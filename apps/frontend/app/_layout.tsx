@@ -1,9 +1,8 @@
 import "../global.css";
 
 import type { ReactNode } from "react";
-import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
-import { Stack, useRouter, useSegments } from "expo-router";
+import { Redirect, Stack, useSegments } from "expo-router";
 
 import { AppPreferencesProvider, useThemeColors } from "../components/AppPreferences";
 import { AuthProvider, useAuth } from "../components/AuthProvider";
@@ -40,25 +39,7 @@ export default function RootLayout() {
 function AuthGate({ children }: { children: ReactNode }) {
   const { user, initializing } = useAuth();
   const colors = useThemeColors();
-  const router = useRouter();
   const segments = useSegments();
-
-  useEffect(() => {
-    if (initializing) {
-      return;
-    }
-
-    const inAuthFlow = segments[0] === "auth";
-
-    if (!user && !inAuthFlow) {
-      router.replace("/auth/login");
-      return;
-    }
-
-    if (user && inAuthFlow) {
-      router.replace("/");
-    }
-  }, [user, initializing, segments, router]);
 
   if (initializing) {
     return (
@@ -66,6 +47,23 @@ function AuthGate({ children }: { children: ReactNode }) {
         <ActivityIndicator color={colors.accent} size="large" />
       </View>
     );
+  }
+
+  // Declarative <Redirect> rather than an imperative router.replace() in a
+  // useEffect: Redirect defers via useFocusEffect and catches its own
+  // navigation errors, so it doesn't race the navigator's own mount the
+  // way a raw effect call did - that race crashed with "Attempted to
+  // navigate before mounting the Root Layout component" whenever a
+  // redirect fired on the very first render (e.g. loading /auth/login
+  // directly while already signed in).
+  const inAuthFlow = segments[0] === "auth";
+
+  if (!user && !inAuthFlow) {
+    return <Redirect href="/auth/login" />;
+  }
+
+  if (user && inAuthFlow) {
+    return <Redirect href="/" />;
   }
 
   return <>{children}</>;
