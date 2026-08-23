@@ -14,7 +14,7 @@ import {
 
 export const financeRouter = Router();
 
-const financeInputsSchema = z
+export const financeInputsSchema = z
   .object({
     incomeInput: z.string().max(30),
     expenseInput: z.string().max(30),
