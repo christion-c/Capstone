@@ -1,4 +1,3 @@
-import BottomNav from "../components/BottomNav";
 import PageScaffold from "../components/PageScaffold";
 import Card from "../components/ui/Card";
 import CardText from "../components/ui/CardText";
@@ -11,7 +10,7 @@ import CardTitle from "../components/ui/CardTitle";
 // if anyone reaches it.
 export default function Nutrition() {
   return (
-    <PageScaffold title="Nutrition" subtitle="This feature isn't available yet." footer={<BottomNav />}>
+    <PageScaffold title="Nutrition" subtitle="This feature isn't available yet." showNav>
       <Card>
         <CardTitle>Check back soon</CardTitle>
         <CardText tight>

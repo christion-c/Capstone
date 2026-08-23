@@ -49,6 +49,7 @@ export default function ForgotPassword() {
     <PageScaffold
       title="Reset Password"
       subtitle="Recover account access quickly and safely."
+      narrow
     >
       <Card gap="md">
         <Text className="text-[22px] font-bold text-text">Request Reset Link</Text>

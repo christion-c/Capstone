@@ -61,6 +61,7 @@ export default function Register() {
     <PageScaffold
       title="Sign Up"
       subtitle="Create your account and personalize your experience."
+      narrow
     >
       <Card gap="md">
         <Text className="text-[22px] font-bold text-text">Create Account</Text>

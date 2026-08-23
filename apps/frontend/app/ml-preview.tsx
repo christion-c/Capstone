@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 
-import BottomNav from "../components/BottomNav";
 import PageScaffold from "../components/PageScaffold";
 import { useThemeColors } from "../components/AppPreferences";
 import { useAuth } from "../components/AuthProvider";
@@ -44,7 +43,7 @@ export default function MlPreviewPage() {
   }, []);
 
   return (
-    <PageScaffold title="Fuel forecast" subtitle="Fuel cost forecast" footer={<BottomNav active="Home" />}>
+    <PageScaffold title="Fuel forecast" subtitle="Fuel cost forecast" showNav navActive="Home">
       <Card gap="md">
         <CardTitle>Fuel forecast</CardTitle>
 

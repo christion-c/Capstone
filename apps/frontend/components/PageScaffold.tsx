@@ -5,6 +5,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, { Easing, FadeInDown } from "react-native-reanimated";
 
 import { useAppPreferences } from "./AppPreferences";
+import BottomNav from "./BottomNav";
+import type { NavTabLabel } from "./nav-tabs";
+import TopNav from "./TopNav";
+import { useIsWideLayout } from "../hooks/useIsWideLayout";
 
 // A quick, gentle rise-and-fade rather than a linear one, so screen
 // content arrives with a slight settle instead of snapping to a stop.
@@ -16,7 +20,9 @@ export default function PageScaffold({
   headerLeft,
   headerRight,
   children,
-  footer,
+  showNav = false,
+  navActive,
+  narrow = false,
   scrollable = true,
 }: {
   title: string;
@@ -24,10 +30,25 @@ export default function PageScaffold({
   headerLeft?: ReactNode;
   headerRight?: ReactNode;
   children: ReactNode;
-  footer?: ReactNode;
+  // Top-level tab screens (Home, Finance, Fuel, Profile) opt into
+  // navigation chrome; nested screens (settings, auth, debug) reach
+  // this via a back button (headerLeft) instead and stay off by
+  // default, matching how `footer` used to be omitted entirely for them.
+  showNav?: boolean;
+  // Which tab this screen belongs to, if any - PageScaffold owns
+  // picking and rendering the right navigation chrome for it (BottomNav
+  // on a narrow/app layout, TopNav on a wide/website one) rather than
+  // every screen constructing its own <BottomNav active="..." />, so
+  // that decision lives in exactly one place.
+  navActive?: NavTabLabel;
+  // Form-only screens (auth) read better as a narrow card even on a
+  // wide/website layout - unlike dashboard screens, more width doesn't
+  // give them anything useful to do with it, it just stretches a form.
+  narrow?: boolean;
   scrollable?: boolean;
 }) {
   const { compactCards } = useAppPreferences();
+  const isWideLayout = useIsWideLayout();
   const scrollRef = useRef<ScrollView>(null);
 
   // Belt-and-suspenders against rubber-band overscroll: the ScrollView below
@@ -75,11 +96,13 @@ export default function PageScaffold({
 
   return (
     <SafeAreaView className="flex-1 overflow-hidden bg-background">
-      {/* Caps content to a phone-width column on wide (web/desktop)
-          viewports instead of letting every card/row stretch full-bleed
-          across the browser window - on an actual phone screen this is
-          a no-op since the viewport is already narrower than the cap. */}
-      <View className="w-full max-w-[480px] flex-1 self-center">
+      {/* Website mode: a persistent top bar instead of a bottom tab
+          strip, rendered full-width above the content column below. */}
+      {showNav && isWideLayout ? <TopNav active={navActive} /> : null}
+      {/* App mode caps content to a phone-width column; website mode
+          allows a much wider column so screens can use the extra room
+          instead of stretching a phone-shaped layout across the page. */}
+      <View className={`w-full flex-1 self-center ${isWideLayout && !narrow ? "max-w-[1100px]" : "max-w-[480px]"}`}>
         <View
           pointerEvents="none"
           className="absolute -right-5 -top-10 h-[180px] w-[180px] rounded-[90px] bg-[rgba(240,168,104,0.12)]"
@@ -101,7 +124,7 @@ export default function PageScaffold({
         ) : (
           body
         )}
-        {footer}
+        {showNav && !isWideLayout ? <BottomNav active={navActive} /> : null}
       </View>
     </SafeAreaView>
   );

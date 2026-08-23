@@ -5,7 +5,6 @@ import { Pressable, Text } from "react-native";
 
 import { useAppPreferences, useThemeColors } from "../../components/AppPreferences";
 import { useAuth } from "../../components/AuthProvider";
-import BottomNav from "../../components/BottomNav";
 import { useFinance } from "../../components/FinanceContext";
 import PageScaffold from "../../components/PageScaffold";
 import { useVehicle } from "../../components/VehicleContext";
@@ -39,7 +38,8 @@ export default function Profile() {
           <Ionicons name="settings-outline" size={20} color={colors.text} />
         </Pressable>
       }
-      footer={<BottomNav active="Profile" />}
+      showNav
+      navActive="Profile"
     >
       <Card>
         <CardTitle>Account Snapshot</CardTitle>

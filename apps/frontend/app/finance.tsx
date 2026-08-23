@@ -2,7 +2,6 @@ import { useCallback } from "react";
 import { Platform, Text, View } from "react-native";
 
 import { useThemeColors } from "../components/AppPreferences";
-import BottomNav from "../components/BottomNav";
 import StepFlowModal from "../components/StepFlowModal";
 import { useFinance } from "../components/FinanceContext";
 import PageScaffold from "../components/PageScaffold";
@@ -77,7 +76,8 @@ export default function Finance() {
     <PageScaffold
       title="Finances"
       subtitle="Build your monthly budget and reserve room for fuel before surprises hit."
-      footer={<BottomNav active="Finance" />}
+      showNav
+      navActive="Finance"
     >
       <Card>
         <CardTitle>Budget Snapshot</CardTitle>

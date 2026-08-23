@@ -3,20 +3,10 @@ import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
 import { useAppPreferences, useThemeColors } from "./AppPreferences";
+import { navTabs, type NavTabLabel } from "./nav-tabs";
 import { shadows } from "./theme";
 
-const tabs = [
-  { label: "Finance", path: "/finance", icon: "wallet-outline", activeIcon: "wallet" },
-  { label: "Home", path: "/", icon: "home-outline", activeIcon: "home" },
-  { label: "Profile", path: "/profile/profile", icon: "person-outline", activeIcon: "person" },
-  { label: "Fuel", path: "/fuel", icon: "car-outline", activeIcon: "car" },
-
-  // nutrition is not complete do not use while this is commented out
-  // { label: "Nutrition", path: "/nutrition", icon: "restaurant-outline", activeIcon: "restaurant" },
-
-] as const;
-
-export default function BottomNav({ active }: { active?: (typeof tabs)[number]["label"] }) {
+export default function BottomNav({ active }: { active?: NavTabLabel }) {
   const colors = useThemeColors();
   const { compactCards } = useAppPreferences();
 
@@ -26,7 +16,7 @@ export default function BottomNav({ active }: { active?: (typeof tabs)[number]["
         style={shadows.elevated}
         className={`flex-row justify-between rounded-lg border border-border bg-surface px-sm ${compactCards ? "py-1.5" : "py-2"}`}
       >
-        {tabs.map((tab) => {
+        {navTabs.map((tab) => {
           const isActive = tab.label === active;
           return (
             <Pressable

@@ -2,7 +2,6 @@ import { useCallback } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
 import { useThemeColors } from "../components/AppPreferences";
-import BottomNav from "../components/BottomNav";
 import StepFlowModal from "../components/StepFlowModal";
 import { useFinance } from "../components/FinanceContext";
 import PageScaffold from "../components/PageScaffold";
@@ -53,7 +52,8 @@ export default function Fuel() {
     <PageScaffold
       title="Fuel"
       subtitle="Track your driving inputs so budget and refill predictions stay realistic."
-      footer={<BottomNav active="Fuel" />}
+      showNav
+      navActive="Fuel"
     >
       <Card>
         <CardTitle>Forecast</CardTitle>
