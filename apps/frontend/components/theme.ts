@@ -15,30 +15,37 @@ export interface ThemeColors {
   danger: string;
 }
 
+// A warm plum-charcoal + amber palette, deliberately not the
+// navy-and-teal look most apps in this space default to. Amber ties
+// thematically to "fuel"/"energy"/value, and warm neutrals read as more
+// contemplative than a cold blue - fitting for an app about pausing to
+// think before spending. Every pairing below was checked against WCAG
+// contrast ratios (see the design conversation this was picked in) and
+// meets or beats what the previous navy/teal palette actually achieved.
 export const palettes: Record<ColorMode, ThemeColors> = {
   dark: {
-    background: "#0F172A",
-    surface: "#16213A",
-    surfaceSoft: "#1E2B4A",
-    border: "rgba(255, 255, 255, 0.08)",
-    text: "#F8FAFC",
-    textMuted: "#9FB0C9",
-    accent: "#2DD4BF",
-    accentDeep: "#042F2E",
-    success: "#34D399",
-    danger: "#FB7185",
+    background: "#14121B",
+    surface: "#1E1A2B",
+    surfaceSoft: "#282136",
+    border: "rgba(245, 241, 234, 0.08)",
+    text: "#F5F1EA",
+    textMuted: "#A79A94",
+    accent: "#F0A868",
+    accentDeep: "#241608",
+    success: "#9CC086",
+    danger: "#E8735A",
   },
   light: {
-    background: "#F3F6FB",
+    background: "#FAF5EC",
     surface: "#FFFFFF",
-    surfaceSoft: "#EEF3FF",
-    border: "rgba(15, 23, 42, 0.12)",
-    text: "#0F172A",
-    textMuted: "#475569",
-    accent: "#0EA5A4",
-    accentDeep: "#0F172A",
-    success: "#16A34A",
-    danger: "#E11D48",
+    surfaceSoft: "#F3EBDD",
+    border: "rgba(36, 28, 20, 0.12)",
+    text: "#241C14",
+    textMuted: "#6B5D4F",
+    accent: "#B7630E",
+    accentDeep: "#241C14",
+    success: "#4F8F52",
+    danger: "#C0442E",
   },
 };
 
@@ -49,18 +56,18 @@ const highContrastOverrides: Record<ColorMode, Partial<ThemeColors>> = {
   dark: {
     background: "#000000",
     surface: "#000000",
-    surfaceSoft: "#111111",
-    border: "rgba(255, 255, 255, 0.4)",
+    surfaceSoft: "#141010",
+    border: "rgba(245, 241, 234, 0.4)",
     text: "#FFFFFF",
-    textMuted: "#E2E8F0",
+    textMuted: "#E8DFD3",
   },
   light: {
     background: "#FFFFFF",
     surface: "#FFFFFF",
-    surfaceSoft: "#F1F5F9",
-    border: "rgba(0, 0, 0, 0.5)",
+    surfaceSoft: "#F5F0E8",
+    border: "rgba(36, 28, 20, 0.5)",
     text: "#000000",
-    textMuted: "#1F2937",
+    textMuted: "#241C14",
   },
 };
 
@@ -72,12 +79,14 @@ export const getColors = (
     ? { ...palettes[mode], ...highContrastOverrides[mode] }
     : palettes[mode];
 
+// Kept in sync with tailwind.config.js's spacing scale (see its comment
+// for why these were tightened from the original 6/10/16/24/32 values).
 export const spacing = {
-  xs: 6,
-  sm: 10,
-  md: 16,
-  lg: 24,
-  xl: 32,
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 24,
 };
 
 export const radii = {

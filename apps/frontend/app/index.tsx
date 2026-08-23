@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { Image } from "expo-image";
 import { useCallback } from "react";
 import { Pressable, Text, View } from "react-native";
 
@@ -9,7 +8,9 @@ import BottomNav from "../components/BottomNav";
 import { useFinance } from "../components/FinanceContext";
 import PageScaffold from "../components/PageScaffold";
 import { shadows, type ThemeColors } from "../components/theme";
+import AnimatedNumber from "../components/ui/AnimatedNumber";
 import Card from "../components/ui/Card";
+import LogoMark from "../components/ui/LogoMark";
 import StatTile from "../components/ui/StatTile";
 import { useVehicle } from "../components/VehicleContext";
 import { useRefetchOnFocus } from "../hooks/useRefetchOnFocus";
@@ -78,28 +79,21 @@ export default function Home() {
     <PageScaffold
       title="Welcome back"
       subtitle="Your monthly plan updates from manual finance and fuel inputs as you go."
-      headerRight={
-        <Image
-          source={require("../assets/images/ThinkTwice-Logo.png")}
-          // react-native-web's core Image sets an inline width/height
-          // style from the source's natural pixel size (612x408 for
-          // this logo), which overrode both the h-16/w-16 className
-          // and an explicit style prop. expo-image (already a
-          // dependency) doesn't have that quirk on web.
-          style={{ height: 64, width: 64 }}
-          contentFit="contain"
-        />
-      }
+      headerRight={<LogoMark />}
       footer={<BottomNav active="Home" />}
     >
       <View style={shadows.soft} className="gap-sm rounded-xl border border-border bg-surface p-lg">
         {shouldShowSetupChecklist ? (
-          <View className="self-start rounded-round bg-[rgba(45,212,191,0.18)] px-3 py-1.5">
+          <View className="self-start rounded-round bg-[rgba(240,168,104,0.18)] px-3 py-1.5">
             <Text className="text-xs font-bold uppercase tracking-[0.4px] text-accent">{completionCount}/{setupSteps.length} setup steps complete</Text>
           </View>
         ) : null}
         <Text className="text-[15px] text-textMuted">Projected Free Cash This Month</Text>
-        <Text className="mt-xs text-[38px] font-bold text-text">{formatCurrencyWhole(projectedBudgetAfterEssentials)}</Text>
+        <AnimatedNumber
+          value={projectedBudgetAfterEssentials}
+          formatValue={formatCurrencyWhole}
+          className="mt-xs text-[38px] font-bold text-text"
+        />
         <Text className={`text-sm font-bold ${isBudgetHealthy ? "text-success" : "text-danger"}`}>{budgetStatus.title}</Text>
 
         <View className="mt-sm flex-row flex-wrap gap-sm">
@@ -146,7 +140,7 @@ export default function Home() {
           <Text className="text-lg font-bold text-text">Get Fully Set Up</Text>
           <View className="gap-xs">
             {setupSteps.map((step) => (
-              <Pressable key={step.label} onPress={() => router.push(step.path)} className="flex-row items-center gap-sm rounded-md bg-surfaceSoft px-md py-3">
+              <Pressable key={step.label} onPress={() => router.push(step.path)} className="flex-row items-center gap-sm rounded-md bg-surfaceSoft px-md py-3 transition-transform duration-150 ease-out active:scale-[0.98]">
                 <Ionicons
                   name={step.complete ? "checkmark-circle" : "ellipse-outline"}
                   size={20}
@@ -204,7 +198,7 @@ function QuickActionCard({
   onPress: () => void;
 }) {
   return (
-    <Pressable onPress={onPress} className="flex-1 gap-xs rounded-lg border border-border bg-surface p-md active:opacity-85">
+    <Pressable onPress={onPress} className="flex-1 gap-xs rounded-lg border border-border bg-surface p-md transition-transform duration-150 ease-out active:scale-[0.97] active:opacity-85">
       <Ionicons name={icon} size={20} color={colors.accent} />
       <Text className="text-base font-bold text-text">{title}</Text>
       <Text className="text-[13px] leading-[19px] text-textMuted">{description}</Text>

@@ -27,12 +27,16 @@ module.exports = {
         success: "var(--color-success)",
         danger: "var(--color-danger)",
       },
+      // Tightened from the original 6/10/16/24/32 scale - the previous
+      // values compounded (24px card padding + 24px gap between cards,
+      // repeated down every screen) into a visibly sparse, empty-feeling
+      // layout across the whole app.
       spacing: {
-        xs: "6px",
-        sm: "10px",
-        md: "16px",
-        lg: "24px",
-        xl: "32px",
+        xs: "4px",
+        sm: "8px",
+        md: "12px",
+        lg: "16px",
+        xl: "24px",
       },
       borderRadius: {
         sm: "12px",
