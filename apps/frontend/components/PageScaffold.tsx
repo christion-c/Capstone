@@ -66,7 +66,7 @@ export default function PageScaffold({
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView className="flex-1 overflow-hidden bg-background">
       <View
         pointerEvents="none"
         className="absolute -right-5 -top-10 h-[180px] w-[180px] rounded-[90px] bg-[rgba(45,212,191,0.12)]"

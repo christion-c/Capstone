@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { Image } from "expo-image";
 import { useCallback } from "react";
-import { Image, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 import { useThemeColors } from "../components/AppPreferences";
 import BottomNav from "../components/BottomNav";
@@ -80,8 +81,13 @@ export default function Home() {
       headerRight={
         <Image
           source={require("../assets/images/ThinkTwice-Logo.png")}
-          className="h-16 w-16"
-          resizeMode="contain"
+          // react-native-web's core Image sets an inline width/height
+          // style from the source's natural pixel size (612x408 for
+          // this logo), which overrode both the h-16/w-16 className
+          // and an explicit style prop. expo-image (already a
+          // dependency) doesn't have that quirk on web.
+          style={{ height: 64, width: 64 }}
+          contentFit="contain"
         />
       }
       footer={<BottomNav active="Home" />}
