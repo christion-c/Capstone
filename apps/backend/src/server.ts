@@ -71,6 +71,24 @@ async function startServer(): Promise<void> {
     process.on("SIGTERM", () => {
       void shutDown("SIGTERM");
     });
+
+    // Every request-lifecycle error already goes through app.ts's error
+    // middleware via asyncHandler's catch(next). These two only fire for
+    // something outside that lifecycle - a rejected promise or thrown
+    // error with no handler anywhere (e.g. a missed await in a future
+    // background task). Node's default behavior is to crash immediately
+    // without closing the DB pool or draining in-flight requests; run
+    // the same graceful shutdown as SIGTERM instead, after logging what
+    // actually went wrong so it doesn't fail silently.
+    process.on("unhandledRejection", (reason) => {
+      console.error("Unhandled promise rejection:", reason);
+      void shutDown("unhandledRejection");
+    });
+
+    process.on("uncaughtException", (error) => {
+      console.error("Uncaught exception:", error);
+      void shutDown("uncaughtException");
+    });
   } catch (startupError) {
     // A migration failure leaves the database transaction rolled back -
     // the API must not start against an incomplete schema.

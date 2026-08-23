@@ -105,6 +105,7 @@ export default function Login() {
       await signInWithEmailAndPassword(auth, email.trim(), password);
       router.replace("/");
     } catch (error) {
+      console.error("Email/password sign-in failed:", error);
       setErrorMessage(getAuthErrorMessage(error, "Unable to sign in right now. Please try again."));
     } finally {
       setIsSubmitting(false);

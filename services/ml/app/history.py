@@ -164,6 +164,9 @@ def save_user_history(payload: dict[str, Any]) -> dict[str, Any]:
     try:
         _ensure_file(HISTORY_PATH)
     except OSError:
+        # Not fatal here - the write_text below independently fails and
+        # returns an error to the caller if the path really isn't
+        # writable, so this is just a best-effort pre-create.
         pass
 
     # Append this entry to the user's existing list (or start a new one).

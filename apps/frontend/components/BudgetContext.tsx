@@ -72,6 +72,7 @@ export function BudgetProvider({ children }: { children: ReactNode }) {
       setEntries(nextEntries);
       setPrediction(nextPrediction);
     } catch (error) {
+      console.error("Failed to load budget entries/predictions:", error);
       const message =
         error instanceof Error
           ? error.message

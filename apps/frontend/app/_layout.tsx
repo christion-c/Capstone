@@ -1,8 +1,8 @@
 import "../global.css";
 
 import type { ReactNode } from "react";
-import { ActivityIndicator, View } from "react-native";
-import { Redirect, Stack, useSegments } from "expo-router";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { Redirect, Stack, useSegments, type ErrorBoundaryProps } from "expo-router";
 
 import { AppPreferencesProvider, useThemeColors } from "../components/AppPreferences";
 import { AuthProvider, useAuth } from "../components/AuthProvider";
@@ -10,6 +10,33 @@ import { BudgetProvider } from "../components/BudgetContext";
 import { FinanceProvider } from "../components/FinanceContext";
 import ThemeVarsRoot from "../components/ThemeVarsRoot";
 import { VehicleProvider } from "../components/VehicleContext";
+
+// Expo Router wraps the whole app in a Try/catch boundary using this
+// export (the file-based convention any route or layout module can use)
+// whenever it's present - without it, an uncaught render error anywhere
+// in the tree unmounts the entire app to a blank screen with no
+// recovery, since nothing else in this app catches React errors.
+//
+// Hardcoded colors rather than the usual className theme tokens: this
+// can render for an error thrown before/outside ThemeVarsRoot mounts
+// (confirmed by testing - className-based colors here fell back to an
+// unstyled white page since the CSS custom properties they reference
+// weren't defined), so it needs to look reasonable without depending on
+// anything else in the tree having mounted successfully.
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: 16, backgroundColor: "#0b1220", paddingHorizontal: 24 }}>
+      <Text style={{ textAlign: "center", fontSize: 18, fontWeight: "bold", color: "#f5f7fa" }}>Something went wrong</Text>
+      <Text style={{ textAlign: "center", fontSize: 14, color: "#9aa5b1" }}>{error.message}</Text>
+      <Pressable
+        onPress={() => void retry()}
+        style={{ alignItems: "center", borderRadius: 8, backgroundColor: "#2dd4bf", paddingHorizontal: 24, paddingVertical: 12 }}
+      >
+        <Text style={{ fontSize: 15, fontWeight: "bold", color: "#0f2d29" }}>Try again</Text>
+      </Pressable>
+    </View>
+  );
+}
 
 export default function RootLayout() {
   return (

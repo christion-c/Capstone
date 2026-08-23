@@ -17,6 +17,11 @@ export type ForecastOutcome =
   // The ML service was unreachable (network failure, DNS, connection refused).
   | { status: "unreachable" };
 
+export type PreviewOutcome =
+  | { status: "ok"; preview: unknown }
+  | { status: "service-error" }
+  | { status: "unreachable" };
+
 // Calls the ML service's /predict endpoint with the given budget
 // entries and classifies the outcome. Any error other than a
 // network-level failure is rethrown for the caller to handle -
@@ -60,4 +65,44 @@ export async function requestForecast(
   const prediction = (await mlResponse.json()) as BudgetPrediction;
 
   return { status: "ok", prediction };
+}
+
+// Calls the ML service's debug-only GET /ml-preview endpoint on behalf
+// of the given (already-authenticated) user, presenting the internal
+// service token that endpoint requires. userId is always the caller's
+// own verified id, never a client-supplied value - the frontend used to
+// call /ml-preview directly with an arbitrary ?user_id=, which let
+// anyone request another user's fill-up history and prediction. Routing
+// it through here means only the backend can reach it, and only with
+// the identity it already verified via Firebase.
+export async function requestPreview(
+  userId: string,
+  milesDriven: number,
+): Promise<PreviewOutcome> {
+  let mlResponse: Response;
+
+  try {
+    const query = new URLSearchParams({
+      user_id: userId,
+      miles_driven: String(milesDriven),
+    });
+
+    mlResponse = await fetch(`${env.ML_SERVICE_URL}/ml-preview?${query}`, {
+      headers: {
+        "X-Internal-Token": env.INTERNAL_SERVICE_TOKEN,
+      },
+    });
+  } catch (error) {
+    if (error instanceof TypeError) {
+      return { status: "unreachable" };
+    }
+
+    throw error;
+  }
+
+  if (!mlResponse.ok) {
+    return { status: "service-error" };
+  }
+
+  return { status: "ok", preview: await mlResponse.json() };
 }

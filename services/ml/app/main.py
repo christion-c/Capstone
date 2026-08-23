@@ -7,12 +7,16 @@
 #                 with a local-file fallback)
 #   prediction.py the actual prediction math for both /predict and /ml-preview
 
+import hmac
+import logging
+from contextlib import asynccontextmanager
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
-from .history import load_user_history, save_user_history
+from .history import INTERNAL_SERVICE_TOKEN, load_user_history, save_user_history
 from .models import PredictRequest, PredictResponse
 from .prediction import (
     MIN_ENTRIES_FOR_REGRESSION,
@@ -22,7 +26,33 @@ from .prediction import (
     recency_weighted_average,
 )
 
-app = FastAPI(title="ThinkTwice ML Service")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    if not INTERNAL_SERVICE_TOKEN:
+        print(
+            "WARNING: INTERNAL_SERVICE_TOKEN is not set - /fill-up-history and "
+            "/ml-preview will reject every request until it is configured.",
+        )
+    yield
+
+
+logger = logging.getLogger("thinktwice.ml")
+
+app = FastAPI(title="ThinkTwice ML Service", lifespan=lifespan)
+
+
+@app.exception_handler(Exception)
+async def handle_unexpected_error(request: Request, exc: Exception) -> JSONResponse:
+    # Starlette's own default handler already returns a generic 500 with
+    # no stack trace leaked to the client (debug mode is off), so this
+    # isn't a safety fix - it's here so an unexpected failure is logged
+    # somewhere structured/queryable instead of only appearing as
+    # uvicorn's raw traceback output, and so the body matches the
+    # backend's { "error": "..." } shape rather than differing between
+    # the two services.
+    logger.exception("Unhandled error on %s %s", request.method, request.url.path)
+    return JSONResponse(status_code=500, content={"error": "Internal server error"})
 
 # Wide open: this service sits behind the backend and is not directly
 # exposed to end users with sensitive credentials to protect.
@@ -33,6 +63,24 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def require_internal_token(x_internal_token: str | None = Header(default=None)) -> None:
+    # Locks the debug-only endpoints below to callers holding the same
+    # shared secret the backend already presents when it calls this
+    # service (see require-internal-service.ts on the backend side).
+    # Without this, /ml-preview accepted an arbitrary ?user_id= and
+    # returned that user's real fill-up history and prediction to
+    # anyone on the internet - a straightforward per-user data leak.
+    # Fails closed (rejects every request) if INTERNAL_SERVICE_TOKEN
+    # itself isn't configured, rather than treating a missing secret as
+    # "no check needed."
+    if (
+        not INTERNAL_SERVICE_TOKEN
+        or not x_internal_token
+        or not hmac.compare_digest(x_internal_token, INTERNAL_SERVICE_TOKEN)
+    ):
+        raise HTTPException(status_code=401, detail="Missing or invalid internal service token")
 
 
 @app.get("/health")
@@ -58,13 +106,13 @@ def predict(request: PredictRequest) -> PredictResponse:
     return predict_by_regression(request.entries)
 
 
-@app.post("/fill-up-history")
+@app.post("/fill-up-history", dependencies=[Depends(require_internal_token)])
 def fill_up_history(payload: dict[str, Any]) -> dict[str, Any]:
     # Backs the /ml-preview debug flow's own history writes (see history.py).
     return save_user_history(payload)
 
 
-@app.get("/ml-preview")
+@app.get("/ml-preview", dependencies=[Depends(require_internal_token)])
 def ml_preview(
     miles_driven: int = 120,
     user_id: str | None = None,
@@ -73,10 +121,10 @@ def ml_preview(
     tank_capacity: float | None = None,
     gallons: float | None = None,
 ) -> dict[str, Any]:
-    # Debug-only preview endpoint, not called by the main app - backs
-    # the frontend's /ml-preview and /debug/ml-account screens, which
-    # call this directly from the browser (via EXPO_PUBLIC_ML_API_URL)
-    # rather than going through the backend.
+    # Debug-only preview endpoint, not called directly by the frontend -
+    # it goes through the backend's authenticated GET /predictions/preview,
+    # which forwards here with the internal token and the caller's own
+    # verified user id (see predictions.client.ts on the backend side).
     return build_prediction(
         miles_driven=miles_driven,
         user_id=user_id,

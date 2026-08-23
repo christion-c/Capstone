@@ -50,6 +50,7 @@ export default function Register() {
       await createUserWithEmailAndPassword(auth, email.trim(), password);
       router.replace("/");
     } catch (error) {
+      console.error("Account creation failed:", error);
       setErrorMessage(getAuthErrorMessage(error, "Unable to create account right now. Please try again."));
     } finally {
       setIsSubmitting(false);

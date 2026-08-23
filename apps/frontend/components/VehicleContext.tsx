@@ -97,6 +97,7 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
         return nextVehicles[0]?.id ?? null;
       });
     } catch (error) {
+      console.error("Failed to load vehicles:", error);
       const message =
         error instanceof Error
           ? error.message

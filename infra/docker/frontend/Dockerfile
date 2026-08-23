@@ -1,4 +1,11 @@
 # syntax=docker/dockerfile:1.7
+#
+# Development only - there is no production stage here. This image runs
+# the Metro dev server (see the CMD at the bottom) for local docker
+# compose use; it is never built or deployed for production. The real
+# production artifact is the static web export (`npm run export:web`,
+# verified in CI) deployed to Firebase Hosting - see firebase.json and
+# .firebaserc at the repo root.
 
 ARG NODE_VERSION=22
 

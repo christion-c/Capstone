@@ -83,3 +83,30 @@ jobs:
       - run: python -m pip_audit -r requirements.txt
       - run: python -c "from app.main import app; assert any(route.path == '/health' for route in app.routes)"
       - run: python -m pytest
+
+  docker-build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Build-only, no push/deploy - this just catches a broken Dockerfile
+      # (stale COPY path, missing file in the production stage, etc.)
+      # before it surfaces manually at deploy time. frontend has no
+      # production stage (its real prod artifact is the static web export,
+      # already verified by the frontend job's `expo export:web` step, not
+      # this Dockerfile - see infra/docker/frontend/Dockerfile), so only
+      # backend and ml are built here.
+      - name: Build backend production image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/docker/backend/Dockerfile
+          target: production
+          push: false
+      - name: Build ml production image
+        uses: docker/build-push-action@v6
+        with:
+          context: services/ml
+          file: infra/docker/ml/Dockerfile
+          target: production
+          push: false

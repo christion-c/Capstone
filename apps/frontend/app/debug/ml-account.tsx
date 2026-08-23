@@ -14,7 +14,7 @@ import { formatCurrency } from "../../lib/money-format";
 export default function PrivateMlAccountPage() {
   const colors = useThemeColors();
   const { user } = useAuth();
-  const { milesInput, setMilesInput, data, loading, error, reload } = useMlPreview(user?.uid ?? "guest");
+  const { milesInput, setMilesInput, data, loading, error, reload } = useMlPreview(user);
 
   return (
     <PageScaffold

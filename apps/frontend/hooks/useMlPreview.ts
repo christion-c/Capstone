@@ -1,3 +1,4 @@
+import type { User } from "firebase/auth";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { fetchMlPreview, type MlPreviewResponse } from "../lib/ml-preview-api";
@@ -14,8 +15,9 @@ const WARMUP_ERROR_DELAY_MS = 30000;
 // they render. Guards against out-of-order responses (an earlier,
 // slower request resolving after a newer one already succeeded) via a
 // request-id ref, and won't overwrite already-loaded data with a
-// stale-request error.
-export function useMlPreview(userId: string, initialMiles = "120") {
+// stale-request error. Requires a real signed-in user - the endpoint is
+// authenticated and always returns that user's own data.
+export function useMlPreview(user: User | null, initialMiles = "120") {
   const [milesInput, setMilesInput] = useState(initialMiles);
   const [data, setData] = useState<MlPreviewResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -25,6 +27,12 @@ export function useMlPreview(userId: string, initialMiles = "120") {
   const hasDataRef = useRef(false);
 
   const loadPreview = useCallback(async (miles: string) => {
+    if (!user) {
+      setLoading(false);
+      setError("Sign in to load a preview.");
+      return;
+    }
+
     // Bump the request id so any earlier in-flight request can recognize
     // itself as stale once this one starts.
     const requestId = requestIdRef.current + 1;
@@ -49,7 +57,7 @@ export function useMlPreview(userId: string, initialMiles = "120") {
     }, WARMUP_ERROR_DELAY_MS);
 
     try {
-      const payload = await fetchMlPreview(miles, userId);
+      const payload = await fetchMlPreview(user, miles);
       // A newer request already started - ignore this now-stale response.
       if (requestIdRef.current !== requestId) {
         return;
@@ -83,7 +91,7 @@ export function useMlPreview(userId: string, initialMiles = "120") {
       setError(fetchError instanceof Error ? fetchError.message : "Preview service is unavailable right now.");
       setLoading(false);
     }
-  }, [userId]);
+  }, [user]);
 
   useEffect(() => {
     void loadPreview(milesInput);
@@ -93,10 +101,11 @@ export function useMlPreview(userId: string, initialMiles = "120") {
         clearTimeout(errorTimeoutRef.current);
       }
     };
-    // Intentionally mount-only: re-fetching on every milesInput keystroke
-    // would spam the service. Callers re-trigger via `reload`.
+    // Re-runs when `user` resolves (e.g. auth was still initializing on
+    // mount) but intentionally not on every milesInput keystroke, which
+    // would spam the service - callers re-trigger that via `reload`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
 
   return {
     milesInput,

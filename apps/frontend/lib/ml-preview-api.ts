@@ -1,9 +1,15 @@
-// Client for the ML service's debug-only GET /ml-preview endpoint (see
-// services/ml/app/prediction.py's build_prediction). This is a
-// separate, unauthenticated preview flow that the frontend calls
-// directly from the browser - not to be confused with the
-// backend-mediated POST /predict path used by the main app (see
-// backend-api.ts's prediction calls).
+import type { User } from "firebase/auth";
+
+import { getAuthHeader, requestBackend } from "./backend-api";
+
+// Client for the backend's authenticated GET /predictions/preview route,
+// which proxies to the ML service's debug-only /ml-preview endpoint. This
+// used to call the ML service directly with a plain ?user_id= query
+// param and no auth at all, which meant anyone who guessed another
+// user's Firebase uid could read that user's fill-up history and
+// prediction. Routing through the backend means the caller's identity
+// is verified via their own Firebase ID token, and the backend is the
+// only thing that ever holds the ML service's internal token.
 //
 // Response fields match the ML service's response dict exactly
 // (snake_case, no camelCase aliasing - that's only applied to
@@ -26,44 +32,13 @@ export interface MlPreviewResponse {
   }[];
 }
 
-function buildCandidateUrls(miles: string, userId: string): string[] {
-  const configuredBaseUrl = process.env.EXPO_PUBLIC_ML_API_URL?.trim();
-  const query = `miles_driven=${encodeURIComponent(miles)}&user_id=${encodeURIComponent(userId)}`;
+export async function fetchMlPreview(user: User, miles: string): Promise<MlPreviewResponse> {
+  const milesDriven = Number.parseInt(miles, 10);
+  const query = new URLSearchParams({
+    miles_driven: String(Number.isFinite(milesDriven) ? milesDriven : 120),
+  });
 
-  // Tried in order: the configured deployment URL first, then the various
-  // hostnames the ML container might be reachable at depending on where
-  // the frontend itself is running (Docker Compose network, browser on the
-  // host machine, or Android emulator's loopback alias).
-  return [
-    configuredBaseUrl ? `${configuredBaseUrl.replace(/\/+$/, "")}/ml-preview?${query}` : null,
-    `http://ml:8000/ml-preview?${query}`,
-    `http://127.0.0.1:8000/ml-preview?${query}`,
-    `http://localhost:8000/ml-preview?${query}`,
-    `http://10.0.2.2:8000/ml-preview?${query}`,
-  ].filter((value): value is string => Boolean(value));
-}
-
-// Tries each candidate host in turn, throwing with the last error if none respond.
-export async function fetchMlPreview(miles: string, userId: string): Promise<MlPreviewResponse> {
-  const candidates = buildCandidateUrls(miles, userId);
-  let lastError = "";
-
-  for (const [index, url] of candidates.entries()) {
-    try {
-      const response = await fetch(url, { headers: { Accept: "application/json" } });
-      if (!response.ok) {
-        throw new Error(`Request failed with status ${response.status}`);
-      }
-      return (await response.json()) as MlPreviewResponse;
-    } catch (fetchError) {
-      const message = fetchError instanceof Error ? fetchError.message : "Unknown error";
-      lastError = `Preview service is unavailable right now. (${message})`;
-
-      if (index < candidates.length - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 250));
-      }
-    }
-  }
-
-  throw new Error(lastError || "Preview service is unavailable right now.");
+  return requestBackend<MlPreviewResponse>(`/predictions/preview?${query}`, {
+    headers: await getAuthHeader(user),
+  });
 }

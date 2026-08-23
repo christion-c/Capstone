@@ -22,8 +22,11 @@ const environmentSchema = z.object({
     .url()
     .default("http://ml:8000"),
 
-  // "*" allows any origin; production sets this to the real frontend origin(s).
-  CORS_ORIGIN: z.string().default("*"),
+  // No default. "*" allows any origin - that's a real choice a
+  // developer/operator should make explicitly (as local dev's
+  // CORS_ORIGIN=* does in .env.example), not something that happens
+  // silently if this var is forgotten when configuring a deployment.
+  CORS_ORIGIN: z.string().min(1),
 });
 
 // Validate once at startup rather than trusting process.env directly
