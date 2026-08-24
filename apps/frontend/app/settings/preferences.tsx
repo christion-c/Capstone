@@ -3,15 +3,12 @@ import { signOut } from "firebase/auth";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import { useAppPreferences, useThemeColors } from "../../components/AppPreferences";
-import PageScaffold from "../../components/PageScaffold";
-import SettingsBackButton from "../../components/settings/SettingsBackButton";
-import SettingToggleRow from "../../components/settings/SettingToggleRow";
-import Card from "../../components/ui/Card";
-import CardText from "../../components/ui/CardText";
-import CardTitle from "../../components/ui/CardTitle";
-import StatusMessage from "../../components/ui/StatusMessage";
-import { auth, isFirebaseConfigured } from "../../lib/firebase";
+import { useAppPreferences, useThemeColors } from "@/components/contexts/AppPreferencesProvider";
+import PageScaffold from "@/components/PageScaffold";
+import SettingsBackButton from "@/components/settings/SettingsBackButton";
+import SettingToggleRow from "@/components/settings/SettingToggleRow";
+import { Card, CardText, CardTitle, StatusMessage } from "@/components/ui";
+import { auth, isFirebaseConfigured } from "@/lib/firebase";
 
 export default function ProfileSettings() {
   const colors = useThemeColors();
@@ -49,7 +46,7 @@ export default function ProfileSettings() {
     <PageScaffold
       title="Profile Settings"
       subtitle="Adjust a few frontend app options for your experience."
-      headerLeft={<SettingsBackButton onPress={() => router.replace("/profile/profile")} colors={colors} />}
+      headerLeft={<SettingsBackButton onPress={() => router.replace("/profile")} colors={colors} />}
     >
       <Card>
         <CardTitle>Appearance</CardTitle>

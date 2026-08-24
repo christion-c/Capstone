@@ -3,18 +3,15 @@ import { router } from "expo-router";
 import { useCallback } from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 
-import { useThemeColors } from "../components/AppPreferences";
-import { useFinance } from "../components/FinanceContext";
-import PageScaffold from "../components/PageScaffold";
-import { shadows, type ThemeColors } from "../components/theme";
-import AnimatedNumber from "../components/ui/AnimatedNumber";
-import Card from "../components/ui/Card";
-import LogoMark from "../components/ui/LogoMark";
-import StatTile from "../components/ui/StatTile";
-import { useVehicle } from "../components/VehicleContext";
-import { useRefetchOnFocus } from "../hooks/useRefetchOnFocus";
-import { useSetupChecklist } from "../hooks/useSetupChecklist";
-import { formatCurrencyWhole } from "../lib/money-format";
+import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
+import { useFinance } from "@/components/contexts/FinanceProvider";
+import PageScaffold from "@/components/PageScaffold";
+import { shadows, type ThemeColors } from "@/components/theme";
+import { AnimatedNumber, Card, LogoMark, StatTile } from "@/components/ui";
+import { useVehicle } from "@/components/contexts/VehicleProvider";
+import { useRefetchOnFocus } from "@/hooks/useRefetchOnFocus";
+import { useSetupChecklist } from "@/hooks/useSetupChecklist";
+import { formatCurrencyWhole } from "@/lib/money-format";
 
 // TopNav (the website shell, PageScaffold.web.tsx) already shows the
 // logo/wordmark, so this screen's own header-right logo would be a

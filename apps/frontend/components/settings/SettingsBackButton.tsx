@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text } from "react-native";
 
-import type { ThemeColors } from "../theme";
+import type { ThemeColors } from "@/components/theme";
 
 interface SettingsBackButtonProps {
   onPress: () => void;

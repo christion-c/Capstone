@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 
-import type { BackendVehicle } from "../../lib/backend-api";
+import type { BackendVehicle } from "@/lib/backend-api";
 
 interface VehicleSelectorProps {
   vehicles: BackendVehicle[];

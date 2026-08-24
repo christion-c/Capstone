@@ -3,15 +3,14 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import { useThemeColors } from "../../components/AppPreferences";
-import PageScaffold from "../../components/PageScaffold";
-import AuthSubmitButton from "../../components/auth/AuthSubmitButton";
-import AuthTextField from "../../components/auth/AuthTextField";
-import PreviewModeNotice from "../../components/auth/PreviewModeNotice";
-import Card from "../../components/ui/Card";
-import StatusMessage from "../../components/ui/StatusMessage";
-import { getAuthErrorMessage } from "../../lib/auth-errors";
-import { auth, isFirebaseConfigured } from "../../lib/firebase";
+import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
+import PageScaffold from "@/components/PageScaffold";
+import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
+import AuthTextField from "@/components/auth/AuthTextField";
+import PreviewModeNotice from "@/components/auth/PreviewModeNotice";
+import { Card, StatusMessage } from "@/components/ui";
+import { getAuthErrorMessage } from "@/lib/auth-errors";
+import { auth, isFirebaseConfigured } from "@/lib/firebase";
 
 export default function Register() {
   const colors = useThemeColors();

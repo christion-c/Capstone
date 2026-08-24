@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import { useAuth } from "./AuthProvider";
-import { getColors, type ColorMode } from "./theme";
+import { getColors, type ColorMode } from "@/components/theme";
 
 const PREFERENCES_STORAGE_KEY = "thinktwice.app-preferences";
 

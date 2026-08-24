@@ -1,11 +1,10 @@
 import { router } from "expo-router";
 
-import { useAppPreferences, useThemeColors } from "../../components/AppPreferences";
-import PageScaffold from "../../components/PageScaffold";
-import SettingsBackButton from "../../components/settings/SettingsBackButton";
-import SettingToggleRow from "../../components/settings/SettingToggleRow";
-import Card from "../../components/ui/Card";
-import CardTitle from "../../components/ui/CardTitle";
+import { useAppPreferences, useThemeColors } from "@/components/contexts/AppPreferencesProvider";
+import PageScaffold from "@/components/PageScaffold";
+import SettingsBackButton from "@/components/settings/SettingsBackButton";
+import SettingToggleRow from "@/components/settings/SettingToggleRow";
+import { Card, CardTitle } from "@/components/ui";
 
 export default function Accessibility() {
   const colors = useThemeColors();

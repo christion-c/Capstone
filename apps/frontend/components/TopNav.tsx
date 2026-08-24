@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
-import { useThemeColors } from "./AppPreferences";
+import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import { navTabs, type NavTabLabel } from "./nav-tabs";
 import LogoMark from "./ui/LogoMark";
 

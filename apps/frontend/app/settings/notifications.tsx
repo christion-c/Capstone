@@ -1,14 +1,11 @@
 import { router } from "expo-router";
 import { Text, View } from "react-native";
 
-import { useAppPreferences, useThemeColors } from "../../components/AppPreferences";
-import PageScaffold from "../../components/PageScaffold";
-import SettingsBackButton from "../../components/settings/SettingsBackButton";
-import SettingToggleRow from "../../components/settings/SettingToggleRow";
-import Card from "../../components/ui/Card";
-import CardText from "../../components/ui/CardText";
-import CardTitle from "../../components/ui/CardTitle";
-import StatTile from "../../components/ui/StatTile";
+import { useAppPreferences, useThemeColors } from "@/components/contexts/AppPreferencesProvider";
+import PageScaffold from "@/components/PageScaffold";
+import SettingsBackButton from "@/components/settings/SettingsBackButton";
+import SettingToggleRow from "@/components/settings/SettingToggleRow";
+import { Card, CardText, CardTitle, StatTile } from "@/components/ui";
 
 export default function DailyRhythmSettings() {
   const colors = useThemeColors();

@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 
-import { useAuth } from "../components/AuthProvider";
+import { useAuth } from "@/components/contexts/AuthProvider";
 
 interface ChecklistStep {
   complete: boolean;

@@ -1,4 +1,4 @@
-import StatTile from "../ui/StatTile";
+import { StatTile } from "@/components/ui";
 
 interface MlMetricBoxProps {
   label: string;

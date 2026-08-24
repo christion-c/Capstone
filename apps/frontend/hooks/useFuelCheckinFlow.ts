@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
-import { useAuth } from "../components/AuthProvider";
-import { useFinance } from "../components/FinanceContext";
-import { useVehicle } from "../components/VehicleContext";
-import { saveFillUpHistory } from "../lib/backend-api";
+import { useAuth } from "@/components/contexts/AuthProvider";
+import { useFinance } from "@/components/contexts/FinanceProvider";
+import { useVehicle } from "@/components/contexts/VehicleProvider";
+import { saveFillUpHistory } from "@/lib/backend-api";
 import { useStepFlow, type StepFlowStepConfig } from "./useStepFlow";
 
 type FuelCheckinStepKey = "gallons" | "price" | "miles" | "tankLevel";

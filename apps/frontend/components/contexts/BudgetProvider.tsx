@@ -17,7 +17,7 @@ import {
   type BackendBudgetEntry,
   type CreateBackendBudgetEntryInput,
   type PredictionResult,
-} from "../lib/backend-api";
+} from "@/lib/backend-api";
 
 // No screen currently calls useBudget() - app/nutrition.tsx (its
 // intended consumer) is a stub because daily nutrition check-ins are

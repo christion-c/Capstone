@@ -1,7 +1,7 @@
 import { KeyboardAvoidingView, Modal, Platform, Pressable, Text, TextInput, View } from "react-native";
 import type { KeyboardAvoidingViewProps } from "react-native";
 
-import type { StepFlowStepConfig } from "../hooks/useStepFlow";
+import type { StepFlowStepConfig } from "@/hooks/useStepFlow";
 import type { ThemeColors } from "./theme";
 
 interface StepFlowModalProps<K extends string> {

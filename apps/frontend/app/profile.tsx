@@ -3,16 +3,14 @@ import { router } from "expo-router";
 import { useCallback } from "react";
 import { Pressable, Text } from "react-native";
 
-import { useAppPreferences, useThemeColors } from "../../components/AppPreferences";
-import { useAuth } from "../../components/AuthProvider";
-import { useFinance } from "../../components/FinanceContext";
-import PageScaffold from "../../components/PageScaffold";
-import { useVehicle } from "../../components/VehicleContext";
-import Card from "../../components/ui/Card";
-import CardText from "../../components/ui/CardText";
-import CardTitle from "../../components/ui/CardTitle";
-import { useRefetchOnFocus } from "../../hooks/useRefetchOnFocus";
-import { formatCurrencyWhole } from "../../lib/money-format";
+import { useAppPreferences, useThemeColors } from "@/components/contexts/AppPreferencesProvider";
+import { useAuth } from "@/components/contexts/AuthProvider";
+import { useFinance } from "@/components/contexts/FinanceProvider";
+import PageScaffold from "@/components/PageScaffold";
+import { useVehicle } from "@/components/contexts/VehicleProvider";
+import { Card, CardText, CardTitle } from "@/components/ui";
+import { useRefetchOnFocus } from "@/hooks/useRefetchOnFocus";
+import { formatCurrencyWhole } from "@/lib/money-format";
 
 export default function Profile() {
   const colors = useThemeColors();

@@ -7,10 +7,10 @@ import {
   fetchFillUpHistory,
   type SavedFillUpHistoryEntry,
   upsertFinanceInputs,
-} from "../lib/backend-api";
-import { computeFillUpStats, computeFinanceProjections } from "../lib/finance-projections";
+} from "@/lib/backend-api";
+import { computeFillUpStats, computeFinanceProjections } from "@/lib/finance-projections";
 import { useAuth } from "./AuthProvider";
-import { useVehicle } from "./VehicleContext";
+import { useVehicle } from "./VehicleProvider";
 
 const FINANCE_STORAGE_KEY = "thinktwice.finance-inputs";
 

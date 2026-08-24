@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { Text, View } from "react-native";
 
-import PageScaffold from "../components/PageScaffold";
-import Card from "../components/ui/Card";
+import PageScaffold from "@/components/PageScaffold";
+import { Card } from "@/components/ui";
 
 const CONTACT_EMAIL = "bubba7xallahan@gmail.com";
 const LAST_UPDATED = "August 24, 2026";

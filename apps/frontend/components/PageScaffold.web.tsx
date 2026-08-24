@@ -2,11 +2,11 @@ import type { ReactNode } from "react";
 import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useAppPreferences } from "./AppPreferences";
+import { useAppPreferences } from "@/components/contexts/AppPreferencesProvider";
 import type { NavTabLabel } from "./nav-tabs";
 import PageScaffoldBody from "./PageScaffoldBody";
 import TopNav from "./TopNav";
-import { useOverscrollGuard } from "../hooks/useOverscrollGuard";
+import { useOverscrollGuard } from "@/hooks/useOverscrollGuard";
 
 // The website-shell variant of PageScaffold: a persistent top nav bar,
 // wide multi-column-capable content, no bottom tab strip. Metro

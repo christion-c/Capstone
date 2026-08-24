@@ -1,7 +1,5 @@
-import PageScaffold from "../components/PageScaffold";
-import Card from "../components/ui/Card";
-import CardText from "../components/ui/CardText";
-import CardTitle from "../components/ui/CardTitle";
+import PageScaffold from "@/components/PageScaffold";
+import { Card, CardText, CardTitle } from "@/components/ui";
 
 // Nutrition daily check-ins are paused (not this screen's decision -
 // see team commit "undid nutrition page changes", Aug 2026). Kept as a

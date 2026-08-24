@@ -3,14 +3,13 @@ import { sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
 import { Pressable, Text } from "react-native";
 
-import { useThemeColors } from "../../components/AppPreferences";
-import PageScaffold from "../../components/PageScaffold";
-import AuthSubmitButton from "../../components/auth/AuthSubmitButton";
-import AuthTextField from "../../components/auth/AuthTextField";
-import PreviewModeNotice from "../../components/auth/PreviewModeNotice";
-import Card from "../../components/ui/Card";
-import StatusMessage from "../../components/ui/StatusMessage";
-import { auth, isFirebaseConfigured } from "../../lib/firebase";
+import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
+import PageScaffold from "@/components/PageScaffold";
+import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
+import AuthTextField from "@/components/auth/AuthTextField";
+import PreviewModeNotice from "@/components/auth/PreviewModeNotice";
+import { Card, StatusMessage } from "@/components/ui";
+import { auth, isFirebaseConfigured } from "@/lib/firebase";
 
 export default function ForgotPassword() {
   const colors = useThemeColors();

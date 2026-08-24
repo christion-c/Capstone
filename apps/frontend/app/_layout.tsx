@@ -1,15 +1,15 @@
-import "../global.css";
+import "@/global.css";
 
 import type { ReactNode } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { Redirect, Stack, useSegments, type ErrorBoundaryProps } from "expo-router";
 
-import { AppPreferencesProvider, useThemeColors } from "../components/AppPreferences";
-import { AuthProvider, useAuth } from "../components/AuthProvider";
-import { BudgetProvider } from "../components/BudgetContext";
-import { FinanceProvider } from "../components/FinanceContext";
-import ThemeVarsRoot from "../components/ThemeVarsRoot";
-import { VehicleProvider } from "../components/VehicleContext";
+import { AppPreferencesProvider, useThemeColors } from "@/components/contexts/AppPreferencesProvider";
+import { AuthProvider, useAuth } from "@/components/contexts/AuthProvider";
+import { BudgetProvider } from "@/components/contexts/BudgetProvider";
+import { FinanceProvider } from "@/components/contexts/FinanceProvider";
+import ThemeVarsRoot from "@/components/ThemeVarsRoot";
+import { VehicleProvider } from "@/components/contexts/VehicleProvider";
 
 // Expo Router wraps the whole app in a Try/catch boundary using this
 // export (the file-based convention any route or layout module can use)
@@ -122,11 +122,11 @@ function AppStack() {
       <Stack.Screen name="nutrition" options={{ title: "Nutrition" }} />
       <Stack.Screen name="notifications" options={{ title: "Notifications" }} />
 
-      <Stack.Screen name="profile/profile" options={{ title: "Profile" }} />
+      <Stack.Screen name="profile" options={{ title: "Profile" }} />
 
       <Stack.Screen name="auth/login" options={{ title: "Login" }} />
       <Stack.Screen name="auth/register" options={{ title: "Register" }} />
-      <Stack.Screen name="auth/forgotPassword" options={{ title: "Forgot Password" }} />
+      <Stack.Screen name="auth/forgot-password" options={{ title: "Forgot Password" }} />
 
       <Stack.Screen name="settings/preferences" options={{ title: "Profile Settings" }} />
       <Stack.Screen name="debug/ml-account" options={{ title: "Internal ML Debug" }} />

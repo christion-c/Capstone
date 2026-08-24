@@ -1,23 +1,18 @@
 import { useCallback } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
-import { useThemeColors } from "../components/AppPreferences";
-import StepFlowModal from "../components/StepFlowModal";
-import { useFinance } from "../components/FinanceContext";
-import PageScaffold from "../components/PageScaffold";
-import { useVehicle } from "../components/VehicleContext";
-import { shadows } from "../components/theme";
-import Card from "../components/ui/Card";
-import CardText from "../components/ui/CardText";
-import CardTitle from "../components/ui/CardTitle";
-import PrimaryButton from "../components/ui/PrimaryButton";
-import StatTile from "../components/ui/StatTile";
-import StatusMessage from "../components/ui/StatusMessage";
-import VehicleSelector from "../components/fuel/VehicleSelector";
-import { useWebKeyboardInset } from "../hooks/useWebKeyboardInset";
-import { useRefetchOnFocus } from "../hooks/useRefetchOnFocus";
-import { useFuelCheckinFlow } from "../hooks/useFuelCheckinFlow";
-import { formatCurrency } from "../lib/money-format";
+import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
+import StepFlowModal from "@/components/StepFlowModal";
+import { useFinance } from "@/components/contexts/FinanceProvider";
+import PageScaffold from "@/components/PageScaffold";
+import { useVehicle } from "@/components/contexts/VehicleProvider";
+import { shadows } from "@/components/theme";
+import { Card, CardText, CardTitle, PrimaryButton, StatTile, StatusMessage } from "@/components/ui";
+import VehicleSelector from "@/components/fuel/VehicleSelector";
+import { useWebKeyboardInset } from "@/hooks/useWebKeyboardInset";
+import { useRefetchOnFocus } from "@/hooks/useRefetchOnFocus";
+import { useFuelCheckinFlow } from "@/hooks/useFuelCheckinFlow";
+import { formatCurrency } from "@/lib/money-format";
 
 export default function Fuel() {
   const colors = useThemeColors();

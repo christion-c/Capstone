@@ -11,15 +11,14 @@ import { useEffect, useState } from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
-import { useAppPreferences, useThemeColors } from "../../components/AppPreferences";
-import PageScaffold from "../../components/PageScaffold";
-import AuthSubmitButton from "../../components/auth/AuthSubmitButton";
-import AuthTextField from "../../components/auth/AuthTextField";
-import PreviewModeNotice from "../../components/auth/PreviewModeNotice";
-import Card from "../../components/ui/Card";
-import StatusMessage from "../../components/ui/StatusMessage";
-import { getAuthErrorMessage } from "../../lib/auth-errors";
-import { auth, isFirebaseConfigured } from "../../lib/firebase";
+import { useAppPreferences, useThemeColors } from "@/components/contexts/AppPreferencesProvider";
+import PageScaffold from "@/components/PageScaffold";
+import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
+import AuthTextField from "@/components/auth/AuthTextField";
+import PreviewModeNotice from "@/components/auth/PreviewModeNotice";
+import { Card, StatusMessage } from "@/components/ui";
+import { getAuthErrorMessage } from "@/lib/auth-errors";
+import { auth, isFirebaseConfigured } from "@/lib/firebase";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -217,7 +216,7 @@ export default function Login() {
           </View>
         </Pressable>
 
-        <Pressable onPress={() => router.push("/auth/forgotPassword")}>
+        <Pressable onPress={() => router.push("/auth/forgot-password")}>
           <Text className="text-center text-sm font-bold text-accent">Forgot password?</Text>
         </Pressable>
 

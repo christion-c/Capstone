@@ -2,11 +2,11 @@ import type { ReactNode } from "react";
 import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useAppPreferences } from "./AppPreferences";
+import { useAppPreferences } from "@/components/contexts/AppPreferencesProvider";
 import BottomNav from "./BottomNav";
 import type { NavTabLabel } from "./nav-tabs";
 import PageScaffoldBody from "./PageScaffoldBody";
-import { useOverscrollGuard } from "../hooks/useOverscrollGuard";
+import { useOverscrollGuard } from "@/hooks/useOverscrollGuard";
 
 // The app-shell variant of PageScaffold: bottom tab bar, phone-width
 // column, compact touch-first chrome. Metro resolves this file for

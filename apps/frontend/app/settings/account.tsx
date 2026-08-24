@@ -1,14 +1,12 @@
 import { router } from "expo-router";
 import { Pressable, Text } from "react-native";
 
-import { useThemeColors } from "../../components/AppPreferences";
-import { useAuth } from "../../components/AuthProvider";
-import PageScaffold from "../../components/PageScaffold";
-import SettingsBackButton from "../../components/settings/SettingsBackButton";
-import { useVehicle } from "../../components/VehicleContext";
-import Card from "../../components/ui/Card";
-import CardText from "../../components/ui/CardText";
-import CardTitle from "../../components/ui/CardTitle";
+import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
+import { useAuth } from "@/components/contexts/AuthProvider";
+import PageScaffold from "@/components/PageScaffold";
+import SettingsBackButton from "@/components/settings/SettingsBackButton";
+import { useVehicle } from "@/components/contexts/VehicleProvider";
+import { Card, CardText, CardTitle } from "@/components/ui";
 
 export default function Account() {
   const colors = useThemeColors();
@@ -37,7 +35,7 @@ export default function Account() {
 
       <Card>
         <CardTitle>Next Steps</CardTitle>
-        <Pressable onPress={() => router.push("/profile/profile")} className="rounded-md border border-border bg-surfaceSoft px-md py-3.5">
+        <Pressable onPress={() => router.push("/profile")} className="rounded-md border border-border bg-surfaceSoft px-md py-3.5">
           <Text className="text-[15px] font-bold text-text">Open profile overview</Text>
         </Pressable>
         <Pressable onPress={() => router.push("/settings/preferences")} className="rounded-md border border-border bg-surfaceSoft px-md py-3.5">

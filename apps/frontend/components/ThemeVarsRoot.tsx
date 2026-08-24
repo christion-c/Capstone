@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { View } from "react-native";
 import { vars } from "nativewind";
 
-import { useAppPreferences } from "./AppPreferences";
+import { useAppPreferences } from "@/components/contexts/AppPreferencesProvider";
 import { getColors } from "./theme";
 
 // Bridges the app's runtime theme (colorMode x highContrast, four

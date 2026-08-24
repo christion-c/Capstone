@@ -1,15 +1,14 @@
 import { Text, View } from "react-native";
 
-import { useThemeColors } from "../../components/AppPreferences";
-import { useAuth } from "../../components/AuthProvider";
-import PageScaffold from "../../components/PageScaffold";
-import MlAccountInfoBox from "../../components/ml/MlAccountInfoBox";
-import MlMetricBox from "../../components/ml/MlMetricBox";
-import MlPreviewControls from "../../components/ml/MlPreviewControls";
-import Card from "../../components/ui/Card";
-import CardTitle from "../../components/ui/CardTitle";
-import { useMlPreview } from "../../hooks/useMlPreview";
-import { formatCurrency } from "../../lib/money-format";
+import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
+import { useAuth } from "@/components/contexts/AuthProvider";
+import PageScaffold from "@/components/PageScaffold";
+import MlAccountInfoBox from "@/components/ml/MlAccountInfoBox";
+import MlMetricBox from "@/components/ml/MlMetricBox";
+import MlPreviewControls from "@/components/ml/MlPreviewControls";
+import { Card, CardTitle } from "@/components/ui";
+import { useMlPreview } from "@/hooks/useMlPreview";
+import { formatCurrency } from "@/lib/money-format";
 
 export default function PrivateMlAccountPage() {
   const colors = useThemeColors();

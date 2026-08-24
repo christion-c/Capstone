@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
-import { useAppPreferences, useThemeColors } from "./AppPreferences";
+import { useAppPreferences, useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import { navTabs, type NavTabLabel } from "./nav-tabs";
 import { shadows } from "./theme";
 

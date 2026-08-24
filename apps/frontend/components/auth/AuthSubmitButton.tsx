@@ -1,4 +1,4 @@
-import PrimaryButton from "../ui/PrimaryButton";
+import { PrimaryButton } from "@/components/ui";
 
 interface AuthSubmitButtonProps {
   onPress: () => void;
