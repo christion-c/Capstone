@@ -27,16 +27,16 @@ module.exports = {
         success: "var(--color-success)",
         danger: "var(--color-danger)",
       },
-      // Tightened from the original 6/10/16/24/32 scale - the previous
-      // values compounded (24px card padding + 24px gap between cards,
-      // repeated down every screen) into a visibly sparse, empty-feeling
-      // layout across the whole app.
+      // Tightened twice now: originally 6/10/16/24/32, then 4/8/12/16/24,
+      // now this - each pass compounds (card padding + inter-card gap +
+      // page padding, repeated down every screen), so even a small
+      // per-token reduction reads as a much denser layout in practice.
       spacing: {
-        xs: "4px",
-        sm: "8px",
-        md: "12px",
-        lg: "16px",
-        xl: "24px",
+        xs: "3px",
+        sm: "6px",
+        md: "8px",
+        lg: "12px",
+        xl: "16px",
       },
       borderRadius: {
         sm: "12px",

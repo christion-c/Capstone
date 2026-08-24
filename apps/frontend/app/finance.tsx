@@ -5,7 +5,8 @@ import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import StepFlowModal from "@/components/StepFlowModal";
 import { useFinance } from "@/components/contexts/FinanceProvider";
 import PageScaffold from "@/components/PageScaffold";
-import { Card, CardText, CardTitle, PrimaryButton, StatTile } from "@/components/ui";
+import { shadows } from "@/components/theme";
+import { Card, CardTitle, MetricRow, PrimaryButton, RadialGauge, StatTile } from "@/components/ui";
 import { useWebKeyboardInset } from "@/hooks/useWebKeyboardInset";
 import { useRefetchOnFocus } from "@/hooks/useRefetchOnFocus";
 import { useStepFlow, type StepFlowStepConfig } from "@/hooks/useStepFlow";
@@ -14,9 +15,9 @@ import { formatCurrency } from "@/lib/money-format";
 type FinanceCheckinStepKey = "income" | "expense" | "bills";
 
 const FINANCE_CHECKIN_STEPS: StepFlowStepConfig<FinanceCheckinStepKey>[] = [
-  { key: "income", title: "Monthly income", hint: "Enter your normal monthly income.", placeholder: "0.00", keyboardType: "decimal-pad" },
-  { key: "expense", title: "Monthly spending", hint: "Enter your typical monthly spending.", placeholder: "0.00", keyboardType: "decimal-pad" },
-  { key: "bills", title: "Static bills", hint: "Enter your recurring monthly bills like rent, insurance, or loan payments.", placeholder: "0.00", keyboardType: "decimal-pad" },
+  { key: "income", title: "Monthly income", hint: "Enter your normal monthly income.", placeholder: "0.00", keyboardType: "decimal-pad", icon: "cash-outline" },
+  { key: "expense", title: "Monthly spending", hint: "Enter your typical monthly spending.", placeholder: "0.00", keyboardType: "decimal-pad", icon: "cart-outline" },
+  { key: "bills", title: "Static bills", hint: "Enter your recurring monthly bills like rent, insurance, or loan payments.", placeholder: "0.00", keyboardType: "decimal-pad", icon: "receipt-outline" },
 ];
 
 export default function Finance() {
@@ -75,19 +76,27 @@ export default function Finance() {
       showNav
       navActive="Finance"
     >
-      <Card>
+      <Card style={shadows.soft} className={isHealthy ? "border-success" : "border-danger"}>
         <CardTitle>Budget Snapshot</CardTitle>
-        <CardText tight>Take-home income: {formatCurrency(monthlyIncome)}</CardText>
-        <CardText tight>Variable spending: {formatCurrency(monthlyExpenses)}</CardText>
-        <CardText tight>Fixed costs: {formatCurrency(monthlyFixedCosts)}</CardText>
-        <CardText tight>Monthly Fuel Cost: {formatCurrency(monthlyFuelBudget)}</CardText>
-        <Text className="mt-xs text-base font-bold text-accent">Projected Available Balance: {formatCurrency(projectedBudgetAfterEssentials)}</Text>
-      </Card>
-
-      <Card gap="xs" padding="md" className={isHealthy ? "border-success" : "border-danger"}>
-        <Text className="text-base font-bold text-text">Budget Health</Text>
-        <Text className={`text-[22px] font-bold ${isHealthy ? "text-success" : "text-danger"}`}>
-          {isHealthy ? "Healthy" : "Needs attention"}
+        <View className="flex-row items-center gap-md">
+          <RadialGauge
+            percent={spendingHabitRatio * 100}
+            trackColor={colors.surfaceSoft}
+            fillColor={isHealthy ? colors.success : colors.danger}
+            label="Spent"
+            valueLabel={`${Math.round(spendingHabitRatio * 100)}%`}
+            labelColor={colors.textMuted}
+            valueColor={colors.text}
+          />
+          <View className="flex-1 gap-xs">
+            <MetricRow icon="cash-outline" label="Income" value={formatCurrency(monthlyIncome)} iconColor={colors.textMuted} />
+            <MetricRow icon="cart-outline" label="Spending" value={formatCurrency(monthlyExpenses)} iconColor={colors.textMuted} />
+            <MetricRow icon="receipt-outline" label="Fixed costs" value={formatCurrency(monthlyFixedCosts)} iconColor={colors.textMuted} />
+            <MetricRow icon="water-outline" label="Fuel cost" value={formatCurrency(monthlyFuelBudget)} iconColor={colors.textMuted} />
+          </View>
+        </View>
+        <Text className={`text-sm font-bold ${isHealthy ? "text-success" : "text-danger"}`}>
+          {isHealthy ? "Healthy" : "Needs attention"} · Available: {formatCurrency(projectedBudgetAfterEssentials)}
         </Text>
       </Card>
 
@@ -106,13 +115,6 @@ export default function Finance() {
           labelClassName="text-[13px] uppercase tracking-[0.5px] text-textMuted"
           valueClassName="text-[22px] font-bold text-text"
         />
-        <StatTile
-          label="Spent each month"
-          value={`${Math.round(spendingHabitRatio * 100)}%`}
-          className="min-w-[30%] flex-1 gap-xs rounded-lg border border-border bg-surface p-md"
-          labelClassName="text-[13px] uppercase tracking-[0.5px] text-textMuted"
-          valueClassName="text-[22px] font-bold text-text"
-        />
       </View>
 
       <Card padding="md">
@@ -127,6 +129,8 @@ export default function Finance() {
       <StepFlowModal
         step={financeFlow.activeStep}
         isLastStep={financeFlow.isLastStep}
+        stepIndex={financeFlow.stepIndex}
+        totalSteps={financeFlow.totalSteps}
         draft={financeFlow.draft}
         onChangeDraft={financeFlow.setDraft}
         onCancel={financeFlow.close}

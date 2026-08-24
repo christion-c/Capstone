@@ -25,8 +25,8 @@ import { VehicleProvider } from "@/components/contexts/VehicleProvider";
 // anything else in the tree having mounted successfully.
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: 16, backgroundColor: "#14121B", paddingHorizontal: 24 }}>
-      <Text style={{ textAlign: "center", fontSize: 18, fontWeight: "bold", color: "#F5F1EA" }}>Something went wrong</Text>
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: 16, backgroundColor: "#17151F", paddingHorizontal: 24 }}>
+      <Text style={{ textAlign: "center", fontSize: 18, fontWeight: "bold", color: "#E8E1D4" }}>Something went wrong</Text>
       <Text style={{ textAlign: "center", fontSize: 14, color: "#A79A94" }}>{error.message}</Text>
       <Pressable
         onPress={() => void retry()}

@@ -24,11 +24,16 @@ export interface ThemeColors {
 // meets or beats what the previous navy/teal palette actually achieved.
 export const palettes: Record<ColorMode, ThemeColors> = {
   dark: {
-    background: "#14121B",
+    // Lifted slightly off near-black and dialed text down from
+    // near-white to a softer warm off-white - pure white-on-black is
+    // the classic source of dark-mode eye strain (the glare/contrast
+    // is higher than reading needs), and there was 16:1+ of contrast
+    // to spend before this even approaches the 7:1 AAA floor.
+    background: "#17151F",
     surface: "#1E1A2B",
     surfaceSoft: "#282136",
     border: "rgba(245, 241, 234, 0.08)",
-    text: "#F5F1EA",
+    text: "#E8E1D4",
     textMuted: "#A79A94",
     accent: "#F0A868",
     accentDeep: "#241608",
@@ -80,13 +85,13 @@ export const getColors = (
     : palettes[mode];
 
 // Kept in sync with tailwind.config.js's spacing scale (see its comment
-// for why these were tightened from the original 6/10/16/24/32 values).
+// for why these were tightened, twice now).
 export const spacing = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
+  xs: 3,
+  sm: 6,
+  md: 8,
+  lg: 12,
+  xl: 16,
 };
 
 export const radii = {

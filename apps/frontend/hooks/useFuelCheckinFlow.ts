@@ -10,19 +10,19 @@ type FuelCheckinStepKey = "gallons" | "price" | "miles" | "tankLevel";
 type VehicleDetailsStepKey = "nickname" | "year" | "make" | "model" | "mpg" | "tank";
 
 const FUEL_CHECKIN_STEPS: StepFlowStepConfig<FuelCheckinStepKey>[] = [
-  { key: "gallons", title: "Gallons", hint: "Enter the gallons you put in your tank this fill-up.", placeholder: "0", keyboardType: "decimal-pad" },
-  { key: "price", title: "Price per gallon", hint: "Enter the price you paid per gallon.", placeholder: "0.00", keyboardType: "decimal-pad" },
-  { key: "miles", title: "Miles since last fill-up", hint: "We'll pre-fill an estimate here once you've logged a few fill-ups - adjust it if today was different.", placeholder: "0", keyboardType: "decimal-pad" },
-  { key: "tankLevel", title: "Tank level", hint: "Enter how full the tank is right now.", placeholder: "0%", keyboardType: "decimal-pad" },
+  { key: "gallons", title: "Gallons", hint: "Enter the gallons you put in your tank this fill-up.", placeholder: "0", keyboardType: "decimal-pad", icon: "water-outline" },
+  { key: "price", title: "Price per gallon", hint: "Enter the price you paid per gallon.", placeholder: "0.00", keyboardType: "decimal-pad", icon: "pricetag-outline" },
+  { key: "miles", title: "Miles since last fill-up", hint: "We'll pre-fill an estimate here once you've logged a few fill-ups - adjust it if today was different.", placeholder: "0", keyboardType: "decimal-pad", icon: "speedometer-outline" },
+  { key: "tankLevel", title: "Tank level", hint: "Enter how full the tank is right now.", placeholder: "0%", keyboardType: "decimal-pad", icon: "battery-half-outline" },
 ];
 
 const VEHICLE_DETAILS_STEPS: StepFlowStepConfig<VehicleDetailsStepKey>[] = [
-  { key: "nickname", title: "Nickname", hint: "Enter a nickname for this vehicle.", placeholder: "eg. My daily driver", keyboardType: "default", autoCapitalize: "words", autoCorrect: true },
-  { key: "year", title: "Year", hint: "Enter the model year.", placeholder: "eg. 2016", keyboardType: "number-pad", autoCapitalize: "none", autoCorrect: false },
-  { key: "make", title: "Make", hint: "Enter the make.", placeholder: "eg. Toyota, Ford, Nissan", keyboardType: "default", autoCapitalize: "words", autoCorrect: true },
-  { key: "model", title: "Model", hint: "Enter the model.", placeholder: "Model Name", keyboardType: "default", autoCapitalize: "words", autoCorrect: true },
-  { key: "mpg", title: "MPG", hint: "Optional - leave blank and we'll calculate your real MPG from fill-up history once you've logged a few.", placeholder: "0", keyboardType: "decimal-pad", autoCapitalize: "none", autoCorrect: false },
-  { key: "tank", title: "Tank size", hint: "Enter the tank size in gallons.", placeholder: "0", keyboardType: "decimal-pad", autoCapitalize: "none", autoCorrect: false },
+  { key: "nickname", title: "Nickname", hint: "Enter a nickname for this vehicle.", placeholder: "eg. My daily driver", keyboardType: "default", autoCapitalize: "words", autoCorrect: true, icon: "create-outline" },
+  { key: "year", title: "Year", hint: "Enter the model year.", placeholder: "eg. 2016", keyboardType: "number-pad", autoCapitalize: "none", autoCorrect: false, icon: "calendar-outline" },
+  { key: "make", title: "Make", hint: "Enter the make.", placeholder: "eg. Toyota, Ford, Nissan", keyboardType: "default", autoCapitalize: "words", autoCorrect: true, icon: "business-outline" },
+  { key: "model", title: "Model", hint: "Enter the model.", placeholder: "Model Name", keyboardType: "default", autoCapitalize: "words", autoCorrect: true, icon: "car-outline" },
+  { key: "mpg", title: "MPG", hint: "Optional - leave blank and we'll calculate your real MPG from fill-up history once you've logged a few.", placeholder: "0", keyboardType: "decimal-pad", autoCapitalize: "none", autoCorrect: false, icon: "leaf-outline" },
+  { key: "tank", title: "Tank size", hint: "Enter the tank size in gallons.", placeholder: "0", keyboardType: "decimal-pad", autoCapitalize: "none", autoCorrect: false, icon: "water-outline" },
 ];
 
 function parseOptionalNumber(value: string) {

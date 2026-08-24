@@ -1,16 +1,29 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useCallback } from "react";
-import { Pressable, Text } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 import { useAppPreferences, useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import { useAuth } from "@/components/contexts/AuthProvider";
 import { useFinance } from "@/components/contexts/FinanceProvider";
 import PageScaffold from "@/components/PageScaffold";
+import { shadows } from "@/components/theme";
 import { useVehicle } from "@/components/contexts/VehicleProvider";
-import { Card, CardText, CardTitle } from "@/components/ui";
+import { Card, CardTitle, MetricRow } from "@/components/ui";
 import { useRefetchOnFocus } from "@/hooks/useRefetchOnFocus";
 import { formatCurrencyWhole } from "@/lib/money-format";
+
+function initialsFor(label: string): string {
+  const words = label.trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) {
+    return "?";
+  }
+
+  return words
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase())
+    .join("");
+}
 
 export default function Profile() {
   const colors = useThemeColors();
@@ -26,6 +39,9 @@ export default function Profile() {
   );
 
   const accountLabel = user?.displayName || user?.email || "Account owner";
+  const cloudStatus = backendUser ? "Connected" : loading ? "Syncing..." : "Not synced yet";
+  const cloudStatusIcon = backendUser ? "cloud-done-outline" : loading ? "sync-outline" : "cloud-offline-outline";
+  const cloudStatusColor = backendUser ? colors.success : loading ? colors.accent : colors.textMuted;
 
   return (
     <PageScaffold
@@ -39,19 +55,28 @@ export default function Profile() {
       showNav
       navActive="Profile"
     >
-      <Card>
-        <CardTitle>Account Snapshot</CardTitle>
-        <CardText>Signed in as {accountLabel}.</CardText>
-        <CardText>Cloud Status: {backendUser ? "Connected" : loading ? "Loading" : "Not synced yet"}</CardText>
-        <CardText>Current monthly fuel cost: {formatCurrencyWhole(monthlyFuelBudget)}</CardText>
-        <Text className="mt-0.5 text-sm font-semibold text-accent">Appearance: {colorMode === "dark" ? "Dark" : "Light"}</Text>
+      <Card style={shadows.soft}>
+        <View className="flex-row items-center gap-md">
+          <View className="h-14 w-14 items-center justify-center rounded-round bg-[rgba(240,168,104,0.16)]">
+            <Text className="text-xl font-bold text-accent">{initialsFor(accountLabel)}</Text>
+          </View>
+          <View className="flex-1 gap-xs">
+            <Text className="text-lg font-bold text-text">{accountLabel}</Text>
+            <View className="flex-row items-center gap-xs">
+              <Ionicons name={cloudStatusIcon} size={14} color={cloudStatusColor} />
+              <Text className="text-[13px]" style={{ color: cloudStatusColor }}>{cloudStatus}</Text>
+            </View>
+          </View>
+        </View>
       </Card>
 
       <Card>
         <CardTitle>Account Details</CardTitle>
-        <CardText>Active vehicle: {selectedVehicle?.nickname ?? "None selected"}</CardText>
-        <CardText>High contrast: {highContrast ? "On" : "Off"}</CardText>
-        <CardText>Reminders: {remindersEnabled ? "On" : "Off"}</CardText>
+        <MetricRow icon="car-outline" label="Active vehicle" value={selectedVehicle?.nickname ?? "None selected"} iconColor={colors.textMuted} />
+        <MetricRow icon="water-outline" label="Monthly fuel cost" value={formatCurrencyWhole(monthlyFuelBudget)} iconColor={colors.textMuted} />
+        <MetricRow icon="moon-outline" label="Appearance" value={colorMode === "dark" ? "Dark" : "Light"} iconColor={colors.textMuted} />
+        <MetricRow icon="contrast-outline" label="High contrast" value={highContrast ? "On" : "Off"} iconColor={colors.textMuted} />
+        <MetricRow icon="notifications-outline" label="Reminders" value={remindersEnabled ? "On" : "Off"} iconColor={colors.textMuted} />
       </Card>
     </PageScaffold>
   );

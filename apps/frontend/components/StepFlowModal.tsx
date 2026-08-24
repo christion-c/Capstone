@@ -1,12 +1,28 @@
+import { Ionicons } from "@expo/vector-icons";
 import { KeyboardAvoidingView, Modal, Platform, Pressable, Text, TextInput, View } from "react-native";
 import type { KeyboardAvoidingViewProps } from "react-native";
 
 import type { StepFlowStepConfig } from "@/hooks/useStepFlow";
 import type { ThemeColors } from "./theme";
 
+// Tailwind's color-opacity shorthand (e.g. "bg-text/15") needs a color
+// defined in a special rgb(var(...) / <alpha-value>) form to work with
+// CSS variables - this app's theme vars are plain hex, so that syntax
+// silently doesn't apply alpha. This does it manually instead, off
+// whichever already-mode-resolved color the caller passes in.
+function withAlpha(hexColor: string, alpha: number): string {
+  const hex = hexColor.replace("#", "");
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 interface StepFlowModalProps<K extends string> {
   step: StepFlowStepConfig<K> | null;
   isLastStep: boolean;
+  stepIndex: number;
+  totalSteps: number;
   draft: string;
   onChangeDraft: (value: string) => void;
   onCancel: () => void;
@@ -19,10 +35,15 @@ interface StepFlowModalProps<K extends string> {
   keyboardVerticalOffset?: number;
 }
 
-// Renders the current step of a useStepFlow wizard as a bottom-anchored modal.
+// Renders the current step of a useStepFlow wizard as a bottom-anchored
+// modal - a progress bar plus an icon badge per step, rather than a bare
+// "title, hint, text field" form, so a 4-step wizard reads as one guided
+// flow with a sense of where you are in it instead of a plain form.
 export default function StepFlowModal<K extends string>({
   step,
   isLastStep,
+  stepIndex,
+  totalSteps,
   draft,
   onChangeDraft,
   onCancel,
@@ -44,7 +65,27 @@ export default function StepFlowModal<K extends string>({
             unbounded runtime number. */}
         <View style={{ marginBottom: webKeyboardInset }} className="px-md pb-lg">
           <View className="gap-sm rounded-lg border border-border bg-surface p-lg">
-            <Text className="text-xl font-bold text-text">{step?.title}</Text>
+            {totalSteps > 1 ? (
+              <View className="flex-row gap-xs">
+                {Array.from({ length: totalSteps }).map((_, index) => (
+                  <View
+                    key={index}
+                    className={`h-1.5 flex-1 rounded-round ${index <= stepIndex ? "bg-accent" : ""}`}
+                    style={index <= stepIndex ? undefined : { backgroundColor: withAlpha(colors.text, 0.14) }}
+                  />
+                ))}
+              </View>
+            ) : null}
+
+            <View className="flex-row items-center gap-sm">
+              {step?.icon ? (
+                <View className="h-9 w-9 items-center justify-center rounded-round bg-[rgba(240,168,104,0.16)]">
+                  <Ionicons name={step.icon} size={18} color={colors.accent} />
+                </View>
+              ) : null}
+              <Text className="flex-1 text-xl font-bold text-text">{step?.title}</Text>
+            </View>
+
             <Text className="text-sm leading-5 text-textMuted">{step?.hint}</Text>
             <TextInput
               value={draft}

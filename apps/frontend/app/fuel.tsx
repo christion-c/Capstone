@@ -7,7 +7,7 @@ import { useFinance } from "@/components/contexts/FinanceProvider";
 import PageScaffold from "@/components/PageScaffold";
 import { useVehicle } from "@/components/contexts/VehicleProvider";
 import { shadows } from "@/components/theme";
-import { Card, CardText, CardTitle, PrimaryButton, StatTile, StatusMessage } from "@/components/ui";
+import { Card, CardTitle, MetricRow, PrimaryButton, RadialGauge, StatTile, StatusMessage } from "@/components/ui";
 import VehicleSelector from "@/components/fuel/VehicleSelector";
 import { useWebKeyboardInset } from "@/hooks/useWebKeyboardInset";
 import { useRefetchOnFocus } from "@/hooks/useRefetchOnFocus";
@@ -27,11 +27,13 @@ export default function Fuel() {
   const {
     fuelGallonsInput,
     combinedMpgInput,
+    currentTankPercentInput,
     projectedFillUpCost,
     projectedDaysUntilFillUp,
     monthlyFuelBudget,
     refresh: refreshFinance,
   } = useFinance();
+  const tankPercent = Number.parseFloat(currentTankPercentInput) || 0;
 
   useRefetchOnFocus(
     useCallback(async () => {
@@ -50,11 +52,24 @@ export default function Fuel() {
       showNav
       navActive="Fuel"
     >
-      <Card>
+      <Card style={shadows.soft}>
         <CardTitle>Forecast</CardTitle>
-        <CardText>Estimated next refill cost: {formatCurrency(projectedFillUpCost)}</CardText>
-        <CardText>Estimated days remaining: {Math.max(projectedDaysUntilFillUp, 0).toFixed(1)}</CardText>
-        <CardText>Monthly fuel reserve: {formatCurrency(monthlyFuelBudget)}</CardText>
+        <View className="flex-row items-center gap-md">
+          <RadialGauge
+            percent={tankPercent}
+            trackColor={colors.surfaceSoft}
+            fillColor={colors.accent}
+            label="Tank"
+            valueLabel={`${Math.round(tankPercent)}%`}
+            labelColor={colors.textMuted}
+            valueColor={colors.text}
+          />
+          <View className="flex-1 gap-xs">
+            <MetricRow icon="cash-outline" label="Next refill cost" value={formatCurrency(projectedFillUpCost)} iconColor={colors.textMuted} />
+            <MetricRow icon="time-outline" label="Days remaining" value={Math.max(projectedDaysUntilFillUp, 0).toFixed(1)} iconColor={colors.textMuted} />
+            <MetricRow icon="wallet-outline" label="Monthly reserve" value={formatCurrency(monthlyFuelBudget)} iconColor={colors.textMuted} />
+          </View>
+        </View>
       </Card>
 
       <Card padding="md">
@@ -127,6 +142,8 @@ export default function Fuel() {
       <StepFlowModal
         step={fuelFlow.activeStep}
         isLastStep={fuelFlow.isLastStep}
+        stepIndex={fuelFlow.stepIndex}
+        totalSteps={fuelFlow.totalSteps}
         draft={fuelFlow.draft}
         onChangeDraft={fuelFlow.setDraft}
         onCancel={fuelFlow.close}
@@ -138,6 +155,8 @@ export default function Fuel() {
       <StepFlowModal
         step={vehicleFlow.activeStep}
         isLastStep={vehicleFlow.isLastStep}
+        stepIndex={vehicleFlow.stepIndex}
+        totalSteps={vehicleFlow.totalSteps}
         draft={vehicleFlow.draft}
         onChangeDraft={vehicleFlow.setDraft}
         onCancel={vehicleFlow.close}

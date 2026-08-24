@@ -1,5 +1,7 @@
 import { useRef, useState } from "react";
 import type { KeyboardTypeOptions } from "react-native";
+import type { ComponentProps } from "react";
+import type { Ionicons } from "@expo/vector-icons";
 
 export interface StepFlowStepConfig<K extends string> {
   key: K;
@@ -9,6 +11,10 @@ export interface StepFlowStepConfig<K extends string> {
   keyboardType?: KeyboardTypeOptions;
   autoCapitalize?: "none" | "words" | "sentences" | "characters";
   autoCorrect?: boolean;
+  // Shown next to the title so each step of a wizard has a distinct
+  // visual identity instead of reading as an undifferentiated list of
+  // text fields - optional since not every flow needs it.
+  icon?: ComponentProps<typeof Ionicons>["name"];
 }
 
 interface UseStepFlowOptions<K extends string> {
@@ -72,6 +78,10 @@ export function useStepFlow<K extends string>({ steps, onStepConfirmed, onComple
   return {
     activeStep: activeIndex === null ? null : steps[activeIndex],
     isLastStep: activeIndex !== null && activeIndex === steps.length - 1,
+    // 0-based position and total count, for a step-progress indicator -
+    // both meaningless (but harmless) while no step is active.
+    stepIndex: activeIndex ?? 0,
+    totalSteps: steps.length,
     draft,
     setDraft,
     start,
