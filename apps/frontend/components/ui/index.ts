@@ -1,5 +1,6 @@
 export { default as AnimatedNumber } from "./AnimatedNumber";
 export { default as Card } from "./Card";
+export { default as DonutGauge } from "./DonutGauge";
 export { default as CardText } from "./CardText";
 export { default as CardTitle } from "./CardTitle";
 export { default as LogoMark } from "./LogoMark";

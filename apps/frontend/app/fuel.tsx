@@ -1,4 +1,5 @@
-import { useCallback } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { useCallback, useMemo } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
 import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
@@ -31,9 +32,17 @@ export default function Fuel() {
     projectedFillUpCost,
     projectedDaysUntilFillUp,
     monthlyFuelBudget,
+    fillUpHistory,
     refresh: refreshFinance,
   } = useFinance();
   const tankPercent = Number.parseFloat(currentTankPercentInput) || 0;
+  const recentFillUps = useMemo(
+    () =>
+      [...fillUpHistory]
+        .sort((a, b) => Date.parse(b.recordedAt) - Date.parse(a.recordedAt))
+        .slice(0, 5),
+    [fillUpHistory],
+  );
 
   useRefetchOnFocus(
     useCallback(async () => {
@@ -138,6 +147,29 @@ export default function Fuel() {
           <PrimaryButton onPress={startFuelFlow} label="Start fuel check-in" textClassName="text-[15px]" />
         </View>
       </Card>
+
+      {recentFillUps.length > 0 ? (
+        <Card padding="md">
+          <CardTitle>Fill-Up History</CardTitle>
+          <View className="gap-sm">
+            {recentFillUps.map((entry, index) => (
+              <View key={index} className="flex-row items-center gap-sm">
+                <View className="h-9 w-9 items-center justify-center rounded-round bg-[rgba(240,145,61,0.16)]">
+                  <Ionicons name="water-outline" size={16} color={colors.accent} />
+                </View>
+                <View className="flex-1 gap-0.5">
+                  <Text className="text-[14px] font-semibold text-text">{entry.gallons.toFixed(1)} gal</Text>
+                  <Text className="text-[12px] text-textMuted">{new Date(entry.recordedAt).toLocaleDateString()}</Text>
+                </View>
+                <View className="items-end gap-0.5">
+                  <Text className="text-[14px] font-bold text-text">{formatCurrency(entry.observedCost)}</Text>
+                  <Text className="text-[12px] text-textMuted">{entry.combinedMpg.toFixed(1)} mpg</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        </Card>
+      ) : null}
 
       <StepFlowModal
         step={fuelFlow.activeStep}

@@ -1,12 +1,14 @@
+import { LinearGradient } from "expo-linear-gradient";
 import type { ReactNode } from "react";
 import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useAppPreferences } from "@/components/contexts/AppPreferencesProvider";
+import { useAppPreferences, useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import BottomNav from "./BottomNav";
 import type { NavTabLabel } from "./nav-tabs";
 import PageScaffoldBody from "./PageScaffoldBody";
 import { useOverscrollGuard } from "@/hooks/useOverscrollGuard";
+import { withAlpha } from "@/lib/color";
 
 // The app shell: bottom tab bar, phone-width column, compact
 // touch-first chrome - used on every platform, including web, so the
@@ -36,6 +38,7 @@ export default function PageScaffold({
 }) {
   const { compactCards } = useAppPreferences();
   const { scrollRef, handleScroll } = useOverscrollGuard();
+  const colors = useThemeColors();
 
   const body = (
     <PageScaffoldBody
@@ -52,9 +55,15 @@ export default function PageScaffold({
   return (
     <SafeAreaView className="flex-1 overflow-hidden bg-background">
       <View className="w-full max-w-[480px] flex-1 self-center">
-        <View
+        {/* A warm ambient wash behind the header, not a loud full-bleed
+            gradient - low alpha throughout so body text underneath still
+            reads at full contrast. */}
+        <LinearGradient
           pointerEvents="none"
-          className="absolute -right-5 -top-10 h-[180px] w-[180px] rounded-[90px] bg-[rgba(240,145,61,0.12)]"
+          colors={[withAlpha(colors.accent, 0.16), withAlpha(colors.danger, 0.05), "transparent"]}
+          start={{ x: 0.1, y: 0 }}
+          end={{ x: 0.9, y: 1 }}
+          style={{ position: "absolute", left: 0, right: 0, top: 0, height: 260 }}
         />
         {scrollable ? (
           <ScrollView

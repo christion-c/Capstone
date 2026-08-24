@@ -48,6 +48,7 @@ type FinanceContextValue = {
   // instead of asking from a blank field every time, the same way MPG
   // is already auto-calculated from history rather than asked for.
   estimatedMilesSinceLastFillUp: number | null;
+  fillUpHistory: SavedFillUpHistoryEntry[];
   refresh: () => Promise<void>;
 };
 
@@ -336,6 +337,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       projectedBudgetAfterEssentials,
       weeklySpendTarget,
       estimatedMilesSinceLastFillUp,
+      fillUpHistory,
       refresh,
     }),
     [
@@ -349,6 +351,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       tankCapacityInput,
       currentTankPercentInput,
       estimatedMilesSinceLastFillUp,
+      fillUpHistory,
       monthlyIncome,
       monthlyExpenses,
       monthlyFixedCosts,

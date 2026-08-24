@@ -21,8 +21,8 @@ export default function BottomNav({ active }: { active?: NavTabLabel }) {
           return (
             <Pressable
               key={tab.label}
-              className={`mx-1 flex-1 items-center justify-center gap-1 rounded-sm transition-transform duration-150 ease-out active:scale-90 ${compactCards ? "py-2" : "py-[9px]"} ${
-                isActive ? "bg-[rgba(240,145,61,0.2)]" : "bg-transparent"
+              className={`mx-1 flex-1 items-center justify-center gap-1 rounded-round transition-transform duration-150 ease-out active:scale-90 ${compactCards ? "py-2" : "py-[9px]"} ${
+                isActive ? "bg-accent" : "bg-transparent"
               }`}
               onPress={() => {
                 if (!isActive) {
@@ -33,10 +33,10 @@ export default function BottomNav({ active }: { active?: NavTabLabel }) {
               <Ionicons
                 name={isActive ? tab.activeIcon : tab.icon}
                 size={compactCards ? 16 : 18}
-                color={isActive ? colors.accent : colors.textMuted}
+                color={isActive ? colors.accentDeep : colors.textMuted}
               />
               <Text
-                className={`${compactCards ? "text-xs" : "text-[13px]"} ${isActive ? "font-bold text-accent" : "font-semibold text-textMuted"}`}
+                className={`${compactCards ? "text-xs" : "text-[13px]"} font-bold ${isActive ? "text-accentDeep" : "font-semibold text-textMuted"}`}
               >
                 {tab.label}
               </Text>

@@ -7,7 +7,7 @@ import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import { useFinance } from "@/components/contexts/FinanceProvider";
 import PageScaffold from "@/components/PageScaffold";
 import { shadows, type ThemeColors } from "@/components/theme";
-import { AnimatedNumber, Card, LogoMark, StatTile } from "@/components/ui";
+import { AnimatedNumber, Card, CardTitle, DonutGauge, LogoMark } from "@/components/ui";
 import { useVehicle } from "@/components/contexts/VehicleProvider";
 import { useRefetchOnFocus } from "@/hooks/useRefetchOnFocus";
 import { useSetupChecklist } from "@/hooks/useSetupChecklist";
@@ -35,14 +35,8 @@ export default function Home() {
 
   const isBudgetHealthy = projectedBudgetAfterEssentials >= 0;
   const budgetStatus = isBudgetHealthy
-    ? {
-        title: "Plan looks stable",
-        description: "You still have room after your core monthly costs and fuel reserve.",
-      }
-    : {
-        title: "Budget risk detected",
-        description: "Your current monthly plan runs negative after fuel and fixed costs.",
-      };
+    ? { title: "Plan looks stable" }
+    : { title: "Budget risk detected" };
   // How much of take-home income is still free after essentials - a
   // second, differently-framed number alongside the dollar figure
   // shown higher up, rather than just repeating it.
@@ -79,6 +73,17 @@ export default function Home() {
         ? "Monitor this week"
         : "On track";
 
+  // Where this month's income actually goes - the same three cost
+  // fields projectedBudgetAfterEssentials is computed from
+  // (finance-projections.ts), plus whatever's left over, as ring
+  // segments instead of a plain number column.
+  const donutLegend: { label: string; value: number; color: string }[] = [
+    { label: "Fixed costs", value: monthlyFixedCosts, color: colors.textMuted },
+    { label: "Fuel", value: monthlyFuelBudget, color: colors.accent },
+    { label: "Spending", value: monthlyExpenses, color: colors.danger },
+    { label: "Remaining", value: Math.max(projectedBudgetAfterEssentials, 0), color: colors.success },
+  ];
+
   return (
     <PageScaffold
       title="Welcome back"
@@ -87,63 +92,47 @@ export default function Home() {
       showNav
       navActive="Home"
     >
-      <View className="flex-row items-start gap-sm">
-        <View style={shadows.soft} className="flex-1 gap-xs rounded-xl border border-border bg-surface p-lg">
-          {shouldShowSetupChecklist ? (
-            <View className="self-start rounded-round bg-[rgba(240,145,61,0.18)] px-3 py-1.5">
-              <Text className="text-xs font-bold uppercase tracking-[0.4px] text-accent">{completionCount}/{setupSteps.length} setup steps complete</Text>
-            </View>
-          ) : null}
-          <Text className="text-[13px] text-textMuted">Projected Free Cash This Month</Text>
-          <AnimatedNumber
-            value={projectedBudgetAfterEssentials}
-            formatValue={formatCurrencyWhole}
-            className="text-[30px] font-bold text-text"
-          />
-          <Text className={`text-sm font-bold ${isBudgetHealthy ? "text-success" : "text-danger"}`}>{budgetStatus.title}</Text>
-        </View>
-
-        <View className="w-[38%] gap-sm">
-          <StatTile
-            label="Income"
-            value={formatCurrencyWhole(monthlyIncome)}
-            className="rounded-md border border-border bg-surfaceSoft px-sm py-2.5"
-            labelClassName="mb-1 text-[11px] text-textMuted"
-            valueClassName="text-base font-semibold text-success"
-          />
-
-          <StatTile
-            label="Spending"
-            value={formatCurrencyWhole(monthlyExpenses + monthlyFixedCosts)}
-            className="rounded-md border border-border bg-surfaceSoft px-sm py-2.5"
-            labelClassName="mb-1 text-[11px] text-textMuted"
-            valueClassName="text-base font-semibold text-danger"
-          />
-
-          <StatTile
-            label="Fuel Budget"
-            value={formatCurrencyWhole(monthlyFuelBudget)}
-            className="rounded-md border border-border bg-surfaceSoft px-sm py-2.5"
-            labelClassName="mb-1 text-[11px] text-textMuted"
-            valueClassName="text-base font-semibold text-text"
-          />
-        </View>
-      </View>
-
-      <Card padding="md" className={isBudgetHealthy ? "border-success" : "border-danger"}>
+      <Card style={shadows.soft} className={isBudgetHealthy ? "border-success" : "border-danger"}>
         <View className="flex-row items-center justify-between gap-sm">
-          <View className="flex-1 gap-xs">
-            <Text className="text-[17px] font-bold text-text">{budgetStatus.title}</Text>
-            <Text className="text-sm leading-[21px] text-textMuted">{budgetStatus.description}</Text>
-          </View>
-          {remainingIncomeSharePercent !== null ? (
-            <View className="items-center gap-0.5 rounded-md bg-surfaceSoft px-md py-2">
-              <Text className={`text-xl font-bold ${isBudgetHealthy ? "text-success" : "text-danger"}`}>
-                {remainingIncomeSharePercent}%
-              </Text>
-              <Text className="text-[11px] uppercase tracking-[0.4px] text-textMuted">of income free</Text>
+          <CardTitle>Free Cash Flow</CardTitle>
+          {shouldShowSetupChecklist ? (
+            <View className="rounded-round bg-[rgba(240,145,61,0.18)] px-3 py-1.5">
+              <Text className="text-xs font-bold uppercase tracking-[0.4px] text-accent">{completionCount}/{setupSteps.length} setup</Text>
             </View>
           ) : null}
+        </View>
+
+        <View className="items-center py-xs">
+          <DonutGauge
+            segments={donutLegend.map((item) => ({ value: item.value, color: item.color }))}
+            size={176}
+            strokeWidth={18}
+            trackColor={colors.surfaceSoft}
+          >
+            <View className="items-center">
+              <Text className="text-[11px] text-textMuted">This month</Text>
+              <AnimatedNumber
+                value={projectedBudgetAfterEssentials}
+                formatValue={formatCurrencyWhole}
+                className="text-[24px] font-bold text-text"
+              />
+            </View>
+          </DonutGauge>
+        </View>
+
+        <Text className={`text-center text-sm font-bold ${isBudgetHealthy ? "text-success" : "text-danger"}`}>
+          {budgetStatus.title}
+          {remainingIncomeSharePercent !== null ? ` · ${remainingIncomeSharePercent}% of income free` : ""}
+        </Text>
+
+        <View className="mt-xs gap-xs">
+          {donutLegend.map((item) => (
+            <View key={item.label} className="flex-row items-center gap-sm">
+              <View className="h-2.5 w-2.5 rounded-round" style={{ backgroundColor: item.color }} />
+              <Text className="flex-1 text-[13px] text-textMuted">{item.label}</Text>
+              <Text className="text-[13px] font-bold text-text">{formatCurrencyWhole(item.value)}</Text>
+            </View>
+          ))}
         </View>
       </Card>
 
