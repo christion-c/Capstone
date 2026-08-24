@@ -84,8 +84,13 @@ function AuthGate({ children }: { children: ReactNode }) {
   // redirect fired on the very first render (e.g. loading /auth/login
   // directly while already signed in).
   const inAuthFlow = segments[0] === "auth";
+  // The privacy policy has to be reachable by anyone without signing
+  // in - Play/App Store reviewers, and prospective users deciding
+  // whether to make an account - so it's exempt from the sign-in
+  // redirect the same way the auth flow itself is.
+  const isPublicLegalPage = segments[0] === "privacy-policy";
 
-  if (!user && !inAuthFlow) {
+  if (!user && !inAuthFlow && !isPublicLegalPage) {
     return <Redirect href="/auth/login" />;
   }
 
@@ -125,6 +130,8 @@ function AppStack() {
 
       <Stack.Screen name="settings/preferences" options={{ title: "Profile Settings" }} />
       <Stack.Screen name="debug/ml-account" options={{ title: "Internal ML Debug" }} />
+
+      <Stack.Screen name="privacy-policy" options={{ title: "Privacy Policy" }} />
     </Stack>
   );
 }
