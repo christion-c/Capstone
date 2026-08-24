@@ -41,6 +41,13 @@ type FinanceContextValue = {
   projectedDaysUntilFillUp: number;
   projectedBudgetAfterEssentials: number;
   weeklySpendTarget: number;
+  // Estimated miles driven since the last logged fill-up, derived from
+  // fill-up history (daily-miles average x days since the last entry) -
+  // null until there's enough history to estimate from. Lets the fuel
+  // check-in flow pre-fill its "miles since last fill-up" question
+  // instead of asking from a blank field every time, the same way MPG
+  // is already auto-calculated from history rather than asked for.
+  estimatedMilesSinceLastFillUp: number | null;
   refresh: () => Promise<void>;
 };
 
@@ -206,6 +213,29 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
 
   const stats = useMemo(() => computeFillUpStats(fillUpHistory), [fillUpHistory]);
 
+  const estimatedMilesSinceLastFillUp = useMemo(() => {
+    if (stats.dailyMiles <= 0) {
+      return null;
+    }
+
+    const mostRecentTimestamp = fillUpHistory
+      .map((entry) => Date.parse(entry.recordedAt))
+      .filter((timestamp) => Number.isFinite(timestamp))
+      .reduce((latest, timestamp) => Math.max(latest, timestamp), 0);
+
+    if (mostRecentTimestamp <= 0) {
+      return null;
+    }
+
+    const daysSinceLastFillUp = (Date.now() - mostRecentTimestamp) / (1000 * 60 * 60 * 24);
+
+    if (daysSinceLastFillUp <= 0) {
+      return null;
+    }
+
+    return Math.round(stats.dailyMiles * daysSinceLastFillUp);
+  }, [stats.dailyMiles, fillUpHistory]);
+
   const {
     monthlyIncome,
     monthlyExpenses,
@@ -305,6 +335,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       projectedDaysUntilFillUp,
       projectedBudgetAfterEssentials,
       weeklySpendTarget,
+      estimatedMilesSinceLastFillUp,
       refresh,
     }),
     [
@@ -317,6 +348,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       combinedMpgInput,
       tankCapacityInput,
       currentTankPercentInput,
+      estimatedMilesSinceLastFillUp,
       monthlyIncome,
       monthlyExpenses,
       monthlyFixedCosts,

@@ -12,7 +12,7 @@ type VehicleDetailsStepKey = "nickname" | "year" | "make" | "model" | "mpg" | "t
 const FUEL_CHECKIN_STEPS: StepFlowStepConfig<FuelCheckinStepKey>[] = [
   { key: "gallons", title: "Gallons", hint: "Enter the gallons you put in your tank this fill-up.", placeholder: "0", keyboardType: "decimal-pad" },
   { key: "price", title: "Price per gallon", hint: "Enter the price you paid per gallon.", placeholder: "0.00", keyboardType: "decimal-pad" },
-  { key: "miles", title: "Miles since last fill-up", hint: "Enter the miles you drove since your previous fill-up.", placeholder: "0", keyboardType: "decimal-pad" },
+  { key: "miles", title: "Miles since last fill-up", hint: "We'll pre-fill an estimate here once you've logged a few fill-ups - adjust it if today was different.", placeholder: "0", keyboardType: "decimal-pad" },
   { key: "tankLevel", title: "Tank level", hint: "Enter how full the tank is right now.", placeholder: "0%", keyboardType: "decimal-pad" },
 ];
 
@@ -67,6 +67,7 @@ export function useFuelCheckinFlow() {
     setTankCapacityInput,
     currentTankPercentInput,
     setCurrentTankPercentInput,
+    estimatedMilesSinceLastFillUp,
   } = useFinance();
 
   const [nicknameInput, setNicknameInput] = useState("");
@@ -179,7 +180,12 @@ export function useFuelCheckinFlow() {
     fuelFlow.start({
       gallons: fuelGallonsInput,
       price: fuelPriceInput,
-      miles: milesPerWeekInput,
+      // Pre-fill with a history-derived estimate once there's enough
+      // history to compute one, rather than always starting blank -
+      // the user can still overwrite it if today was different. Falls
+      // back to whatever was last entered when there isn't enough
+      // history yet (same as the other steps in this flow).
+      miles: estimatedMilesSinceLastFillUp !== null ? String(estimatedMilesSinceLastFillUp) : milesPerWeekInput,
       tankLevel: currentTankPercentInput,
     });
 
