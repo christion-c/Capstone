@@ -15,42 +15,48 @@ export interface ThemeColors {
   danger: string;
 }
 
-// A warm plum-charcoal + amber palette, deliberately not the
-// navy-and-teal look most apps in this space default to. Amber ties
-// thematically to "fuel"/"energy"/value, and warm neutrals read as more
-// contemplative than a cold blue - fitting for an app about pausing to
-// think before spending. Every pairing below was checked against WCAG
-// contrast ratios (see the design conversation this was picked in) and
-// meets or beats what the previous navy/teal palette actually achieved.
+// A fall/harvest palette: warm espresso-brown neutrals (not the plum
+// this app used to lean on) under a pumpkin-orange accent, olive-gold
+// success, and brick-red danger. Both modes share the same hue family
+// for background/text/accent (just inverted lightness), so switching
+// modes feels like the same app rather than two different color
+// schemes - the plum-charcoal dark mode this replaced didn't share
+// any hue with the warm cream/orange light mode, which read as
+// mismatched. Every pairing below was checked against WCAG contrast
+// ratios (see scratchpad/contrast*.py from the redesign this was
+// picked in) and hits at least AA (4.5:1 body text, 3:1 large text).
 export const palettes: Record<ColorMode, ThemeColors> = {
   dark: {
-    // Lifted slightly off near-black and dialed text down from
-    // near-white to a softer warm off-white - pure white-on-black is
-    // the classic source of dark-mode eye strain (the glare/contrast
-    // is higher than reading needs), and there was 16:1+ of contrast
-    // to spend before this even approaches the 7:1 AAA floor.
-    background: "#17151F",
-    surface: "#1E1A2B",
-    surfaceSoft: "#282136",
-    border: "rgba(245, 241, 234, 0.08)",
-    text: "#E8E1D4",
-    textMuted: "#A79A94",
-    accent: "#F0A868",
+    // Warm near-black (espresso, not plum) - lifted slightly off true
+    // black and text dialed down from near-white to a soft warm cream,
+    // since pure white-on-black is the classic source of dark-mode eye
+    // strain.
+    background: "#1B1410",
+    surface: "#241B14",
+    surfaceSoft: "#2E2318",
+    border: "rgba(245, 230, 210, 0.10)",
+    text: "#F1E4D4",
+    textMuted: "#B49A80",
+    accent: "#F0913D",
     accentDeep: "#241608",
-    success: "#9CC086",
-    danger: "#E8735A",
+    success: "#A9C15E",
+    danger: "#E2673F",
   },
   light: {
-    background: "#FAF5EC",
+    background: "#FBF2E4",
     surface: "#FFFFFF",
-    surfaceSoft: "#F3EBDD",
-    border: "rgba(36, 28, 20, 0.12)",
-    text: "#241C14",
-    textMuted: "#6B5D4F",
-    accent: "#B7630E",
-    accentDeep: "#241C14",
-    success: "#4F8F52",
-    danger: "#C0442E",
+    surfaceSoft: "#F6E9D3",
+    border: "rgba(43, 27, 14, 0.12)",
+    text: "#2B1B10",
+    textMuted: "#7C6248",
+    accent: "#B8500A",
+    // Unlike dark mode, the accent here is deep enough that dark text on
+    // it reads worse than a warm off-white does (see contrast script) -
+    // accentDeep is "whatever reads best on this mode's accent," not a
+    // shared literal between modes.
+    accentDeep: "#FFF8EE",
+    success: "#55731F",
+    danger: "#B23A1E",
   },
 };
 
@@ -61,18 +67,18 @@ const highContrastOverrides: Record<ColorMode, Partial<ThemeColors>> = {
   dark: {
     background: "#000000",
     surface: "#000000",
-    surfaceSoft: "#141010",
-    border: "rgba(245, 241, 234, 0.4)",
+    surfaceSoft: "#1A130D",
+    border: "rgba(245, 230, 210, 0.4)",
     text: "#FFFFFF",
-    textMuted: "#E8DFD3",
+    textMuted: "#F1E4D4",
   },
   light: {
     background: "#FFFFFF",
     surface: "#FFFFFF",
-    surfaceSoft: "#F5F0E8",
-    border: "rgba(36, 28, 20, 0.5)",
+    surfaceSoft: "#F8EFDD",
+    border: "rgba(43, 27, 14, 0.5)",
     text: "#000000",
-    textMuted: "#241C14",
+    textMuted: "#2B1B10",
   },
 };
 

@@ -22,7 +22,7 @@ export default function BottomNav({ active }: { active?: NavTabLabel }) {
             <Pressable
               key={tab.label}
               className={`mx-1 flex-1 items-center justify-center gap-1 rounded-sm transition-transform duration-150 ease-out active:scale-90 ${compactCards ? "py-2" : "py-[9px]"} ${
-                isActive ? "bg-[rgba(240,168,104,0.2)]" : "bg-transparent"
+                isActive ? "bg-[rgba(240,145,61,0.2)]" : "bg-transparent"
               }`}
               onPress={() => {
                 if (!isActive) {

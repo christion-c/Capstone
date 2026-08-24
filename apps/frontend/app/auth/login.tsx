@@ -157,7 +157,6 @@ export default function Login() {
     <PageScaffold
       title="ThinkTwice"
       subtitle="Welcome back. Sign in to continue where you left off."
-      narrow
     >
       <Card gap="md">
         <Text className="text-[22px] font-bold text-text">Account Login</Text>

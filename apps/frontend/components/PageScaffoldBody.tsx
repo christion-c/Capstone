@@ -6,10 +6,8 @@ import Animated, { Easing, FadeInDown } from "react-native-reanimated";
 // content arrives with a slight settle instead of snapping to a stop.
 const entranceEasing = Easing.out(Easing.cubic);
 
-// The page title/subtitle/header block plus entrance animation, shared
-// identically by PageScaffold.tsx (app shell) and PageScaffold.web.tsx
-// (website shell) - only the surrounding nav chrome and content width
-// differ between those two, not this.
+// The page title/subtitle/header block plus entrance animation, used
+// by every screen through PageScaffold.tsx.
 export default function PageScaffoldBody({
   title,
   subtitle,

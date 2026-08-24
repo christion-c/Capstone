@@ -57,7 +57,7 @@ export default function Profile() {
     >
       <Card style={shadows.soft}>
         <View className="flex-row items-center gap-md">
-          <View className="h-14 w-14 items-center justify-center rounded-round bg-[rgba(240,168,104,0.16)]">
+          <View className="h-14 w-14 items-center justify-center rounded-round bg-[rgba(240,145,61,0.16)]">
             <Text className="text-xl font-bold text-accent">{initialsFor(accountLabel)}</Text>
           </View>
           <View className="flex-1 gap-xs">

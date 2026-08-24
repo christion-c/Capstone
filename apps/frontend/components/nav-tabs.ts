@@ -1,6 +1,5 @@
-// Shared between BottomNav (narrow/app layout) and TopNav (wide/website
-// layout, see PageScaffold) so the two navigation chrome components
-// can't drift out of sync with each other.
+// Tab config for BottomNav, shared across all platforms - PageScaffold
+// is a single app-shell layout now, no separate website variant.
 export const navTabs = [
   { label: "Finance", path: "/finance", icon: "wallet-outline", activeIcon: "wallet" },
   { label: "Home", path: "/", icon: "home-outline", activeIcon: "home" },

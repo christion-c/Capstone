@@ -24,7 +24,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 // this if that ever changes.
 export default function PrivacyPolicy() {
   return (
-    <PageScaffold title="Privacy Policy" subtitle={`Last updated ${LAST_UPDATED}`} narrow>
+    <PageScaffold title="Privacy Policy" subtitle={`Last updated ${LAST_UPDATED}`}>
       <Card gap="md">
         <Section title="What this app is">
           ThinkTwice is a personal budgeting and fuel-cost planning app. It helps you track income,

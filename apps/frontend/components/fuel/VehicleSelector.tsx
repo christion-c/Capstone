@@ -29,7 +29,7 @@ export default function VehicleSelector({ vehicles, selectedVehicleId, onSelect 
             key={vehicle.id}
             onPress={() => onSelect(vehicle.id)}
             className={`rounded-round border px-sm py-1.5 transition-transform duration-150 ease-out active:scale-95 ${
-              active ? "border-accent bg-[rgba(240,168,104,0.18)]" : "border-border bg-surfaceSoft"
+              active ? "border-accent bg-[rgba(240,145,61,0.18)]" : "border-border bg-surfaceSoft"
             }`}
           >
             <Text className={`text-[13px] font-semibold ${active ? "text-accent" : "text-textMuted"}`}>

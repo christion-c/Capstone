@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useCallback } from "react";
-import { Platform, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import { useFinance } from "@/components/contexts/FinanceProvider";
@@ -12,15 +12,6 @@ import { useVehicle } from "@/components/contexts/VehicleProvider";
 import { useRefetchOnFocus } from "@/hooks/useRefetchOnFocus";
 import { useSetupChecklist } from "@/hooks/useSetupChecklist";
 import { formatCurrencyWhole } from "@/lib/money-format";
-
-// TopNav (the website shell, PageScaffold.web.tsx) already shows the
-// logo/wordmark, so this screen's own header-right logo would be a
-// redundant second one there - only the app shell, which uses
-// BottomNav instead, needs it as its one brand touch. A plain
-// Platform.OS check rather than a width hook, since this now tracks
-// which PageScaffold variant actually rendered (a platform fork), not
-// how wide the window happens to be.
-const isWeb = Platform.OS === "web";
 
 export default function Home() {
   const colors = useThemeColors();
@@ -92,14 +83,14 @@ export default function Home() {
     <PageScaffold
       title="Welcome back"
       subtitle="Your monthly plan updates from manual finance and fuel inputs as you go."
-      headerRight={isWeb ? undefined : <LogoMark />}
+      headerRight={<LogoMark />}
       showNav
       navActive="Home"
     >
-      <View className="flex-row gap-sm">
-        <View style={shadows.soft} className="flex-1 justify-center gap-xs rounded-xl border border-border bg-surface p-lg">
+      <View className="flex-row items-start gap-sm">
+        <View style={shadows.soft} className="flex-1 gap-xs rounded-xl border border-border bg-surface p-lg">
           {shouldShowSetupChecklist ? (
-            <View className="self-start rounded-round bg-[rgba(240,168,104,0.18)] px-3 py-1.5">
+            <View className="self-start rounded-round bg-[rgba(240,145,61,0.18)] px-3 py-1.5">
               <Text className="text-xs font-bold uppercase tracking-[0.4px] text-accent">{completionCount}/{setupSteps.length} setup steps complete</Text>
             </View>
           ) : null}
@@ -112,29 +103,29 @@ export default function Home() {
           <Text className={`text-sm font-bold ${isBudgetHealthy ? "text-success" : "text-danger"}`}>{budgetStatus.title}</Text>
         </View>
 
-        <View className="w-[112px] gap-sm">
+        <View className="w-[38%] gap-sm">
           <StatTile
             label="Income"
             value={formatCurrencyWhole(monthlyIncome)}
-            className="flex-1 justify-center rounded-md border border-border bg-surfaceSoft px-sm py-2"
-            labelClassName="mb-0.5 text-[11px] text-textMuted"
-            valueClassName="text-sm font-semibold text-success"
+            className="rounded-md border border-border bg-surfaceSoft px-sm py-2.5"
+            labelClassName="mb-1 text-[11px] text-textMuted"
+            valueClassName="text-base font-semibold text-success"
           />
 
           <StatTile
             label="Spending"
             value={formatCurrencyWhole(monthlyExpenses + monthlyFixedCosts)}
-            className="flex-1 justify-center rounded-md border border-border bg-surfaceSoft px-sm py-2"
-            labelClassName="mb-0.5 text-[11px] text-textMuted"
-            valueClassName="text-sm font-semibold text-danger"
+            className="rounded-md border border-border bg-surfaceSoft px-sm py-2.5"
+            labelClassName="mb-1 text-[11px] text-textMuted"
+            valueClassName="text-base font-semibold text-danger"
           />
 
           <StatTile
             label="Fuel Budget"
             value={formatCurrencyWhole(monthlyFuelBudget)}
-            className="flex-1 justify-center rounded-md border border-border bg-surfaceSoft px-sm py-2"
-            labelClassName="mb-0.5 text-[11px] text-textMuted"
-            valueClassName="text-sm font-semibold text-text"
+            className="rounded-md border border-border bg-surfaceSoft px-sm py-2.5"
+            labelClassName="mb-1 text-[11px] text-textMuted"
+            valueClassName="text-base font-semibold text-text"
           />
         </View>
       </View>
@@ -185,7 +176,7 @@ export default function Home() {
         </Card>
       ) : null}
 
-      <View className={isWeb ? "flex-row gap-sm" : "gap-sm"}>
+      <View className="gap-sm">
         <QuickActionCard
           colors={colors}
           title="Update budget"
@@ -233,7 +224,7 @@ function QuickActionCard({
       onPress={onPress}
       className="flex-1 flex-row items-center gap-sm rounded-lg border border-border bg-surface p-md transition-transform duration-150 ease-out active:scale-[0.97] active:opacity-85"
     >
-      <View className="items-center justify-center rounded-round bg-[rgba(240,168,104,0.16)] p-sm">
+      <View className="items-center justify-center rounded-round bg-[rgba(240,145,61,0.16)] p-sm">
         <Ionicons name={icon} size={22} color={colors.accent} />
       </View>
       <View className="flex-1 gap-0.5">

@@ -8,12 +8,9 @@ import type { NavTabLabel } from "./nav-tabs";
 import PageScaffoldBody from "./PageScaffoldBody";
 import { useOverscrollGuard } from "@/hooks/useOverscrollGuard";
 
-// The app-shell variant of PageScaffold: bottom tab bar, phone-width
-// column, compact touch-first chrome. Metro resolves this file for
-// iOS/Android builds; see PageScaffold.web.tsx for the website-shell
-// variant it picks for web builds instead. Same props on both, a
-// genuinely different layout per file - no runtime platform branching,
-// the file itself is the fork.
+// The app shell: bottom tab bar, phone-width column, compact
+// touch-first chrome - used on every platform, including web, so the
+// product looks and behaves like one app everywhere.
 export default function PageScaffold({
   title,
   subtitle,
@@ -22,7 +19,6 @@ export default function PageScaffold({
   children,
   showNav = false,
   navActive,
-  narrow: _narrow = false,
   scrollable = true,
 }: {
   title: string;
@@ -36,11 +32,6 @@ export default function PageScaffold({
   showNav?: boolean;
   // Which tab this screen belongs to, if any.
   navActive?: NavTabLabel;
-  // No-op here - the app shell is always phone-width already. Kept so
-  // screens can pass the same prop set regardless of which PageScaffold
-  // variant Metro resolves for the current platform; see
-  // PageScaffold.web.tsx, where this actually does something.
-  narrow?: boolean;
   scrollable?: boolean;
 }) {
   const { compactCards } = useAppPreferences();
@@ -63,7 +54,7 @@ export default function PageScaffold({
       <View className="w-full max-w-[480px] flex-1 self-center">
         <View
           pointerEvents="none"
-          className="absolute -right-5 -top-10 h-[180px] w-[180px] rounded-[90px] bg-[rgba(240,168,104,0.12)]"
+          className="absolute -right-5 -top-10 h-[180px] w-[180px] rounded-[90px] bg-[rgba(240,145,61,0.12)]"
         />
         {scrollable ? (
           <ScrollView

@@ -7,9 +7,7 @@ import type { ScrollView } from "react-native";
 // platform (Safari in particular can rubber-band past the content edge
 // regardless). This manually snaps back to the last valid offset as a
 // final catch, rather than trusting any single native/CSS flag alone.
-// Shared by both PageScaffold.tsx (app shell) and PageScaffold.web.tsx
-// (website shell) - the scroll guard itself isn't platform-specific,
-// only the surrounding nav chrome is.
+// Used by PageScaffold.tsx.
 export function useOverscrollGuard() {
   const scrollRef = useRef<ScrollView>(null);
 

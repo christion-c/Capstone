@@ -56,7 +56,7 @@ export default function ProfileSettings() {
           <Pressable
             onPress={() => setColorMode("dark")}
             className={`flex-1 items-center rounded-md border py-3 ${
-              colorMode === "dark" ? "border-accent bg-[rgba(240,168,104,0.2)]" : "border-border bg-surfaceSoft"
+              colorMode === "dark" ? "border-accent bg-[rgba(240,145,61,0.2)]" : "border-border bg-surfaceSoft"
             }`}
           >
             <Text className={`text-[15px] ${colorMode === "dark" ? "font-bold text-accent" : "font-semibold text-textMuted"}`}>
@@ -67,7 +67,7 @@ export default function ProfileSettings() {
           <Pressable
             onPress={() => setColorMode("light")}
             className={`flex-1 items-center rounded-md border py-3 ${
-              colorMode === "light" ? "border-accent bg-[rgba(240,168,104,0.2)]" : "border-border bg-surfaceSoft"
+              colorMode === "light" ? "border-accent bg-[rgba(240,145,61,0.2)]" : "border-border bg-surfaceSoft"
             }`}
           >
             <Text className={`text-[15px] ${colorMode === "light" ? "font-bold text-accent" : "font-semibold text-textMuted"}`}>

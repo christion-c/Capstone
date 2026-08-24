@@ -14,7 +14,7 @@ export default function LogoMark({ size = 40 }: LogoMarkProps) {
   return (
     <View
       style={{ height: size, width: size, borderRadius: size / 2 }}
-      className="items-center justify-center border border-accent bg-[rgba(240,168,104,0.16)]"
+      className="items-center justify-center border border-accent bg-[rgba(240,145,61,0.16)]"
     >
       <Text style={{ fontSize: size * 0.4 }} className="font-bold text-accent">
         TT

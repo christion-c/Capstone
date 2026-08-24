@@ -31,19 +31,19 @@
   "portsAttributes": {
     "3000": {
       "label": "Backend API",
-      "onAutoForward": "ignore"
+      "onAutoForward": "silent"
     },
     "5433": {
       "label": "PostgreSQL",
-      "onAutoForward": "ignore"
+      "onAutoForward": "silent"
     },
     "8000": {
       "label": "ML Service",
-      "onAutoForward": "ignore"
+      "onAutoForward": "silent"
     },
     "8081": {
       "label": "Expo",
-      "onAutoForward": "ignore"
+      "onAutoForward": "notify"
     }
   },
 
