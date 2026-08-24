@@ -1,10 +1,12 @@
-What the Project Delivers
-ThinkTwice is an ADHD-friendly personal finance and habit-tracking app. Instead of just showing where money went, it turns everyday spending and driving/eating habits into forward-looking predictions — for example, projecting that a recurring $35/week coffee habit becomes roughly $140 by the end of the month — so users can adjust before small habits become bigger problems.
+# CI
 
-Complete project stack:
+`workflows/validate.yml` runs on every push and pull request. Four independent jobs:
 
-Expo front end (React Native, web + mobile)
-Node.js / Express back end (REST API)
-Python / FastAPI machine-learning service (spending forecasts)
-PostgreSQL database
-Firebase Authentication
+| Job | Checks | Working directory |
+| --- | --- | --- |
+| `backend` | `npm ci`, typecheck, build, test (against a real Postgres service container) | `apps/backend` |
+| `frontend` | `npm ci`, lint, typecheck, `expo install --check`, static web export | `apps/frontend` |
+| `ml` | install, `pip check`, `pip-audit`, import-sanity check, `pytest` | `services/ml` |
+| `docker-build` | builds the backend and ML production Docker images (build-only, no push) so a broken Dockerfile fails CI instead of surfacing at deploy time | repo root |
+
+No job deploys anything — see the root `README.md`'s "Deploying" section and `apps/backend/README.md` for the actual deploy commands, which are run manually.

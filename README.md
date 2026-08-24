@@ -20,6 +20,28 @@ Since one person owns everything, there's no longer a "coordinate with the folde
 
 ---
 
+## Architecture
+
+Three services, one data flow:
+
+```
+Frontend (Expo)  →  Backend (Express)  →  ML service (FastAPI)
+                          ↕
+                     PostgreSQL
+```
+
+* **Frontend** (`apps/frontend`) never talks to the ML service directly. Every request — including the debug-only preview flow — goes through the backend, which is the only thing that holds the ML service's internal auth token.
+* **Backend** (`apps/backend`) owns the database and Firebase token verification, and is the client for the ML service's `/predict` and `/ml-preview` endpoints. Route/data-access code is organized one folder per feature under `src/modules/`.
+* **ML service** (`services/ml`) computes fuel and budget forecasts. Its `method: "linear_regression"` response field is a naming choice for API stability, not literally scikit-learn — see `services/ml/README.md` for what the math actually does.
+
+**Where to go next:**
+
+* [`docs/PROJECT_CONTEXT.md`](docs/PROJECT_CONTEXT.md) — current status, verified behavior, and known gaps (read this before assuming something is or isn't done)
+* [`AGENTS.md`](AGENTS.md) — durable repo rules (ownership, security practices)
+* [`apps/frontend/README.md`](apps/frontend/README.md), [`apps/backend/README.md`](apps/backend/README.md), [`services/ml/README.md`](services/ml/README.md), [`packages/README.md`](packages/README.md) — per-service internals
+
+---
+
 ## After You Clone the Repo
 
 Complete these steps once, the first time you set up the project.
