@@ -29,6 +29,11 @@ services/ml/budget_data.json
 services/ml/user_history.json
 **/user_history.json
 
+# Local Android/iOS build artifacts (EAS/Gradle output)
+*.apk
+*.aab
+*.ipa
+
 # Test output
 **/coverage/
 
