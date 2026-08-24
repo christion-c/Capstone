@@ -15,7 +15,7 @@ import {
   listVehiclesForUser,
   type UpdateVehicleInput,
   updateVehicleForUser,
-} from "./vehicle.repository.js";
+} from "./vehicles.repository.js";
 
 export const vehicleRouter = Router();
 
@@ -31,12 +31,7 @@ export const createVehicleSchema = z
       .max(9999.99)
       .nullable()
       .optional(),
-    combinedMpg: z
-      .number()
-      .positive()
-      .max(9999.99)
-      .nullable()
-      .optional(),
+    combinedMpg: z.number().positive().max(9999.99).nullable().optional(),
   })
   .strict();
 
@@ -100,7 +95,12 @@ vehicleRouter.post(
 vehicleRouter.patch(
   "/:vehicleId",
   withCurrentUser(async (currentUser, request, response) => {
-    const vehicleId = parseRouteParam(response, vehicleIdSchema, request.params.vehicleId, "vehicle ID");
+    const vehicleId = parseRouteParam(
+      response,
+      vehicleIdSchema,
+      request.params.vehicleId,
+      "vehicle ID",
+    );
 
     if (!vehicleId) {
       return;
@@ -144,16 +144,18 @@ vehicleRouter.patch(
 vehicleRouter.delete(
   "/:vehicleId",
   withCurrentUser(async (currentUser, request, response) => {
-    const vehicleId = parseRouteParam(response, vehicleIdSchema, request.params.vehicleId, "vehicle ID");
+    const vehicleId = parseRouteParam(
+      response,
+      vehicleIdSchema,
+      request.params.vehicleId,
+      "vehicle ID",
+    );
 
     if (!vehicleId) {
       return;
     }
 
-    const deleted = await deleteVehicleForUser(
-      vehicleId,
-      currentUser.id,
-    );
+    const deleted = await deleteVehicleForUser(vehicleId, currentUser.id);
 
     if (!deleted) {
       respondNotFound(response, "Vehicle");

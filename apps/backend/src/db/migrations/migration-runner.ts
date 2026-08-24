@@ -22,7 +22,10 @@ function isAlreadyExistsError(error: unknown): boolean {
     message?: string;
   };
 
-  return candidate.code === "42P07" || /already exists/i.test(candidate.message ?? "");
+  return (
+    candidate.code === "42P07" ||
+    /already exists/i.test(candidate.message ?? "")
+  );
 }
 
 // Confirms every migration ID is unique and that the list is already in
@@ -65,9 +68,7 @@ export async function runMigrations(
 
   try {
     // Block here until no other instance holds the migration lock.
-    await client.query("SELECT pg_advisory_lock($1)", [
-      MIGRATION_LOCK_ID,
-    ]);
+    await client.query("SELECT pg_advisory_lock($1)", [MIGRATION_LOCK_ID]);
 
     // Only mark this true after the lock call actually succeeds, so the
     // finally block below doesn't try to release a lock we never took.
@@ -88,9 +89,7 @@ export async function runMigrations(
     );
 
     // Turn the row list into a Set for O(1) membership checks below.
-    const appliedMigrationIds = new Set(
-      result.rows.map((row) => row.id),
-    );
+    const appliedMigrationIds = new Set(result.rows.map((row) => row.id));
 
     for (const migration of migrations) {
       // Skip anything already recorded as applied.
@@ -173,9 +172,7 @@ export async function runMigrations(
   } finally {
     // Always release the advisory lock we took, even if a migration threw.
     if (lockAcquired) {
-      await client.query("SELECT pg_advisory_unlock($1)", [
-        MIGRATION_LOCK_ID,
-      ]);
+      await client.query("SELECT pg_advisory_unlock($1)", [MIGRATION_LOCK_ID]);
     }
 
     // Return the dedicated connection to the pool.

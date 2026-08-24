@@ -47,7 +47,11 @@ fillUpHistoryRouter.post(
     const result = entrySchema.safeParse(request.body);
 
     if (!result.success) {
-      respondWithValidationError(response, result.error, "Invalid fill-up data");
+      respondWithValidationError(
+        response,
+        result.error,
+        "Invalid fill-up data",
+      );
       return;
     }
 

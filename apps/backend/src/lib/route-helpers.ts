@@ -1,7 +1,7 @@
 import type { NextFunction, Request, RequestHandler, Response } from "express";
 import type { ZodError, ZodType } from "zod";
 
-import type { UserProfile } from "../modules/users/user.repository.js";
+import type { UserProfile } from "../modules/users/users.repository.js";
 
 // Reads the PostgreSQL profile syncCurrentUser attached to the request,
 // or responds with 500 and returns null. Every route behind

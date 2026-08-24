@@ -6,7 +6,7 @@ import {
   deleteTestUser,
   ensureSchemaReady,
 } from "../../test-support/db-test-helpers.js";
-import { upsertUserFromFirebase } from "./user.repository.js";
+import { upsertUserFromFirebase } from "./users.repository.js";
 
 let dbAvailable = false;
 

@@ -117,9 +117,7 @@ export async function createVehicle(
 }
 
 // Returns only the vehicles belonging to the specified user.
-export async function listVehiclesForUser(
-  userId: string,
-): Promise<Vehicle[]> {
+export async function listVehiclesForUser(userId: string): Promise<Vehicle[]> {
   const result = await database.query<VehicleRow>(
     `
       SELECT

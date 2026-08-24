@@ -17,9 +17,7 @@ async function startServer(): Promise<void> {
     // Bind to 0.0.0.0 (not just localhost) so it's reachable from
     // outside the container in Docker/Cloud Run.
     const server = app.listen(env.PORT, "0.0.0.0", () => {
-      console.log(
-        `ThinkTwice backend listening on http://0.0.0.0:${env.PORT}`,
-      );
+      console.log(`ThinkTwice backend listening on http://0.0.0.0:${env.PORT}`);
     });
 
     // Guards against handling SIGINT/SIGTERM twice if both arrive close together.

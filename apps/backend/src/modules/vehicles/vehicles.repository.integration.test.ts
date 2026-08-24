@@ -11,7 +11,7 @@ import {
   deleteVehicleForUser,
   listVehiclesForUser,
   updateVehicleForUser,
-} from "./vehicle.repository.js";
+} from "./vehicles.repository.js";
 
 let dbAvailable = false;
 let userId = "";

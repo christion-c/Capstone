@@ -85,16 +85,18 @@ budgetRouter.post(
 budgetRouter.delete(
   "/:entryId",
   withCurrentUser(async (currentUser, request, response) => {
-    const entryId = parseRouteParam(response, entryIdSchema, request.params.entryId, "budget entry ID");
+    const entryId = parseRouteParam(
+      response,
+      entryIdSchema,
+      request.params.entryId,
+      "budget entry ID",
+    );
 
     if (!entryId) {
       return;
     }
 
-    const deleted = await deleteBudgetEntryForUser(
-      entryId,
-      currentUser.id,
-    );
+    const deleted = await deleteBudgetEntryForUser(entryId, currentUser.id);
 
     if (!deleted) {
       respondNotFound(response, "Budget entry");

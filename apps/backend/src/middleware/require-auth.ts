@@ -23,11 +23,7 @@ export function parseBearerToken(header: string): string | null {
 
 // Protects a route using Firebase Authentication. Expects the request
 // header: Authorization: Bearer <firebase-id-token>
-export const requireAuth: RequestHandler = async (
-  request,
-  response,
-  next,
-) => {
+export const requireAuth: RequestHandler = async (request, response, next) => {
   const authorizationHeader = request.header("authorization");
 
   // A protected route requires an Authorization header.

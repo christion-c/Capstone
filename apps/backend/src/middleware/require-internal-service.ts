@@ -26,7 +26,10 @@ export const requireInternalService: RequestHandler = (
   const providedToken = request.header("x-internal-token");
 
   // Reject a missing token or one that doesn't match the configured secret.
-  if (!providedToken || !tokensMatch(providedToken, env.INTERNAL_SERVICE_TOKEN)) {
+  if (
+    !providedToken ||
+    !tokensMatch(providedToken, env.INTERNAL_SERVICE_TOKEN)
+  ) {
     response.status(401).json({
       error: "Authentication required",
     });

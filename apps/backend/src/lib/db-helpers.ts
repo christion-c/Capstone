@@ -3,10 +3,7 @@
 // message naming what was expected - repositories call this rather
 // than repeating the same "should always yield exactly one row" guard
 // after every such query.
-export function expectOneRow<T>(
-  result: { rows: T[] },
-  entityName: string,
-): T {
+export function expectOneRow<T>(result: { rows: T[] }, entityName: string): T {
   const row = result.rows[0];
 
   if (!row) {

@@ -17,10 +17,7 @@ const environmentSchema = z.object({
   INTERNAL_SERVICE_TOKEN: z.string().min(1),
 
   // Defaults to the Docker Compose service name; overridden in production.
-  ML_SERVICE_URL: z
-    .string()
-    .url()
-    .default("http://ml:8000"),
+  ML_SERVICE_URL: z.string().url().default("http://ml:8000"),
 
   // No default. "*" allows any origin - that's a real choice a
   // developer/operator should make explicitly (as local dev's

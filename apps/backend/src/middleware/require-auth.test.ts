@@ -66,9 +66,12 @@ test("requireAuth rejects a malformed Authorization header", async () => {
 });
 
 test("requireAuth attaches the decoded token and calls next() for a valid bearer token", async () => {
-  verifyIdToken.mock.mockImplementationOnce(async () => ({
-    uid: "user-123",
-  }) as DecodedIdToken);
+  verifyIdToken.mock.mockImplementationOnce(
+    async () =>
+      ({
+        uid: "user-123",
+      }) as DecodedIdToken,
+  );
 
   const request = {
     header: () => "Bearer valid-token",

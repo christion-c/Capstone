@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { createVehicleSchema, updateVehicleSchema } from "./vehicle.routes.js";
+import { createVehicleSchema, updateVehicleSchema } from "./vehicles.routes.js";
 
 test("createVehicleSchema accepts a minimal valid vehicle", () => {
   const result = createVehicleSchema.safeParse({ nickname: "Daily Driver" });

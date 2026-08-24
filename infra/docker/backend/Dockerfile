@@ -18,7 +18,8 @@ WORKDIR /workspace
 ENV npm_config_fund=false \
     npm_config_update_notifier=false
 
-COPY apps/backend/package.json apps/backend/package-lock.json ./apps/backend/
+COPY apps/backend/package.json apps/backend/package-lock.json apps/backend/.npmrc ./apps/backend/
+COPY apps/backend/scripts/ ./apps/backend/scripts/
 
 RUN --mount=type=cache,target=/root/.npm \
     npm --prefix apps/backend ci

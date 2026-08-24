@@ -1,6 +1,6 @@
 import type { DecodedIdToken } from "firebase-admin/auth";
 
-import type { UserProfile } from "../modules/users/user.repository.js";
+import type { UserProfile } from "../modules/users/users.repository.js";
 
 declare global {
   namespace Express {

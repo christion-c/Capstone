@@ -70,7 +70,8 @@ test("requestForecast returns ok with the prediction on a successful response", 
 
 test("requestForecast returns service-error on a non-2xx response", async () => {
   fetchMock.mock.mockImplementation(
-    async () => new Response(JSON.stringify({ error: "bad input" }), { status: 500 }),
+    async () =>
+      new Response(JSON.stringify({ error: "bad input" }), { status: 500 }),
   );
 
   const outcome = await requestForecast(sampleEntries);

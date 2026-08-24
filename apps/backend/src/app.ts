@@ -13,7 +13,9 @@ import { fillUpHistoryRouter } from "./modules/fill-up-history/fill-up-history.r
 import { financeRouter } from "./modules/finance/finance.routes.js";
 import { healthRouter } from "./modules/health/health.routes.js";
 import { predictionsRouter } from "./modules/predictions/predictions.routes.js";
-import { vehicleRouter } from "./modules/vehicles/vehicle.routes.js";
+import { vehicleRouter } from "./modules/vehicles/vehicles.routes.js";
+
+const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
 
 export function createApp() {
   const app = express();
@@ -41,7 +43,7 @@ export function createApp() {
   // General ceiling for all routes.
   app.use(
     rateLimit({
-      windowMs: 15 * 60 * 1000,
+      windowMs: RATE_LIMIT_WINDOW_MS,
       limit: 300,
       standardHeaders: true,
       legacyHeaders: false,
@@ -51,7 +53,7 @@ export function createApp() {
   // Auth endpoints are more sensitive to abuse (credential stuffing,
   // token-verification hammering), so they get a tighter budget.
   const authRateLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
+    windowMs: RATE_LIMIT_WINDOW_MS,
     limit: 60,
     standardHeaders: true,
     legacyHeaders: false,
