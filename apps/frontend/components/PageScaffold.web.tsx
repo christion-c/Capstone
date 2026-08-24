@@ -3,15 +3,15 @@ import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppPreferences } from "./AppPreferences";
-import BottomNav from "./BottomNav";
 import type { NavTabLabel } from "./nav-tabs";
 import PageScaffoldBody from "./PageScaffoldBody";
+import TopNav from "./TopNav";
 import { useOverscrollGuard } from "../hooks/useOverscrollGuard";
 
-// The app-shell variant of PageScaffold: bottom tab bar, phone-width
-// column, compact touch-first chrome. Metro resolves this file for
-// iOS/Android builds; see PageScaffold.web.tsx for the website-shell
-// variant it picks for web builds instead. Same props on both, a
+// The website-shell variant of PageScaffold: a persistent top nav bar,
+// wide multi-column-capable content, no bottom tab strip. Metro
+// resolves this file for web builds; see PageScaffold.tsx for the
+// app-shell variant iOS/Android get instead. Same props on both, a
 // genuinely different layout per file - no runtime platform branching,
 // the file itself is the fork.
 export default function PageScaffold({
@@ -22,7 +22,7 @@ export default function PageScaffold({
   children,
   showNav = false,
   navActive,
-  narrow: _narrow = false,
+  narrow = false,
   scrollable = true,
 }: {
   title: string;
@@ -36,10 +36,9 @@ export default function PageScaffold({
   showNav?: boolean;
   // Which tab this screen belongs to, if any.
   navActive?: NavTabLabel;
-  // No-op here - the app shell is always phone-width already. Kept so
-  // screens can pass the same prop set regardless of which PageScaffold
-  // variant Metro resolves for the current platform; see
-  // PageScaffold.web.tsx, where this actually does something.
+  // Form-only screens (auth) read better as a narrow card even on this
+  // wide layout - more width doesn't give a form anything useful to do
+  // with it, just stretches it.
   narrow?: boolean;
   scrollable?: boolean;
 }) {
@@ -60,7 +59,8 @@ export default function PageScaffold({
 
   return (
     <SafeAreaView className="flex-1 overflow-hidden bg-background">
-      <View className="w-full max-w-[480px] flex-1 self-center">
+      {showNav ? <TopNav active={navActive} /> : null}
+      <View className={`w-full flex-1 self-center ${narrow ? "max-w-[480px]" : "max-w-[1100px]"}`}>
         <View
           pointerEvents="none"
           className="absolute -right-5 -top-10 h-[180px] w-[180px] rounded-[90px] bg-[rgba(240,168,104,0.12)]"
@@ -82,7 +82,6 @@ export default function PageScaffold({
         ) : (
           body
         )}
-        {showNav ? <BottomNav active={navActive} /> : null}
       </View>
     </SafeAreaView>
   );

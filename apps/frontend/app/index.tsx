@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useCallback } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Platform, Pressable, Text, View } from "react-native";
 
 import { useThemeColors } from "../components/AppPreferences";
 import { useFinance } from "../components/FinanceContext";
@@ -12,18 +12,21 @@ import Card from "../components/ui/Card";
 import LogoMark from "../components/ui/LogoMark";
 import StatTile from "../components/ui/StatTile";
 import { useVehicle } from "../components/VehicleContext";
-import { useIsWideLayout } from "../hooks/useIsWideLayout";
 import { useRefetchOnFocus } from "../hooks/useRefetchOnFocus";
 import { useSetupChecklist } from "../hooks/useSetupChecklist";
 import { formatCurrencyWhole } from "../lib/money-format";
 
+// TopNav (the website shell, PageScaffold.web.tsx) already shows the
+// logo/wordmark, so this screen's own header-right logo would be a
+// redundant second one there - only the app shell, which uses
+// BottomNav instead, needs it as its one brand touch. A plain
+// Platform.OS check rather than a width hook, since this now tracks
+// which PageScaffold variant actually rendered (a platform fork), not
+// how wide the window happens to be.
+const isWeb = Platform.OS === "web";
+
 export default function Home() {
   const colors = useThemeColors();
-  // TopNav (website layout) already shows the logo/wordmark, so this
-  // screen's own header-right logo would be a redundant second one -
-  // only the narrow/app layout, which uses BottomNav instead, needs it
-  // as its one brand touch.
-  const isWideLayout = useIsWideLayout();
   const {
     monthlyIncome,
     monthlyExpenses,
@@ -92,7 +95,7 @@ export default function Home() {
     <PageScaffold
       title="Welcome back"
       subtitle="Your monthly plan updates from manual finance and fuel inputs as you go."
-      headerRight={isWideLayout ? undefined : <LogoMark />}
+      headerRight={isWeb ? undefined : <LogoMark />}
       showNav
       navActive="Home"
     >
@@ -183,7 +186,7 @@ export default function Home() {
         </Card>
       ) : null}
 
-      <View className={isWideLayout ? "flex-row gap-sm" : "gap-sm"}>
+      <View className={isWeb ? "flex-row gap-sm" : "gap-sm"}>
         <QuickActionCard
           colors={colors}
           title="Update budget"

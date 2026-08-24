@@ -10,8 +10,9 @@ import LogoMark from "./ui/LogoMark";
 // instead of a bottom tab strip, with hover states (a website
 // affordance touch devices don't have and NativeWind's hover: variant
 // simply never triggers on, so it's safe to include unconditionally).
-// Rendered by PageScaffold in place of BottomNav once useIsWideLayout()
-// says the viewport is wide enough to read as a website rather than an app.
+// Rendered by PageScaffold.web.tsx in place of BottomNav - Metro
+// resolves that file only for web builds, so this only ever renders
+// there, never on iOS/Android.
 export default function TopNav({ active }: { active?: NavTabLabel }) {
   const colors = useThemeColors();
 
