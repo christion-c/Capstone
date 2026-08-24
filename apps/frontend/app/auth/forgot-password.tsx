@@ -49,7 +49,7 @@ export default function ForgotPassword() {
       title="Reset Password"
       subtitle="Recover account access quickly and safely."
     >
-      <Card gap="md">
+      <Card surface gap="md">
         <Text className="text-[22px] font-bold text-text">Request Reset Link</Text>
 
         <PreviewModeNotice

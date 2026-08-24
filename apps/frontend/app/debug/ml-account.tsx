@@ -21,7 +21,7 @@ export default function PrivateMlAccountPage() {
       subtitle="Private account-scoped preview view for testing. This route is not linked in the main app navigation."
       scrollable
     >
-      <Card gap="md">
+      <Card surface gap="md">
         <CardTitle>Private account monitor</CardTitle>
         <Text className="text-sm leading-5 text-textMuted">Open this route directly by URL while signed in to watch the same account’s history count and predictions update.</Text>
 

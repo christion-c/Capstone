@@ -10,7 +10,8 @@ interface CardTitleProps {
 }
 
 export default function CardTitle({ children, className = "" }: CardTitleProps) {
-  // text-xl font-bold text-text is the exact style every card title used
-  // before this component existed - kept identical on purpose.
-  return <Text className={`text-xl font-bold text-text ${className}`}>{children}</Text>;
+  // Sized up from the original text-xl now that most sections are
+  // borderless - the title itself has to carry the "this is a new
+  // section" signal a box used to carry.
+  return <Text className={`text-2xl font-bold tracking-[0.2px] text-text ${className}`}>{children}</Text>;
 }

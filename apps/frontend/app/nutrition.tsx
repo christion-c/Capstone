@@ -9,7 +9,7 @@ import { Card, CardText, CardTitle } from "@/components/ui";
 export default function Nutrition() {
   return (
     <PageScaffold title="Nutrition" subtitle="This feature isn't available yet." showNav>
-      <Card>
+      <Card surface>
         <CardTitle>Check back soon</CardTitle>
         <CardText tight>
           Daily nutrition check-ins are paused while the team finishes this feature. Your fuel and

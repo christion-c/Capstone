@@ -43,7 +43,7 @@ export default function MlPreviewPage() {
 
   return (
     <PageScaffold title="Fuel forecast" subtitle="Fuel cost forecast" showNav navActive="Home">
-      <Card gap="md">
+      <Card surface gap="md">
         <CardTitle>Fuel forecast</CardTitle>
 
         <MlPreviewControls

@@ -158,7 +158,7 @@ export default function Login() {
       title="ThinkTwice"
       subtitle="Welcome back. Sign in to continue where you left off."
     >
-      <Card gap="md">
+      <Card surface gap="md">
         <Text className="text-[22px] font-bold text-text">Account Login</Text>
 
         <PreviewModeNotice

@@ -6,7 +6,7 @@ import { Pressable, Text, View } from "react-native";
 import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import { useFinance } from "@/components/contexts/FinanceProvider";
 import PageScaffold from "@/components/PageScaffold";
-import { shadows, type ThemeColors } from "@/components/theme";
+import type { ThemeColors } from "@/components/theme";
 import { AnimatedNumber, Card, CardTitle, DonutGauge, LogoMark } from "@/components/ui";
 import { useVehicle } from "@/components/contexts/VehicleProvider";
 import { useRefetchOnFocus } from "@/hooks/useRefetchOnFocus";
@@ -92,7 +92,7 @@ export default function Home() {
       showNav
       navActive="Home"
     >
-      <Card style={shadows.soft} className={isBudgetHealthy ? "border-success" : "border-danger"}>
+      <Card>
         <View className="flex-row items-center justify-between gap-sm">
           <CardTitle>Free Cash Flow</CardTitle>
           {shouldShowSetupChecklist ? (
@@ -125,7 +125,7 @@ export default function Home() {
           {remainingIncomeSharePercent !== null ? ` · ${remainingIncomeSharePercent}% of income free` : ""}
         </Text>
 
-        <View className="mt-xs gap-xs">
+        <View className="mt-sm gap-sm">
           {donutLegend.map((item) => (
             <View key={item.label} className="flex-row items-center gap-sm">
               <View className="h-2.5 w-2.5 rounded-round" style={{ backgroundColor: item.color }} />
@@ -136,16 +136,16 @@ export default function Home() {
         </View>
       </Card>
 
-      <Card padding="md" style={shadows.soft}>
-        <Text className="text-base font-bold text-text">Tank Forecast</Text>
-        <Text className="text-[22px] font-bold text-accent">{Math.max(projectedDaysUntilFillUp, 0).toFixed(1)} days until next fill-up</Text>
+      <Card>
+        <CardTitle>Tank Forecast</CardTitle>
+        <Text className="text-[26px] font-bold text-accent">{Math.max(projectedDaysUntilFillUp, 0).toFixed(1)} days until next fill-up</Text>
         <Text className="text-sm leading-5 text-textMuted">Estimated refill cost: {formatCurrencyWhole(projectedFillUpCost)} based on your current fuel and mileage inputs.</Text>
         <Text className="text-[13px] font-bold uppercase tracking-[0.5px] text-text">{fuelStatus}</Text>
       </Card>
 
       {shouldShowSetupChecklist ? (
-        <Card padding="md">
-          <Text className="text-lg font-bold text-text">Get Fully Set Up</Text>
+        <Card>
+          <CardTitle>Get Fully Set Up</CardTitle>
           <View className="gap-xs">
             {setupSteps.map((step) => (
               <Pressable key={step.label} onPress={() => router.push(step.path)} className="flex-row items-center gap-sm rounded-md bg-surfaceSoft px-md py-3 transition-transform duration-150 ease-out active:scale-[0.98]">
@@ -165,37 +165,40 @@ export default function Home() {
         </Card>
       ) : null}
 
-      <View className="gap-sm">
-        <QuickActionCard
-          colors={colors}
-          title="Update budget"
-          description="Adjust income, bills, and spending."
-          icon="wallet-outline"
-          onPress={() => router.push("/finance")}
-        />
-        <QuickActionCard
-          colors={colors}
-          title="Log fuel"
-          description="Keep your refill forecast accurate."
-          icon="car-outline"
-          onPress={() => router.push("/fuel")}
-        />
+      <Card>
+        <CardTitle>Quick Actions</CardTitle>
+        <View className="gap-xs">
+          <QuickActionRow
+            colors={colors}
+            title="Update budget"
+            description="Adjust income, bills, and spending."
+            icon="wallet-outline"
+            onPress={() => router.push("/finance")}
+          />
+          <QuickActionRow
+            colors={colors}
+            title="Log fuel"
+            description="Keep your refill forecast accurate."
+            icon="car-outline"
+            onPress={() => router.push("/fuel")}
+          />
 
-        {/* nutrition is not complete do not use while this is commented out */}
+          {/* nutrition is not complete do not use while this is commented out */}
 
-        {/* <QuickActionCard
-          colors={colors}
-          title="Log nutrition"
-          description="Track a daily check-in for forecasts."
-          icon="restaurant-outline"
-          onPress={() => router.push("/nutrition")}
-        /> */}
-      </View>
+          {/* <QuickActionRow
+            colors={colors}
+            title="Log nutrition"
+            description="Track a daily check-in for forecasts."
+            icon="restaurant-outline"
+            onPress={() => router.push("/nutrition")}
+          /> */}
+        </View>
+      </Card>
     </PageScaffold>
   );
 }
 
-function QuickActionCard({
+function QuickActionRow({
   title,
   description,
   icon,
@@ -211,7 +214,7 @@ function QuickActionCard({
   return (
     <Pressable
       onPress={onPress}
-      className="flex-1 flex-row items-center gap-sm rounded-lg border border-border bg-surface p-md transition-transform duration-150 ease-out active:scale-[0.97] active:opacity-85"
+      className="flex-row items-center gap-sm rounded-md bg-surfaceSoft px-md py-3 transition-transform duration-150 ease-out active:scale-[0.98]"
     >
       <View className="items-center justify-center rounded-round bg-[rgba(240,145,61,0.16)] p-sm">
         <Ionicons name={icon} size={22} color={colors.accent} />

@@ -19,21 +19,21 @@ export default function Account() {
       subtitle="Manage your personal details and account preferences."
       headerLeft={<SettingsBackButton onPress={() => router.replace("/settings/preferences")} colors={colors} />}
     >
-      <Card>
+      <Card surface>
         <CardTitle>Identity</CardTitle>
         <CardText>Email: {user?.email ?? "Not available"}</CardText>
         <CardText>Display name: {user?.displayName ?? "Not set"}</CardText>
         <CardText>Email verified: {user?.emailVerified ? "Yes" : "No"}</CardText>
       </Card>
 
-      <Card>
+      <Card surface>
         <CardTitle>Backend Sync</CardTitle>
         <CardText>Profile status: {backendUser ? "Connected" : "Not connected"}</CardText>
         <CardText>Vehicles stored: {vehicles.length}</CardText>
         <CardText>Selected vehicle: {selectedVehicle?.nickname ?? "None"}</CardText>
       </Card>
 
-      <Card>
+      <Card surface>
         <CardTitle>Next Steps</CardTitle>
         <Pressable onPress={() => router.push("/profile")} className="rounded-md border border-border bg-surfaceSoft px-md py-3.5">
           <Text className="text-[15px] font-bold text-text">Open profile overview</Text>

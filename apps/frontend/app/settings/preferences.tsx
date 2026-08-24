@@ -48,7 +48,7 @@ export default function ProfileSettings() {
       subtitle="Adjust a few frontend app options for your experience."
       headerLeft={<SettingsBackButton onPress={() => router.replace("/profile")} colors={colors} />}
     >
-      <Card>
+      <Card surface>
         <CardTitle>Appearance</CardTitle>
         <CardText>Choose the app color mode.</CardText>
 
@@ -77,7 +77,7 @@ export default function ProfileSettings() {
         </View>
       </Card>
 
-      <Card>
+      <Card surface>
         <CardTitle>Basic Options</CardTitle>
 
         <SettingToggleRow
@@ -97,7 +97,7 @@ export default function ProfileSettings() {
         />
       </Card>
 
-      <Card>
+      <Card surface>
         <CardTitle>Session</CardTitle>
         <CardText>Sign out of your current account on this device.</CardText>
 

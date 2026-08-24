@@ -21,7 +21,7 @@ export default function Accessibility() {
       subtitle="Adjust the app to match your comfort and readability needs."
       headerLeft={<SettingsBackButton onPress={() => router.replace("/settings/preferences")} colors={colors} />}
     >
-      <Card>
+      <Card surface>
         <CardTitle>Display Comfort</CardTitle>
         <SettingToggleRow
           title="High contrast"

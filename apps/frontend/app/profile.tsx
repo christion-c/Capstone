@@ -7,7 +7,6 @@ import { useAppPreferences, useThemeColors } from "@/components/contexts/AppPref
 import { useAuth } from "@/components/contexts/AuthProvider";
 import { useFinance } from "@/components/contexts/FinanceProvider";
 import PageScaffold from "@/components/PageScaffold";
-import { shadows } from "@/components/theme";
 import { useVehicle } from "@/components/contexts/VehicleProvider";
 import { Card, CardTitle, MetricRow } from "@/components/ui";
 import { useRefetchOnFocus } from "@/hooks/useRefetchOnFocus";
@@ -55,7 +54,7 @@ export default function Profile() {
       showNav
       navActive="Profile"
     >
-      <Card style={shadows.soft}>
+      <Card>
         <View className="flex-row items-center gap-md">
           <View className="h-14 w-14 items-center justify-center rounded-round bg-[rgba(240,145,61,0.16)]">
             <Text className="text-xl font-bold text-accent">{initialsFor(accountLabel)}</Text>

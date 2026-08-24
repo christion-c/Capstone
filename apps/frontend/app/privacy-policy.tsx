@@ -25,7 +25,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 export default function PrivacyPolicy() {
   return (
     <PageScaffold title="Privacy Policy" subtitle={`Last updated ${LAST_UPDATED}`}>
-      <Card gap="md">
+      <Card surface gap="md">
         <Section title="What this app is">
           ThinkTwice is a personal budgeting and fuel-cost planning app. It helps you track income,
           expenses, and vehicle fuel costs, and forecasts your upcoming spending based on the

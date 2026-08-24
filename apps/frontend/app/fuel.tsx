@@ -7,7 +7,6 @@ import StepFlowModal from "@/components/StepFlowModal";
 import { useFinance } from "@/components/contexts/FinanceProvider";
 import PageScaffold from "@/components/PageScaffold";
 import { useVehicle } from "@/components/contexts/VehicleProvider";
-import { shadows } from "@/components/theme";
 import { Card, CardTitle, MetricRow, PrimaryButton, RadialGauge, StatTile, StatusMessage } from "@/components/ui";
 import VehicleSelector from "@/components/fuel/VehicleSelector";
 import { useWebKeyboardInset } from "@/hooks/useWebKeyboardInset";
@@ -61,7 +60,7 @@ export default function Fuel() {
       showNav
       navActive="Fuel"
     >
-      <Card style={shadows.soft}>
+      <Card>
         <CardTitle>Forecast</CardTitle>
         <View className="flex-row items-center gap-md">
           <RadialGauge
@@ -79,9 +78,26 @@ export default function Fuel() {
             <MetricRow icon="wallet-outline" label="Monthly reserve" value={formatCurrency(monthlyFuelBudget)} iconColor={colors.textMuted} />
           </View>
         </View>
+
+        <View className="mt-xs flex-row gap-sm">
+          <StatTile
+            label="Fill-Up Gallons"
+            value={fuelGallonsInput || "0"}
+            className="flex-1 gap-xs rounded-md bg-surfaceSoft p-md"
+            labelClassName="text-[13px] uppercase tracking-[0.4px] text-textMuted"
+            valueClassName="text-[26px] font-bold text-text"
+          />
+          <StatTile
+            label="Current MPG"
+            value={combinedMpgInput || "0"}
+            className="flex-1 gap-xs rounded-md bg-surfaceSoft p-md"
+            labelClassName="text-[13px] uppercase tracking-[0.4px] text-textMuted"
+            valueClassName="text-[26px] font-bold text-text"
+          />
+        </View>
       </Card>
 
-      <Card padding="md">
+      <Card>
         <View className="flex-row items-center justify-between gap-sm">
           <View>
             <CardTitle>Vehicle</CardTitle>
@@ -93,7 +109,7 @@ export default function Fuel() {
               void refreshVehicles();
             }}
             disabled={loading}
-            className="rounded-sm border border-border bg-surfaceSoft px-sm py-2 active:opacity-85 disabled:opacity-85"
+            className="rounded-sm bg-surfaceSoft px-sm py-2 active:opacity-85 disabled:opacity-85"
           >
             <Text className="text-[13px] font-semibold text-text">{loading ? "Loading..." : "Refresh"}</Text>
           </Pressable>
@@ -120,26 +136,7 @@ export default function Fuel() {
         <StatusMessage message={saveMessage} tone="success" />
       </Card>
 
-      <View className="flex-row gap-sm">
-        <StatTile
-          label="Fill-Up Gallons"
-          value={fuelGallonsInput || "0"}
-          style={shadows.soft}
-          className="flex-1 gap-xs rounded-md border border-border bg-surface p-md"
-          labelClassName="text-[13px] uppercase tracking-[0.4px] text-textMuted"
-          valueClassName="text-[28px] font-bold text-text"
-        />
-        <StatTile
-          label="Current MPG"
-          value={combinedMpgInput || "0"}
-          style={shadows.soft}
-          className="flex-1 gap-xs rounded-md border border-border bg-surface p-md"
-          labelClassName="text-[13px] uppercase tracking-[0.4px] text-textMuted"
-          valueClassName="text-[28px] font-bold text-text"
-        />
-      </View>
-
-      <Card padding="md">
+      <Card>
         <CardTitle>Fuel Check-In</CardTitle>
         <Text className="text-sm text-textMuted">Check in after every fill-up.</Text>
 
@@ -149,7 +146,7 @@ export default function Fuel() {
       </Card>
 
       {recentFillUps.length > 0 ? (
-        <Card padding="md">
+        <Card>
           <CardTitle>Fill-Up History</CardTitle>
           <View className="gap-sm">
             {recentFillUps.map((entry, index) => (

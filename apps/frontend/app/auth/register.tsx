@@ -61,7 +61,7 @@ export default function Register() {
       title="Sign Up"
       subtitle="Create your account and personalize your experience."
     >
-      <Card gap="md">
+      <Card surface gap="md">
         <Text className="text-[22px] font-bold text-text">Create Account</Text>
 
         <PreviewModeNotice

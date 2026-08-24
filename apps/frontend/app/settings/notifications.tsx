@@ -25,7 +25,7 @@ export default function DailyRhythmSettings() {
       subtitle="Shape how the app supports your routine without feeling noisy."
       headerLeft={<SettingsBackButton onPress={() => router.replace("/settings/preferences")} colors={colors} />}
     >
-      <Card gap="md">
+      <Card surface gap="md">
         <View className="gap-xs">
           <View className="self-start rounded-round bg-[rgba(240,145,61,0.16)] px-2.5 py-1">
             <Text className="text-xs font-bold uppercase tracking-[0.8px] text-accent">Demo-ready</Text>
@@ -56,7 +56,7 @@ export default function DailyRhythmSettings() {
         </View>
       </Card>
 
-      <Card>
+      <Card surface>
         <CardTitle>Daily support</CardTitle>
         <SettingToggleRow
           title="Check-in reminders"
@@ -67,7 +67,7 @@ export default function DailyRhythmSettings() {
         />
       </Card>
 
-      <Card>
+      <Card surface>
         <CardTitle>Dashboard feel</CardTitle>
         <SettingToggleRow
           title="Compact cards"

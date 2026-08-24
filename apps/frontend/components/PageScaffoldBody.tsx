@@ -26,7 +26,7 @@ export default function PageScaffoldBody({
   return (
     <Animated.View
       entering={FadeInDown.duration(380).easing(entranceEasing)}
-      className={compactCards ? "gap-md px-md pt-md" : "gap-lg px-lg pt-lg"}
+      className={compactCards ? "gap-xl px-lg pt-md" : "gap-2xl px-lg pt-lg"}
     >
       <View className={compactCards ? "gap-1.5" : "gap-2"}>
         <View className="flex-row items-center justify-between gap-sm">

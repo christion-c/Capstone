@@ -27,16 +27,23 @@ module.exports = {
         success: "var(--color-success)",
         danger: "var(--color-danger)",
       },
-      // Tightened twice now: originally 6/10/16/24/32, then 4/8/12/16/24,
-      // now this - each pass compounds (card padding + inter-card gap +
-      // page padding, repeated down every screen), so even a small
-      // per-token reduction reads as a much denser layout in practice.
+      // xs-xl: tightened twice now (originally 6/10/16/24/32, then
+      // 4/8/12/16/24) for compact spacing *within* a component - icon-
+      // to-label gaps, row padding, that kind of thing. 2xl/3xl are a
+      // separate, deliberately generous tier added for spacing *between*
+      // sections on a screen, once the bordered-card layout that used to
+      // separate sections visually went away - without them, a tighter
+      // xl was the only gap available between sections too, which read
+      // as everything crammed into corners with nothing to tell one
+      // section from the next.
       spacing: {
         xs: "3px",
         sm: "6px",
         md: "8px",
         lg: "12px",
         xl: "16px",
+        "2xl": "28px",
+        "3xl": "40px",
       },
       borderRadius: {
         sm: "12px",

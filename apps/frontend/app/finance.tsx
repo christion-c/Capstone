@@ -5,7 +5,6 @@ import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import StepFlowModal from "@/components/StepFlowModal";
 import { useFinance } from "@/components/contexts/FinanceProvider";
 import PageScaffold from "@/components/PageScaffold";
-import { shadows } from "@/components/theme";
 import { Card, CardTitle, MetricRow, PrimaryButton, RadialGauge, StatTile } from "@/components/ui";
 import { useWebKeyboardInset } from "@/hooks/useWebKeyboardInset";
 import { useRefetchOnFocus } from "@/hooks/useRefetchOnFocus";
@@ -76,7 +75,7 @@ export default function Finance() {
       showNav
       navActive="Finance"
     >
-      <Card style={shadows.soft} className={isHealthy ? "border-success" : "border-danger"}>
+      <Card>
         <CardTitle>Budget Snapshot</CardTitle>
         <View className="flex-row items-center gap-md">
           <RadialGauge
@@ -98,26 +97,26 @@ export default function Finance() {
         <Text className={`text-sm font-bold ${isHealthy ? "text-success" : "text-danger"}`}>
           {isHealthy ? "Healthy" : "Needs attention"} · Available: {formatCurrency(projectedBudgetAfterEssentials)}
         </Text>
+
+        <View className="mt-xs flex-row flex-wrap gap-sm">
+          <StatTile
+            label="Weekly Budget"
+            value={formatCurrency(weeklySpendTarget)}
+            className="min-w-[30%] flex-1 gap-xs rounded-md bg-surfaceSoft p-md"
+            labelClassName="text-[13px] uppercase tracking-[0.5px] text-textMuted"
+            valueClassName="text-[22px] font-bold text-text"
+          />
+          <StatTile
+            label="Fuel share"
+            value={monthlyIncome > 0 ? `${Math.round((monthlyFuelBudget / monthlyIncome) * 100)}%` : "0%"}
+            className="min-w-[30%] flex-1 gap-xs rounded-md bg-surfaceSoft p-md"
+            labelClassName="text-[13px] uppercase tracking-[0.5px] text-textMuted"
+            valueClassName="text-[22px] font-bold text-text"
+          />
+        </View>
       </Card>
 
-      <View className="flex-row flex-wrap gap-sm">
-        <StatTile
-          label="Weekly Budget"
-          value={formatCurrency(weeklySpendTarget)}
-          className="min-w-[30%] flex-1 gap-xs rounded-lg border border-border bg-surface p-md"
-          labelClassName="text-[13px] uppercase tracking-[0.5px] text-textMuted"
-          valueClassName="text-[22px] font-bold text-text"
-        />
-        <StatTile
-          label="Fuel share"
-          value={monthlyIncome > 0 ? `${Math.round((monthlyFuelBudget / monthlyIncome) * 100)}%` : "0%"}
-          className="min-w-[30%] flex-1 gap-xs rounded-lg border border-border bg-surface p-md"
-          labelClassName="text-[13px] uppercase tracking-[0.5px] text-textMuted"
-          valueClassName="text-[22px] font-bold text-text"
-        />
-      </View>
-
-      <Card padding="md">
+      <Card>
         <CardTitle>Budget Check-In</CardTitle>
 
         <View className="gap-sm">

@@ -90,14 +90,15 @@ export const getColors = (
     ? { ...palettes[mode], ...highContrastOverrides[mode] }
     : palettes[mode];
 
-// Kept in sync with tailwind.config.js's spacing scale (see its comment
-// for why these were tightened, twice now).
+// Kept in sync with tailwind.config.js's spacing scale.
 export const spacing = {
   xs: 3,
   sm: 6,
   md: 8,
   lg: 12,
   xl: 16,
+  xxl: 28,
+  xxxl: 40,
 };
 
 export const radii = {
