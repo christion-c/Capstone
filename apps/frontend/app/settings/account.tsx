@@ -41,6 +41,9 @@ export default function Account() {
         <Pressable onPress={() => router.push("/settings/preferences")} className="rounded-md border border-border bg-surfaceSoft px-md py-3.5">
           <Text className="text-[15px] font-bold text-text">Adjust app preferences</Text>
         </Pressable>
+        <Pressable onPress={() => router.push("/delete-account")} className="rounded-md border border-border bg-surfaceSoft px-md py-3.5">
+          <Text className="text-[15px] font-bold text-danger">Delete my account</Text>
+        </Pressable>
       </Card>
     </PageScaffold>
   );

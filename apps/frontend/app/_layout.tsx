@@ -84,11 +84,13 @@ function AuthGate({ children }: { children: ReactNode }) {
   // redirect fired on the very first render (e.g. loading /auth/login
   // directly while already signed in).
   const inAuthFlow = segments[0] === "auth";
-  // The privacy policy has to be reachable by anyone without signing
-  // in - Play/App Store reviewers, and prospective users deciding
-  // whether to make an account - so it's exempt from the sign-in
-  // redirect the same way the auth flow itself is.
-  const isPublicLegalPage = segments[0] === "privacy-policy";
+  // The privacy policy and the account-deletion request page have to
+  // be reachable by anyone without signing in - Play/App Store
+  // reviewers, prospective users deciding whether to make an account,
+  // and (for deletion specifically) someone who no longer has the app
+  // installed at all - so both are exempt from the sign-in redirect
+  // the same way the auth flow itself is.
+  const isPublicLegalPage = segments[0] === "privacy-policy" || segments[0] === "delete-account";
 
   if (!user && !inAuthFlow && !isPublicLegalPage) {
     return <Redirect href="/auth/login" />;
