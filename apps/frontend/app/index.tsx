@@ -96,43 +96,45 @@ export default function Home() {
       showNav
       navActive="Home"
     >
-      <View style={shadows.soft} className="gap-sm rounded-xl border border-border bg-surface p-lg">
-        {shouldShowSetupChecklist ? (
-          <View className="self-start rounded-round bg-[rgba(240,168,104,0.18)] px-3 py-1.5">
-            <Text className="text-xs font-bold uppercase tracking-[0.4px] text-accent">{completionCount}/{setupSteps.length} setup steps complete</Text>
-          </View>
-        ) : null}
-        <Text className="text-[15px] text-textMuted">Projected Free Cash This Month</Text>
-        <AnimatedNumber
-          value={projectedBudgetAfterEssentials}
-          formatValue={formatCurrencyWhole}
-          className="mt-xs text-[38px] font-bold text-text"
-        />
-        <Text className={`text-sm font-bold ${isBudgetHealthy ? "text-success" : "text-danger"}`}>{budgetStatus.title}</Text>
+      <View className="flex-row gap-sm">
+        <View style={shadows.soft} className="flex-1 justify-center gap-xs rounded-xl border border-border bg-surface p-lg">
+          {shouldShowSetupChecklist ? (
+            <View className="self-start rounded-round bg-[rgba(240,168,104,0.18)] px-3 py-1.5">
+              <Text className="text-xs font-bold uppercase tracking-[0.4px] text-accent">{completionCount}/{setupSteps.length} setup steps complete</Text>
+            </View>
+          ) : null}
+          <Text className="text-[13px] text-textMuted">Projected Free Cash This Month</Text>
+          <AnimatedNumber
+            value={projectedBudgetAfterEssentials}
+            formatValue={formatCurrencyWhole}
+            className="text-[30px] font-bold text-text"
+          />
+          <Text className={`text-sm font-bold ${isBudgetHealthy ? "text-success" : "text-danger"}`}>{budgetStatus.title}</Text>
+        </View>
 
-        <View className="mt-sm flex-row flex-wrap gap-sm">
+        <View className="w-[112px] gap-sm">
           <StatTile
             label="Income"
             value={formatCurrencyWhole(monthlyIncome)}
-            className="min-w-[30%] grow rounded-md border border-border bg-surfaceSoft p-md"
-            labelClassName="mb-1 text-textMuted"
-            valueClassName="text-lg font-semibold text-success"
+            className="flex-1 justify-center rounded-md border border-border bg-surfaceSoft px-sm py-2"
+            labelClassName="mb-0.5 text-[11px] text-textMuted"
+            valueClassName="text-sm font-semibold text-success"
           />
 
           <StatTile
             label="Spending"
             value={formatCurrencyWhole(monthlyExpenses + monthlyFixedCosts)}
-            className="min-w-[30%] grow rounded-md border border-border bg-surfaceSoft p-md"
-            labelClassName="mb-1 text-textMuted"
-            valueClassName="text-base font-semibold text-danger"
+            className="flex-1 justify-center rounded-md border border-border bg-surfaceSoft px-sm py-2"
+            labelClassName="mb-0.5 text-[11px] text-textMuted"
+            valueClassName="text-sm font-semibold text-danger"
           />
 
           <StatTile
             label="Fuel Budget"
             value={formatCurrencyWhole(monthlyFuelBudget)}
-            className="min-w-[30%] grow rounded-md border border-border bg-surfaceSoft p-md"
-            labelClassName="mb-1 text-textMuted"
-            valueClassName="text-base font-semibold text-text"
+            className="flex-1 justify-center rounded-md border border-border bg-surfaceSoft px-sm py-2"
+            labelClassName="mb-0.5 text-[11px] text-textMuted"
+            valueClassName="text-sm font-semibold text-text"
           />
         </View>
       </View>
