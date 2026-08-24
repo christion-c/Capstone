@@ -54,6 +54,7 @@ async def handle_unexpected_error(request: Request, exc: Exception) -> JSONRespo
     logger.exception("Unhandled error on %s %s", request.method, request.url.path)
     return JSONResponse(status_code=500, content={"error": "Internal server error"})
 
+
 # Wide open: this service sits behind the backend and is not directly
 # exposed to end users with sensitive credentials to protect.
 app.add_middleware(

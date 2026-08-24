@@ -49,9 +49,7 @@ def test_build_dataset_regenerates_when_cached_cost_per_mile_is_implausible(tmp_
     data_path = tmp_path / "budget_data.json"
     # Every row's fuel_cost / miles_driven is far below
     # MIN_PLAUSIBLE_COST_PER_MILE, so the cache should be treated as stale.
-    implausible_rows = [
-        {"date": "2026-01-01", "fuel_cost": 0.01, "miles_driven": 100}
-    ]
+    implausible_rows = [{"date": "2026-01-01", "fuel_cost": 0.01, "miles_driven": 100}]
     data_path.write_text(json.dumps(implausible_rows), encoding="utf-8")
     monkeypatch.setattr(ml_dataset, "DATA_PATH", data_path)
 

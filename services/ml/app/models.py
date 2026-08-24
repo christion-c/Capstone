@@ -4,7 +4,7 @@
 # FastAPI app setup or routing.
 
 from datetime import date
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -17,12 +17,10 @@ class BudgetEntry(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     date: date
-    fuel_cost: Optional[float] = Field(default=None, alias="fuelCost", ge=0)
-    food_cost: Optional[float] = Field(default=None, alias="foodCost", ge=0)
-    miles_driven: Optional[float] = Field(
-        default=None, alias="milesDriven", ge=0
-    )
-    meals: Optional[int] = Field(default=None, ge=0)
+    fuel_cost: float | None = Field(default=None, alias="fuelCost", ge=0)
+    food_cost: float | None = Field(default=None, alias="foodCost", ge=0)
+    miles_driven: float | None = Field(default=None, alias="milesDriven", ge=0)
+    meals: int | None = Field(default=None, ge=0)
 
 
 class PredictRequest(BaseModel):

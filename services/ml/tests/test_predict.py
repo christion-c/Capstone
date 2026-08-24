@@ -60,9 +60,7 @@ def test_predict_uses_regression_at_the_threshold_and_beyond():
             "milesDriven": miles,
             "meals": meals,
         }
-        for day, (miles, meals) in enumerate(
-            [(100, 10), (150, 12), (200, 14), (250, 16)], start=1
-        )
+        for day, (miles, meals) in enumerate([(100, 10), (150, 12), (200, 14), (250, 16)], start=1)
     ]
 
     response = client.post("/predict", json={"entries": entries})
@@ -166,10 +164,8 @@ def test_build_prediction_scales_realistically_with_miles_driven():
     # baseline dataset's cost-per-mile scaling directly - the separate
     # history-blend path is covered by test_main.py's
     # test_build_prediction_blends_math_with_user_history.
-    prediction_120 = build_prediction(
-        miles_driven=120, user_id="realistic-user")
-    prediction_200 = build_prediction(
-        miles_driven=200, user_id="realistic-user")
+    prediction_120 = build_prediction(miles_driven=120, user_id="realistic-user")
+    prediction_200 = build_prediction(miles_driven=200, user_id="realistic-user")
 
     assert prediction_120["fuel_prediction"] > 10.0
     assert prediction_200["fuel_prediction"] > prediction_120["fuel_prediction"] * 1.5

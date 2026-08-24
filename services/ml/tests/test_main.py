@@ -1,9 +1,10 @@
-from app import history as ml_history
-from app import main as ml_main
 import json
 import sys
 import unittest
 from pathlib import Path
+
+from app import history as ml_history
+from app import main as ml_main
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -14,17 +15,27 @@ class PredictionTests(unittest.TestCase):
 
         self.assertEqual(result["next_week"]["miles_driven"], 130)
         self.assertGreater(result["fuel_prediction"], 0)
-        self.assertEqual(result["total_prediction"],
-                         round(result["fuel_prediction"], 2))
+        self.assertEqual(result["total_prediction"], round(result["fuel_prediction"], 2))
 
     def test_build_prediction_blends_math_with_user_history(self) -> None:
         history_path = Path(__file__).resolve().parent / "user_history.json"
-        existing = history_path.read_text(
-            encoding="utf-8") if history_path.exists() else "{}"
+        existing = history_path.read_text(encoding="utf-8") if history_path.exists() else "{}"
         try:
             history_path.write_text(
-                json.dumps({"guest": [{"miles_driven": 100, "fuel_price": 4.2, "combined_mpg": 26,
-                           "tank_capacity": 14, "gallons": 4, "observed_cost": 16.8}]}),
+                json.dumps(
+                    {
+                        "guest": [
+                            {
+                                "miles_driven": 100,
+                                "fuel_price": 4.2,
+                                "combined_mpg": 26,
+                                "tank_capacity": 14,
+                                "gallons": 4,
+                                "observed_cost": 16.8,
+                            }
+                        ]
+                    }
+                ),
                 encoding="utf-8",
             )
             ml_history.HISTORY_PATH = history_path

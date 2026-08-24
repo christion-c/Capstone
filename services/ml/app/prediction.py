@@ -16,7 +16,7 @@
 # merging them would make both harder to reason about for a small
 # amount of code reuse.
 
-from typing import Any, Optional
+from typing import Any
 
 from .dataset import build_dataset
 from .history import load_user_history
@@ -60,9 +60,7 @@ def recency_weighted_average(values: list[float]) -> float | None:
         weights.append(weight)
 
     # Standard weighted-average formula: sum(value * weight) / sum(weight).
-    weighted_sum = sum(
-        value * weight for value, weight in zip(finite_values, weights)
-    )
+    weighted_sum = sum(value * weight for value, weight in zip(finite_values, weights))
     total_weight = sum(weights)
     return weighted_sum / total_weight if total_weight > 0 else None
 
@@ -124,9 +122,7 @@ def _blend_with_history(
     blend_weight = 0.0
 
     if history_count > 0:
-        history_rates = _rates(
-            history, "observed_cost", "miles_driven", miles_default=miles_driven
-        )
+        history_rates = _rates(history, "observed_cost", "miles_driven", miles_default=miles_driven)
 
         if history_rates:
             history_rate = recency_weighted_average(history_rates)
@@ -210,9 +206,7 @@ def build_prediction(
     explanation = _build_explanation(
         len(rows), miles_driven, baseline_prediction, history_count, blended, blend_weight
     )
-    feedback = (
-        f"Using the current miles-driven input and recent fuel history, the fuel preview is ${fuel_prediction:.2f}."
-    )
+    feedback = f"Using the current miles-driven input and recent fuel history, the fuel preview is ${fuel_prediction:.2f}."
 
     return {
         "rows": len(rows),
@@ -226,7 +220,7 @@ def build_prediction(
     }
 
 
-def _average(values: list[Optional[float]]) -> float:
+def _average(values: list[float | None]) -> float:
     if not values:
         return 0.0
 
@@ -259,9 +253,7 @@ def predict_by_regression(entries: list[BudgetEntry]) -> PredictResponse:
 
     # Only entries with both a positive mileage and fuel cost are usable.
     valid_entries = [
-        entry
-        for entry in entries
-        if (entry.miles_driven or 0) > 0 and (entry.fuel_cost or 0) > 0
+        entry for entry in entries if (entry.miles_driven or 0) > 0 and (entry.fuel_cost or 0) > 0
     ]
     if not valid_entries:
         return PredictResponse(
@@ -274,17 +266,15 @@ def predict_by_regression(entries: list[BudgetEntry]) -> PredictResponse:
 
     # Convert each entry to its own cost-per-mile rate, then weight-average them.
     cost_per_mile_values = [
-        (entry.fuel_cost or 0) / max(entry.miles_driven or 0, 1)
-        for entry in valid_entries
+        (entry.fuel_cost or 0) / max(entry.miles_driven or 0, 1) for entry in valid_entries
     ]
     weighted_rate = recency_weighted_average(cost_per_mile_values)
-    average_miles = (
-        sum(entry.miles_driven or 0 for entry in valid_entries) / len(valid_entries)
-    )
+    average_miles = sum(entry.miles_driven or 0 for entry in valid_entries) / len(valid_entries)
     # Fall back to a plain average rate if the weighted average couldn't
     # be computed (shouldn't normally happen given valid_entries is non-empty).
-    predicted_fuel = (weighted_rate or sum(
-        cost_per_mile_values) / len(cost_per_mile_values)) * average_miles
+    predicted_fuel = (
+        weighted_rate or sum(cost_per_mile_values) / len(cost_per_mile_values)
+    ) * average_miles
 
     return PredictResponse(
         predicted_fuel_cost=round(predicted_fuel, 2),

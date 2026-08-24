@@ -59,8 +59,7 @@ def build_dataset() -> list[dict[str, Any]]:
     payload = read_json(DATA_PATH, default=None)
     if isinstance(payload, list) and payload:
         cost_per_mile = [
-            float(item.get("fuel_cost", 0)) /
-            float(item.get("miles_driven", 1) or 1)
+            float(item.get("fuel_cost", 0)) / float(item.get("miles_driven", 1) or 1)
             for item in payload
             if isinstance(item, dict) and float(item.get("miles_driven", 0) or 0) > 0
         ]

@@ -24,9 +24,7 @@ def test_ml_preview_rejects_request_with_no_token_header():
 
 
 def test_ml_preview_rejects_request_with_wrong_token():
-    response = client.get(
-        "/ml-preview", headers={"X-Internal-Token": WRONG_TOKEN}
-    )
+    response = client.get("/ml-preview", headers={"X-Internal-Token": WRONG_TOKEN})
 
     assert response.status_code == 401
 

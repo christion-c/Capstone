@@ -49,9 +49,7 @@ def test_local_history_round_trips_a_saved_entry(tmp_path, monkeypatch):
     )
 
     assert result == {"ok": True, "saved": 1}
-    assert ml_history._load_local_history("alice") == [
-        {"miles_driven": 100, "fuel_price": 4.0}
-    ]
+    assert ml_history._load_local_history("alice") == [{"miles_driven": 100, "fuel_price": 4.0}]
 
 
 def test_local_history_flattens_all_users_when_user_id_is_none(tmp_path, monkeypatch):
@@ -121,9 +119,7 @@ def test_fetch_backend_history_remaps_camel_case_fields(monkeypatch):
 
 
 def test_fetch_backend_history_ignores_non_dict_entries(monkeypatch):
-    body = json.dumps({"entries": [{"milesDriven": 10}, "garbage", 42]}).encode(
-        "utf-8"
-    )
+    body = json.dumps({"entries": [{"milesDriven": 10}, "garbage", 42]}).encode("utf-8")
 
     def fake_urlopen(request, timeout=3):
         return _FakeResponse(body)
@@ -184,18 +180,14 @@ def test_load_user_history_prefers_remote_result_when_available(monkeypatch):
     monkeypatch.setattr(
         ml_history, "_fetch_backend_history", lambda user_id: [{"miles_driven": 999}]
     )
-    monkeypatch.setattr(
-        ml_history, "_load_local_history", lambda user_id: [{"miles_driven": 1}]
-    )
+    monkeypatch.setattr(ml_history, "_load_local_history", lambda user_id: [{"miles_driven": 1}])
 
     assert ml_history.load_user_history("alice") == [{"miles_driven": 999}]
 
 
 def test_load_user_history_falls_back_to_local_when_remote_returns_none(monkeypatch):
     monkeypatch.setattr(ml_history, "_fetch_backend_history", lambda user_id: None)
-    monkeypatch.setattr(
-        ml_history, "_load_local_history", lambda user_id: [{"miles_driven": 1}]
-    )
+    monkeypatch.setattr(ml_history, "_load_local_history", lambda user_id: [{"miles_driven": 1}])
 
     assert ml_history.load_user_history("alice") == [{"miles_driven": 1}]
 
@@ -207,9 +199,7 @@ def test_load_user_history_skips_remote_call_when_no_user_id(monkeypatch):
         "_fetch_backend_history",
         lambda user_id: calls.append(user_id),
     )
-    monkeypatch.setattr(
-        ml_history, "_load_local_history", lambda user_id: [{"miles_driven": 1}]
-    )
+    monkeypatch.setattr(ml_history, "_load_local_history", lambda user_id: [{"miles_driven": 1}])
 
     result = ml_history.load_user_history(None)
 

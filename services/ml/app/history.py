@@ -30,8 +30,7 @@ BACKEND_URL = os.getenv("BACKEND_URL", "http://backend:3000").rstrip("/")
 INTERNAL_SERVICE_TOKEN = os.getenv("INTERNAL_SERVICE_TOKEN", "")
 
 DEFAULT_HISTORY_PATH = Path(
-    os.getenv("ML_HISTORY_PATH",
-              "/home/appuser/.cache/thinktwice/user_history.json")
+    os.getenv("ML_HISTORY_PATH", "/home/appuser/.cache/thinktwice/user_history.json")
 )
 
 
@@ -48,8 +47,7 @@ def resolve_history_path() -> Path:
     history_path = DEFAULT_HISTORY_PATH
     try:
         _ensure_file(history_path)
-        history_path.write_text(
-            "{}", encoding="utf-8") if not history_path.exists() else None
+        history_path.write_text("{}", encoding="utf-8") if not history_path.exists() else None
         return history_path
     except OSError:
         # Preferred path isn't writable (e.g. a read-only filesystem or
@@ -71,9 +69,7 @@ def _fetch_backend_history(user_id: str) -> list[dict[str, Any]] | None:
     try:
         encoded = urllib.parse.quote(user_id, safe="")
         url = f"{BACKEND_URL}/fill-up-history/internal?firebase_uid={encoded}"
-        request = urllib.request.Request(
-            url, headers={"X-Internal-Token": INTERNAL_SERVICE_TOKEN}
-        )
+        request = urllib.request.Request(url, headers={"X-Internal-Token": INTERNAL_SERVICE_TOKEN})
         with urllib.request.urlopen(request, timeout=3) as resp:  # noqa: S310
             payload = json.loads(resp.read().decode("utf-8"))
         entries = payload.get("entries", [])
@@ -121,8 +117,7 @@ def _load_local_history(user_id: str | None) -> list[dict[str, Any]]:
         entries: list[dict[str, Any]] = []
         for value in payload.values():
             if isinstance(value, list):
-                entries.extend(
-                    [item for item in value if isinstance(item, dict)])
+                entries.extend([item for item in value if isinstance(item, dict)])
         return entries
 
     # Otherwise return just this user's entries.
@@ -158,8 +153,7 @@ def save_user_history(payload: dict[str, Any]) -> dict[str, Any]:
 
     # Load whatever's already cached, if anything.
     parsed = read_json(HISTORY_PATH, default={})
-    existing_payload: dict[str, Any] = parsed if isinstance(
-        parsed, dict) else {}
+    existing_payload: dict[str, Any] = parsed if isinstance(parsed, dict) else {}
 
     try:
         _ensure_file(HISTORY_PATH)
@@ -178,8 +172,7 @@ def save_user_history(payload: dict[str, Any]) -> dict[str, Any]:
     entries.append(entry)
     existing_payload[user_id] = entries
     try:
-        HISTORY_PATH.write_text(json.dumps(
-            existing_payload, indent=2), encoding="utf-8")
+        HISTORY_PATH.write_text(json.dumps(existing_payload, indent=2), encoding="utf-8")
     except OSError as exc:
         return {"ok": False, "error": f"history_write_failed: {exc}"}
     return {"ok": True, "saved": len(entries)}
