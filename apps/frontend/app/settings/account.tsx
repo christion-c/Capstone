@@ -1,7 +1,6 @@
 import { router } from "expo-router";
 import { Pressable, Text } from "react-native";
 
-import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import { useAuth } from "@/components/contexts/AuthProvider";
 import PageScaffold from "@/components/PageScaffold";
 import SettingsBackButton from "@/components/settings/SettingsBackButton";
@@ -9,7 +8,6 @@ import { useVehicle } from "@/components/contexts/VehicleProvider";
 import { Card, CardText, CardTitle } from "@/components/ui";
 
 export default function Account() {
-  const colors = useThemeColors();
   const { user } = useAuth();
   const { backendUser, vehicles, selectedVehicle } = useVehicle();
 
@@ -17,7 +15,7 @@ export default function Account() {
     <PageScaffold
       title="Account"
       subtitle="Manage your personal details and account preferences."
-      headerLeft={<SettingsBackButton onPress={() => router.replace("/settings/preferences")} colors={colors} />}
+      headerLeft={<SettingsBackButton onPress={() => router.replace("/settings/preferences")} />}
     >
       <Card surface>
         <CardTitle>Identity</CardTitle>

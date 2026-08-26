@@ -20,6 +20,8 @@ export default function ProfileSettings() {
     setCompactCards,
     highContrast,
     setHighContrast,
+    remindersEnabled,
+    setRemindersEnabled,
   } = useAppPreferences();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [logoutError, setLogoutError] = useState("");
@@ -47,7 +49,7 @@ export default function ProfileSettings() {
     <PageScaffold
       title="Profile Settings"
       subtitle="Adjust a few frontend app options for your experience."
-      headerLeft={<SettingsBackButton onPress={() => router.replace("/profile")} colors={colors} />}
+      headerLeft={<SettingsBackButton onPress={() => router.replace("/profile")} />}
     >
       <Card surface>
         <CardTitle>Appearance</CardTitle>
@@ -88,7 +90,6 @@ export default function ProfileSettings() {
           caption="Use tighter spacing in cards."
           value={compactCards}
           onValueChange={setCompactCards}
-          colors={colors}
         />
 
         <SettingToggleRow
@@ -96,8 +97,25 @@ export default function ProfileSettings() {
           caption="Increase visual separation and stronger text colors."
           value={highContrast}
           onValueChange={setHighContrast}
-          colors={colors}
         />
+
+        <SettingToggleRow
+          title="Check-In Reminders"
+          caption="Keep light follow-up prompts visible so your routine stays on track."
+          value={remindersEnabled}
+          onValueChange={setRemindersEnabled}
+        />
+      </Card>
+
+      <Card surface>
+        <CardTitle>Account</CardTitle>
+        <CardText>View account details or request data deletion.</CardText>
+        <Pressable
+          onPress={() => router.push("/settings/account")}
+          className="mt-xs rounded-md border border-border bg-surfaceSoft px-md py-3.5"
+        >
+          <Text className="text-[15px] font-bold text-text">Account details</Text>
+        </Pressable>
       </Card>
 
       <Card surface>

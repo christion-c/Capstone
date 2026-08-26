@@ -6,7 +6,6 @@ import { Redirect, Stack, useSegments, type ErrorBoundaryProps } from "expo-rout
 
 import { AppPreferencesProvider, useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import { AuthProvider, useAuth } from "@/components/contexts/AuthProvider";
-import { BudgetProvider } from "@/components/contexts/BudgetProvider";
 import { FinanceProvider } from "@/components/contexts/FinanceProvider";
 import ThemeVarsRoot from "@/components/ThemeVarsRoot";
 import { VehicleProvider } from "@/components/contexts/VehicleProvider";
@@ -50,11 +49,9 @@ export default function RootLayout() {
               nesting is reversed. */}
           <VehicleProvider>
             <FinanceProvider>
-              <BudgetProvider>
-                <AuthGate>
-                  <AppStack />
-                </AuthGate>
-              </BudgetProvider>
+              <AuthGate>
+                <AppStack />
+              </AuthGate>
             </FinanceProvider>
           </VehicleProvider>
         </ThemeVarsRoot>
@@ -122,7 +119,6 @@ function AppStack() {
       <Stack.Screen name="fuel" options={{ title: "Fuel" }} />
       <Stack.Screen name="finance" options={{ title: "Finance" }} />
       <Stack.Screen name="nutrition" options={{ title: "Nutrition" }} />
-      <Stack.Screen name="notifications" options={{ title: "Notifications" }} />
 
       <Stack.Screen name="profile" options={{ title: "Profile" }} />
 
@@ -131,6 +127,7 @@ function AppStack() {
       <Stack.Screen name="auth/forgot-password" options={{ title: "Forgot Password" }} />
 
       <Stack.Screen name="settings/preferences" options={{ title: "Profile Settings" }} />
+      <Stack.Screen name="settings/account" options={{ title: "Account" }} />
       <Stack.Screen name="debug/ml-account" options={{ title: "Internal ML Debug" }} />
 
       <Stack.Screen name="privacy-policy" options={{ title: "Privacy Policy" }} />
