@@ -9,6 +9,7 @@ import helmet from "helmet";
 import { env } from "./config/env.js";
 import { authRouter } from "./modules/auth/auth.routes.js";
 import { budgetRouter } from "./modules/budget/budget.routes.js";
+import { dailyDrivingLogRouter } from "./modules/daily-driving-log/daily-driving-log.routes.js";
 import { fillUpHistoryRouter } from "./modules/fill-up-history/fill-up-history.routes.js";
 import { financeRouter } from "./modules/finance/finance.routes.js";
 import { healthRouter } from "./modules/health/health.routes.js";
@@ -85,6 +86,7 @@ export function createApp() {
   app.use("/predictions", predictionsRouter);
   app.use("/finance", financeRouter);
   app.use("/fill-up-history", fillUpHistoryRouter);
+  app.use("/daily-driving-log", dailyDrivingLogRouter);
 
   // Catches any request that didn't match a route above.
   const notFoundHandler: RequestHandler = (_request, response) => {

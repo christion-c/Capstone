@@ -3,12 +3,26 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import {
+  deleteAllDailyDrivingLogs,
+  deleteAllFillUpHistory,
+  deleteDailyDrivingLog,
+  deleteFillUpHistoryEntry,
+  fetchDailyDrivingLogs,
   fetchFinanceInputs,
   fetchFillUpHistory,
+  reassignDailyDrivingLogVehicle,
+  reassignFillUpVehicle,
+  saveDailyDrivingLog,
+  type DailyDrivingLog,
   type SavedFillUpHistoryEntry,
   upsertFinanceInputs,
 } from "@/lib/backend-api";
-import { computeFillUpStats, computeFinanceProjections } from "@/lib/finance-projections";
+import {
+  computeFillUpStats,
+  computeFinanceProjections,
+  filterEntriesForVehicle,
+} from "@/lib/finance-projections";
+import { getLocalDateString } from "@/lib/local-date";
 import { useAuth } from "./AuthProvider";
 import { useVehicle } from "./VehicleProvider";
 
@@ -58,6 +72,21 @@ type FinanceContextValue = {
   // is already auto-calculated from history rather than asked for.
   estimatedMilesSinceLastFillUp: number | null;
   fillUpHistory: SavedFillUpHistoryEntry[];
+  dailyDrivingLogs: DailyDrivingLog[];
+  // Saves (or corrects) today's daily driving check-in for the
+  // signed-in user, then refreshes dailyDrivingLogs so the Tank
+  // Forecast picks up the new sample immediately.
+  logTodaysMiles: (miles: number) => Promise<void>;
+  // Fix-a-mistake actions: delete a single mistaken entry, or move it to
+  // a different vehicle. Each updates local state optimistically and
+  // refetches on failure so the UI never drifts from the server.
+  deleteFillUpEntry: (entryId: string) => Promise<void>;
+  reassignFillUpEntryVehicle: (entryId: string, vehicleId: string | null) => Promise<void>;
+  deleteDailyDrivingLogEntry: (logId: string) => Promise<void>;
+  reassignDailyDrivingLogEntryVehicle: (logId: string, vehicleId: string | null) => Promise<void>;
+  // Wipes every fill-up and check-in for the signed-in user - "start my
+  // data over." Does not touch the account, login, or vehicle profiles.
+  clearAllHistory: () => Promise<void>;
   refresh: () => Promise<void>;
 };
 
@@ -76,6 +105,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
   const [tankCapacityInput, setTankCapacityInput] = useState("");
   const [currentTankPercentInput, setCurrentTankPercentInput] = useState("");
   const [fillUpHistory, setFillUpHistory] = useState<SavedFillUpHistoryEntry[]>([]);
+  const [dailyDrivingLogs, setDailyDrivingLogs] = useState<DailyDrivingLog[]>([]);
 
   const storageKey = user?.uid ? `${FINANCE_STORAGE_KEY}.${user.uid}` : `${FINANCE_STORAGE_KEY}.guest`;
 
@@ -198,13 +228,114 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storageKey, user]);
 
+  const loadDailyDrivingLogs = useCallback(async () => {
+    if (!user) {
+      setDailyDrivingLogs([]);
+      return;
+    }
+
+    try {
+      const logs = await fetchDailyDrivingLogs(user);
+      setDailyDrivingLogs(logs);
+    } catch {
+      // Keep forecasting with fill-up history alone when logs are unavailable.
+      setDailyDrivingLogs([]);
+    }
+  }, [user]);
+
   useEffect(() => {
     void loadFillUpHistory();
   }, [loadFillUpHistory]);
 
+  useEffect(() => {
+    void loadDailyDrivingLogs();
+  }, [loadDailyDrivingLogs]);
+
+  const logTodaysMiles = useCallback(
+    async (miles: number) => {
+      if (!user) {
+        return;
+      }
+
+      await saveDailyDrivingLog(user, {
+        logDate: getLocalDateString(new Date()),
+        milesDriven: miles,
+        vehicleId: selectedVehicle?.id ?? null,
+      });
+      await loadDailyDrivingLogs();
+    },
+    [user, selectedVehicle, loadDailyDrivingLogs],
+  );
+
+  const deleteFillUpEntry = useCallback(
+    async (entryId: string) => {
+      if (!user) {
+        return;
+      }
+
+      await deleteFillUpHistoryEntry(user, entryId);
+      setFillUpHistory((current) => current.filter((entry) => entry.id !== entryId));
+    },
+    [user],
+  );
+
+  const reassignFillUpEntryVehicle = useCallback(
+    async (entryId: string, vehicleId: string | null) => {
+      if (!user) {
+        return;
+      }
+
+      const updated = await reassignFillUpVehicle(user, entryId, vehicleId);
+      setFillUpHistory((current) =>
+        current.map((entry) => (entry.id === entryId ? updated : entry)),
+      );
+    },
+    [user],
+  );
+
+  const deleteDailyDrivingLogEntry = useCallback(
+    async (logId: string) => {
+      if (!user) {
+        return;
+      }
+
+      await deleteDailyDrivingLog(user, logId);
+      setDailyDrivingLogs((current) => current.filter((log) => log.id !== logId));
+    },
+    [user],
+  );
+
+  const reassignDailyDrivingLogEntryVehicle = useCallback(
+    async (logId: string, vehicleId: string | null) => {
+      if (!user) {
+        return;
+      }
+
+      const updated = await reassignDailyDrivingLogVehicle(user, logId, vehicleId);
+      setDailyDrivingLogs((current) =>
+        current.map((log) => (log.id === logId ? updated : log)),
+      );
+    },
+    [user],
+  );
+
+  const clearAllHistory = useCallback(async () => {
+    if (!user) {
+      return;
+    }
+
+    await Promise.all([deleteAllFillUpHistory(user), deleteAllDailyDrivingLogs(user)]);
+    setFillUpHistory([]);
+    setDailyDrivingLogs([]);
+  }, [user]);
+
   const refresh = useCallback(async () => {
-    await Promise.all([loadCloudFinanceInputs(), loadFillUpHistory()]);
-  }, [loadCloudFinanceInputs, loadFillUpHistory]);
+    await Promise.all([
+      loadCloudFinanceInputs(),
+      loadFillUpHistory(),
+      loadDailyDrivingLogs(),
+    ]);
+  }, [loadCloudFinanceInputs, loadFillUpHistory, loadDailyDrivingLogs]);
 
   // Auto-fill MPG/tank-capacity inputs from the selected vehicle's own
   // saved specs, whenever the selection changes.
@@ -221,14 +352,29 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
     }
   }, [selectedVehicle]);
 
-  const stats = useMemo(() => computeFillUpStats(fillUpHistory), [fillUpHistory]);
+  // Scope the Tank Forecast to whichever vehicle is selected - see
+  // filterEntriesForVehicle's own comment for exactly what counts.
+  const selectedVehicleId = selectedVehicle?.id ?? null;
+  const visibleFillUpHistory = useMemo(
+    () => filterEntriesForVehicle(fillUpHistory, selectedVehicleId),
+    [fillUpHistory, selectedVehicleId],
+  );
+  const visibleDailyDrivingLogs = useMemo(
+    () => filterEntriesForVehicle(dailyDrivingLogs, selectedVehicleId),
+    [dailyDrivingLogs, selectedVehicleId],
+  );
+
+  const stats = useMemo(
+    () => computeFillUpStats(visibleFillUpHistory, visibleDailyDrivingLogs),
+    [visibleFillUpHistory, visibleDailyDrivingLogs],
+  );
 
   const estimatedMilesSinceLastFillUp = useMemo(() => {
     if (stats.dailyMiles <= 0) {
       return null;
     }
 
-    const mostRecentTimestamp = fillUpHistory
+    const mostRecentTimestamp = visibleFillUpHistory
       .map((entry) => Date.parse(entry.recordedAt))
       .filter((timestamp) => Number.isFinite(timestamp))
       .reduce((latest, timestamp) => Math.max(latest, timestamp), 0);
@@ -244,7 +390,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
     }
 
     return Math.round(stats.dailyMiles * daysSinceLastFillUp);
-  }, [stats.dailyMiles, fillUpHistory]);
+  }, [stats.dailyMiles, visibleFillUpHistory]);
 
   const {
     monthlyIncome,
@@ -347,6 +493,13 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       weeklySpendTarget,
       estimatedMilesSinceLastFillUp,
       fillUpHistory,
+      dailyDrivingLogs,
+      logTodaysMiles,
+      deleteFillUpEntry,
+      reassignFillUpEntryVehicle,
+      deleteDailyDrivingLogEntry,
+      reassignDailyDrivingLogEntryVehicle,
+      clearAllHistory,
       refresh,
     }),
     [
@@ -361,6 +514,13 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       currentTankPercentInput,
       estimatedMilesSinceLastFillUp,
       fillUpHistory,
+      dailyDrivingLogs,
+      logTodaysMiles,
+      deleteFillUpEntry,
+      reassignFillUpEntryVehicle,
+      deleteDailyDrivingLogEntry,
+      reassignDailyDrivingLogEntryVehicle,
+      clearAllHistory,
       monthlyIncome,
       monthlyExpenses,
       monthlyFixedCosts,

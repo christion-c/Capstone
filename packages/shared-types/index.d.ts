@@ -92,6 +92,19 @@ export interface FillUpHistoryEntry {
   observedCost: number;
 }
 
+export interface DailyDrivingLog {
+  id: string;
+  logDate: string;
+  milesDriven: number;
+  vehicleId: string | null;
+}
+
+export interface CreateDailyDrivingLogInput {
+  logDate: string;
+  milesDriven: number;
+  vehicleId?: string | null;
+}
+
 /**
  * The one shape that's genuinely identical end-to-end with no wire/internal
  * split (ML service -> backend -> frontend all use the same fields, no

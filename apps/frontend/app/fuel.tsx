@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { useCallback, useMemo } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
@@ -148,10 +149,15 @@ export default function Fuel() {
 
       {recentFillUps.length > 0 ? (
         <Card>
-          <CardTitle>Fill-Up History</CardTitle>
+          <View className="flex-row items-center justify-between gap-sm">
+            <CardTitle>Fill-Up History</CardTitle>
+            <Pressable onPress={() => router.push("/history")} className="active:opacity-70">
+              <Text className="text-caption font-semibold text-accent">View all</Text>
+            </Pressable>
+          </View>
           <View className="gap-sm">
-            {recentFillUps.map((entry, index) => (
-              <View key={index} className="flex-row items-center gap-sm">
+            {recentFillUps.map((entry) => (
+              <View key={entry.id} className="flex-row items-center gap-sm">
                 <View
                   className="h-9 w-9 items-center justify-center rounded-round"
                   style={{ backgroundColor: withAlpha(colors.accent, 0.16) }}

@@ -105,6 +105,10 @@ export function useFuelCheckinFlow() {
         // the user to type today's date back to us added friction for
         // information we already have.
         recordedAt: new Date().toISOString(),
+        // Tags the entry with whichever vehicle is currently selected -
+        // no new question added to this flow, just reading who's
+        // already picked via VehicleSelector on the Fuel screen.
+        vehicleId: selectedVehicle?.id ?? null,
       });
     } catch {
       // Ignore history save failures so the fuel flow remains uninterrupted.

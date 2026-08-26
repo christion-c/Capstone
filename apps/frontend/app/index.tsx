@@ -4,6 +4,7 @@ import { Text, View } from "react-native";
 
 import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import { useFinance } from "@/components/contexts/FinanceProvider";
+import DailyCheckinCard from "@/components/home/DailyCheckinCard";
 import PageScaffold from "@/components/PageScaffold";
 import { AnimatedNumber, Card, CardTitle, DonutGauge, ListRow, LogoMark } from "@/components/ui";
 import { useVehicle } from "@/components/contexts/VehicleProvider";
@@ -140,6 +141,12 @@ export default function Home() {
         <Text className="text-[26px] font-bold text-accent">{Math.max(projectedDaysUntilFillUp, 0).toFixed(1)} days until next fill-up</Text>
         <Text className="text-sm leading-5 text-textMuted">Estimated refill cost: {formatCurrencyWhole(projectedFillUpCost)} based on your current fuel and mileage inputs.</Text>
         <Text className="text-caption font-bold uppercase tracking-[0.5px] text-text">{fuelStatus}</Text>
+      </Card>
+
+      <Card>
+        <CardTitle>Daily Check-In</CardTitle>
+        <Text className="text-sm leading-5 text-textMuted">Log the miles you drove today to sharpen the Tank Forecast above.</Text>
+        <DailyCheckinCard />
       </Card>
 
       {shouldShowSetupChecklist ? (

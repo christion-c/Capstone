@@ -34,6 +34,7 @@ export default function Account() {
         <CardTitle>Next Steps</CardTitle>
         <ListRow title="Open profile overview" onPress={() => router.push("/profile")} />
         <ListRow title="Adjust app preferences" onPress={() => router.push("/settings/preferences")} />
+        <ListRow title="Manage fill-up & check-in history" onPress={() => router.push("/history")} />
         <ListRow title="Delete my account" danger onPress={() => router.push("/delete-account")} />
       </Card>
     </PageScaffold>

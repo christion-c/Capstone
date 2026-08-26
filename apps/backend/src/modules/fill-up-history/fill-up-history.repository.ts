@@ -8,8 +8,11 @@ import { numericOrNull } from "../../lib/db-helpers.js";
 // with an update there (and that function's own test,
 // test_fetch_backend_history_remaps_camel_case_fields in
 // services/ml/tests/test_history.py) or the ML service silently starts
-// reading every field as its own 0 default instead of erroring.
+// reading every field as its own 0 default instead of erroring. Adding
+// new fields (id, vehicleId) is additive, not a rename, so it doesn't
+// need a matching ML-side change.
 export interface FillUpEntry {
+  id: string;
   milesDriven: number;
   fuelPrice: number;
   combinedMpg: number;
@@ -17,13 +20,16 @@ export interface FillUpEntry {
   gallons: number;
   observedCost: number;
   recordedAt: Date;
+  vehicleId: string | null;
 }
 
-export type FillUpEntryInput = Omit<FillUpEntry, "recordedAt"> & {
-  recordedAt?: Date | string | null;
+export type FillUpEntryInput = Omit<FillUpEntry, "id" | "recordedAt" | "vehicleId"> & {
+  recordedAt?: Date | string | null | undefined;
+  vehicleId?: string | null | undefined;
 };
 
 interface FillUpRow {
+  id: string;
   miles_driven: string;
   fuel_price: string;
   combined_mpg: string;
@@ -31,11 +37,13 @@ interface FillUpRow {
   gallons: string;
   observed_cost: string;
   recorded_at: Date;
+  vehicle_id: string | null;
 }
 
 // NUMERIC columns come back as strings from the pg driver - convert each to a number.
 function mapRow(row: FillUpRow): FillUpEntry {
   return {
+    id: row.id,
     milesDriven: numericOrNull(row.miles_driven),
     fuelPrice: numericOrNull(row.fuel_price),
     combinedMpg: numericOrNull(row.combined_mpg),
@@ -43,6 +51,7 @@ function mapRow(row: FillUpRow): FillUpEntry {
     gallons: numericOrNull(row.gallons),
     observedCost: numericOrNull(row.observed_cost),
     recordedAt: row.recorded_at,
+    vehicleId: row.vehicle_id,
   };
 }
 
@@ -58,9 +67,9 @@ export async function insertFillUpHistory(
     `
       INSERT INTO fill_up_history (
         user_id, miles_driven, fuel_price, combined_mpg,
-        tank_capacity, gallons, observed_cost, recorded_at
+        tank_capacity, gallons, observed_cost, recorded_at, vehicle_id
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
     `,
     [
       userId,
@@ -71,6 +80,7 @@ export async function insertFillUpHistory(
       entry.gallons,
       entry.observedCost,
       recordedAt,
+      entry.vehicleId ?? null,
     ],
   );
 }
@@ -86,8 +96,9 @@ export async function listFillUpHistoryByFirebaseUid(
   const result = await database.query<FillUpRow>(
     `
       SELECT
-        h.miles_driven, h.fuel_price, h.combined_mpg,
-        h.tank_capacity, h.gallons, h.observed_cost, h.recorded_at
+        h.id, h.miles_driven, h.fuel_price, h.combined_mpg,
+        h.tank_capacity, h.gallons, h.observed_cost, h.recorded_at,
+        h.vehicle_id
       FROM fill_up_history h
       JOIN users u ON u.id = h.user_id
       WHERE u.firebase_uid = $1
@@ -106,8 +117,8 @@ export async function listFillUpHistoryByUserId(
   const result = await database.query<FillUpRow>(
     `
       SELECT
-        miles_driven, fuel_price, combined_mpg,
-        tank_capacity, gallons, observed_cost, recorded_at
+        id, miles_driven, fuel_price, combined_mpg,
+        tank_capacity, gallons, observed_cost, recorded_at, vehicle_id
       FROM fill_up_history
       WHERE user_id = $1
       ORDER BY recorded_at DESC
@@ -116,4 +127,72 @@ export async function listFillUpHistoryByUserId(
   );
 
   return result.rows.map(mapRow);
+}
+
+// Reassigns a fill-up entry to a different vehicle (or unassigns it with
+// null) - only when the entry belongs to the given user AND, when
+// vehicleId isn't null, that vehicle also belongs to the same user. Both
+// checks happen in one statement so there's no gap between "verify
+// ownership" and "apply the change."
+export async function updateFillUpHistoryVehicle(
+  entryId: string,
+  userId: string,
+  vehicleId: string | null,
+): Promise<FillUpEntry | null> {
+  const result = await database.query<FillUpRow>(
+    `
+      UPDATE fill_up_history
+      SET vehicle_id = $3
+      WHERE id = $1
+        AND user_id = $2
+        AND (
+          $3::uuid IS NULL
+          OR EXISTS (
+            SELECT 1 FROM vehicles v WHERE v.id = $3 AND v.user_id = $2
+          )
+        )
+      RETURNING
+        id, miles_driven, fuel_price, combined_mpg,
+        tank_capacity, gallons, observed_cost, recorded_at, vehicle_id
+    `,
+    [entryId, userId, vehicleId],
+  );
+
+  const entry = result.rows[0];
+
+  // No row means the entry doesn't exist, belongs to someone else, or
+  // the target vehicle doesn't belong to this user.
+  return entry ? mapRow(entry) : null;
+}
+
+// Deletes a fill-up entry only when it belongs to the given user.
+export async function deleteFillUpHistoryEntry(
+  entryId: string,
+  userId: string,
+): Promise<boolean> {
+  const result = await database.query(
+    `
+      DELETE FROM fill_up_history
+      WHERE id = $1
+        AND user_id = $2
+    `,
+    [entryId, userId],
+  );
+
+  // Exactly one row deleted means it existed and belonged to this user.
+  return result.rowCount === 1;
+}
+
+// Deletes every fill-up entry for the given user - the "start my data
+// over" bulk action. Returns how many rows were removed.
+export async function deleteAllFillUpHistoryForUser(userId: string): Promise<number> {
+  const result = await database.query(
+    `
+      DELETE FROM fill_up_history
+      WHERE user_id = $1
+    `,
+    [userId],
+  );
+
+  return result.rowCount ?? 0;
 }

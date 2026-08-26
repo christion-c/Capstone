@@ -6,13 +6,18 @@ import { requireInternalService } from "../../middleware/require-internal-servic
 import { syncCurrentUser } from "../../middleware/sync-current-user.js";
 import {
   asyncHandler,
+  parseRouteParam,
+  respondNotFound,
   respondWithValidationError,
   withCurrentUser,
 } from "../../lib/route-helpers.js";
 import {
+  deleteAllFillUpHistoryForUser,
+  deleteFillUpHistoryEntry,
   insertFillUpHistory,
   listFillUpHistoryByUserId,
   listFillUpHistoryByFirebaseUid,
+  updateFillUpHistoryVehicle,
 } from "./fill-up-history.repository.js";
 
 export const fillUpHistoryRouter = Router();
@@ -31,8 +36,17 @@ export const entrySchema = z
         message: "recordedAt must be a valid ISO date string",
       })
       .optional(),
+    vehicleId: z.uuid().nullable().optional(),
   })
   .strict();
+
+export const reassignVehicleSchema = z
+  .object({
+    vehicleId: z.uuid().nullable(),
+  })
+  .strict();
+
+const entryIdSchema = z.uuid();
 
 // Query-param counterpart of entrySchema's body validation, for the
 // /internal route below - a non-empty string is the only requirement.
@@ -73,6 +87,77 @@ fillUpHistoryRouter.get(
   withCurrentUser(async (currentUser, request, response) => {
     const entries = await listFillUpHistoryByUserId(currentUser.id);
     response.status(200).json({ entries });
+  }),
+);
+
+// Reassigns a fill-up entry to a different vehicle (or unassigns it with
+// null) - only when it belongs to the authenticated user.
+fillUpHistoryRouter.patch(
+  "/:entryId",
+  requireAuth,
+  syncCurrentUser,
+  withCurrentUser(async (currentUser, request, response) => {
+    const entryId = parseRouteParam(response, entryIdSchema, request.params.entryId, "entry ID");
+
+    if (!entryId) {
+      return;
+    }
+
+    const validationResult = reassignVehicleSchema.safeParse(request.body);
+
+    if (!validationResult.success) {
+      respondWithValidationError(response, validationResult.error, "Invalid vehicle assignment");
+      return;
+    }
+
+    const entry = await updateFillUpHistoryVehicle(
+      entryId,
+      currentUser.id,
+      validationResult.data.vehicleId,
+    );
+
+    if (!entry) {
+      respondNotFound(response, "Fill-up entry");
+      return;
+    }
+
+    response.status(200).json({ entry });
+  }),
+);
+
+// Deletes a single fill-up entry - only when it belongs to the
+// authenticated user.
+fillUpHistoryRouter.delete(
+  "/:entryId",
+  requireAuth,
+  syncCurrentUser,
+  withCurrentUser(async (currentUser, request, response) => {
+    const entryId = parseRouteParam(response, entryIdSchema, request.params.entryId, "entry ID");
+
+    if (!entryId) {
+      return;
+    }
+
+    const deleted = await deleteFillUpHistoryEntry(entryId, currentUser.id);
+
+    if (!deleted) {
+      respondNotFound(response, "Fill-up entry");
+      return;
+    }
+
+    response.status(204).send();
+  }),
+);
+
+// Deletes every fill-up entry for the authenticated user - the "start my
+// data over" bulk action.
+fillUpHistoryRouter.delete(
+  "/",
+  requireAuth,
+  syncCurrentUser,
+  withCurrentUser(async (currentUser, request, response) => {
+    const deletedCount = await deleteAllFillUpHistoryForUser(currentUser.id);
+    response.status(200).json({ deletedCount });
   }),
 );
 

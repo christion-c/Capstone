@@ -4,7 +4,7 @@ import { after, before } from "node:test";
 import type { AddressInfo } from "node:net";
 
 import { createApp } from "../../app.js";
-import { entrySchema } from "./fill-up-history.routes.js";
+import { entrySchema, reassignVehicleSchema } from "./fill-up-history.routes.js";
 
 // Matches the default the test script exports (see package.json's
 // "test" script) before env.ts is ever imported.
@@ -112,4 +112,90 @@ test("entrySchema rejects an invalid fill-up date", () => {
   });
 
   assert.equal(result.success, false);
+});
+
+test("entrySchema accepts an explicit vehicleId", () => {
+  const result = entrySchema.safeParse({
+    milesDriven: 150,
+    fuelPrice: 3.89,
+    combinedMpg: 30,
+    tankCapacity: 14,
+    gallons: 12.4,
+    observedCost: 48.14,
+    vehicleId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  });
+
+  assert.equal(result.success, true);
+});
+
+test("entrySchema accepts a null vehicleId", () => {
+  const result = entrySchema.safeParse({
+    milesDriven: 150,
+    fuelPrice: 3.89,
+    combinedMpg: 30,
+    tankCapacity: 14,
+    gallons: 12.4,
+    observedCost: 48.14,
+    vehicleId: null,
+  });
+
+  assert.equal(result.success, true);
+});
+
+test("entrySchema rejects a non-UUID vehicleId", () => {
+  const result = entrySchema.safeParse({
+    milesDriven: 150,
+    fuelPrice: 3.89,
+    combinedMpg: 30,
+    tankCapacity: 14,
+    gallons: 12.4,
+    observedCost: 48.14,
+    vehicleId: "not-a-uuid",
+  });
+
+  assert.equal(result.success, false);
+});
+
+test("reassignVehicleSchema accepts a UUID", () => {
+  const result = reassignVehicleSchema.safeParse({
+    vehicleId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  });
+
+  assert.equal(result.success, true);
+});
+
+test("reassignVehicleSchema accepts null (unassign)", () => {
+  const result = reassignVehicleSchema.safeParse({ vehicleId: null });
+
+  assert.equal(result.success, true);
+});
+
+test("reassignVehicleSchema rejects a missing vehicleId field", () => {
+  const result = reassignVehicleSchema.safeParse({});
+
+  assert.equal(result.success, false);
+});
+
+test("PATCH /fill-up-history/:entryId rejects a request with no Authorization header", async () => {
+  const response = await fetch(`${baseUrl}/fill-up-history/3fa85f64-5717-4562-b3fc-2c963f66afa6`, {
+    method: "PATCH",
+  });
+
+  assert.equal(response.status, 401);
+});
+
+test("DELETE /fill-up-history/:entryId rejects a request with no Authorization header", async () => {
+  const response = await fetch(`${baseUrl}/fill-up-history/3fa85f64-5717-4562-b3fc-2c963f66afa6`, {
+    method: "DELETE",
+  });
+
+  assert.equal(response.status, 401);
+});
+
+test("DELETE /fill-up-history rejects a request with no Authorization header", async () => {
+  const response = await fetch(`${baseUrl}/fill-up-history`, {
+    method: "DELETE",
+  });
+
+  assert.equal(response.status, 401);
 });

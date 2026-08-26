@@ -4,7 +4,9 @@ import type {
   BudgetEntry,
   BudgetPrediction,
   CreateBudgetEntryInput,
+  CreateDailyDrivingLogInput,
   CreateVehicleInput,
+  DailyDrivingLog,
   FinanceInputs,
   PredictionResult,
   UpdateVehicleInput,
@@ -25,7 +27,7 @@ export type CreateBackendVehicleInput = CreateVehicleInput;
 export type UpdateBackendVehicleInput = UpdateVehicleInput;
 export type BackendBudgetEntry = BudgetEntry;
 export type CreateBackendBudgetEntryInput = CreateBudgetEntryInput;
-export type { BudgetPrediction, PredictionResult };
+export type { BudgetPrediction, PredictionResult, DailyDrivingLog, CreateDailyDrivingLogInput };
 
 function getApiBaseUrl() {
   if (!apiBaseUrl) {
@@ -236,9 +238,11 @@ export interface FillUpHistoryEntry {
   gallons: number;
   observedCost: number;
   recordedAt?: string;
+  vehicleId?: string | null;
 }
 
 export interface SavedFillUpHistoryEntry {
+  id: string;
   milesDriven: number;
   fuelPrice: number;
   combinedMpg: number;
@@ -246,6 +250,7 @@ export interface SavedFillUpHistoryEntry {
   gallons: number;
   observedCost: number;
   recordedAt: string;
+  vehicleId: string | null;
 }
 
 export async function fetchFillUpHistory(
@@ -273,4 +278,119 @@ export async function saveFillUpHistory(
     headers: { ...headers, "Content-Type": "application/json" },
     body: JSON.stringify(entry),
   });
+}
+
+// Reassigns a fill-up entry to a different vehicle, or unassigns it with
+// vehicleId: null.
+export async function reassignFillUpVehicle(
+  user: User,
+  entryId: string,
+  vehicleId: string | null,
+): Promise<SavedFillUpHistoryEntry> {
+  const headers = await getAuthHeader(user);
+  const response = await requestBackend<{ entry: SavedFillUpHistoryEntry }>(
+    `/fill-up-history/${entryId}`,
+    {
+      method: "PATCH",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({ vehicleId }),
+    },
+  );
+
+  return response.entry;
+}
+
+export async function deleteFillUpHistoryEntry(
+  user: User,
+  entryId: string,
+): Promise<void> {
+  const headers = await getAuthHeader(user);
+  await requestBackend<void>(`/fill-up-history/${entryId}`, {
+    method: "DELETE",
+    headers,
+  });
+}
+
+// Deletes every fill-up entry for the signed-in user - the "start my
+// data over" bulk action. Returns how many rows were removed.
+export async function deleteAllFillUpHistory(user: User): Promise<number> {
+  const headers = await getAuthHeader(user);
+  const response = await requestBackend<{ deletedCount: number }>("/fill-up-history", {
+    method: "DELETE",
+    headers,
+  });
+
+  return response.deletedCount;
+}
+
+export async function fetchDailyDrivingLogs(
+  user: User,
+): Promise<DailyDrivingLog[]> {
+  const headers = await getAuthHeader(user);
+  const response = await requestBackend<{ logs: DailyDrivingLog[] }>(
+    "/daily-driving-log",
+    {
+      method: "GET",
+      headers,
+    },
+  );
+
+  return response.logs;
+}
+
+export async function saveDailyDrivingLog(
+  user: User,
+  input: CreateDailyDrivingLogInput,
+): Promise<DailyDrivingLog> {
+  const headers = await getAuthHeader(user);
+  const response = await requestBackend<{ log: DailyDrivingLog }>(
+    "/daily-driving-log",
+    {
+      method: "POST",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    },
+  );
+
+  return response.log;
+}
+
+// Reassigns a daily driving log to a different vehicle, or unassigns it
+// with vehicleId: null.
+export async function reassignDailyDrivingLogVehicle(
+  user: User,
+  logId: string,
+  vehicleId: string | null,
+): Promise<DailyDrivingLog> {
+  const headers = await getAuthHeader(user);
+  const response = await requestBackend<{ log: DailyDrivingLog }>(
+    `/daily-driving-log/${logId}`,
+    {
+      method: "PATCH",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({ vehicleId }),
+    },
+  );
+
+  return response.log;
+}
+
+export async function deleteDailyDrivingLog(user: User, logId: string): Promise<void> {
+  const headers = await getAuthHeader(user);
+  await requestBackend<void>(`/daily-driving-log/${logId}`, {
+    method: "DELETE",
+    headers,
+  });
+}
+
+// Deletes every daily driving log for the signed-in user - the "start my
+// data over" bulk action. Returns how many rows were removed.
+export async function deleteAllDailyDrivingLogs(user: User): Promise<number> {
+  const headers = await getAuthHeader(user);
+  const response = await requestBackend<{ deletedCount: number }>("/daily-driving-log", {
+    method: "DELETE",
+    headers,
+  });
+
+  return response.deletedCount;
 }
