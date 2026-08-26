@@ -4,6 +4,7 @@ import { useAuth } from "@/components/contexts/AuthProvider";
 import { useFinance } from "@/components/contexts/FinanceProvider";
 import { useVehicle } from "@/components/contexts/VehicleProvider";
 import { saveFillUpHistory } from "@/lib/backend-api";
+import { parseOptionalInt, parseOptionalNumber } from "@/lib/optional-input";
 import { useStepFlow, type StepFlowStepConfig } from "./useStepFlow";
 
 type FuelCheckinStepKey = "gallons" | "price" | "miles" | "tankLevel";
@@ -24,28 +25,6 @@ const VEHICLE_DETAILS_STEPS: StepFlowStepConfig<VehicleDetailsStepKey>[] = [
   { key: "mpg", title: "MPG", hint: "Optional - leave blank and we'll calculate your real MPG from fill-up history once you've logged a few.", placeholder: "0", keyboardType: "decimal-pad", autoCapitalize: "none", autoCorrect: false, icon: "leaf-outline" },
   { key: "tank", title: "Tank size", hint: "Enter the tank size in gallons.", placeholder: "0", keyboardType: "decimal-pad", autoCapitalize: "none", autoCorrect: false, icon: "water-outline" },
 ];
-
-function parseOptionalNumber(value: string) {
-  const trimmedValue = value.trim();
-
-  if (!trimmedValue) {
-    return null;
-  }
-
-  const parsedValue = Number.parseFloat(trimmedValue);
-  return Number.isFinite(parsedValue) ? parsedValue : null;
-}
-
-function parseOptionalInt(value: string) {
-  const trimmedValue = value.trim();
-
-  if (!trimmedValue) {
-    return null;
-  }
-
-  const parsedValue = Number.parseInt(trimmedValue, 10);
-  return Number.isFinite(parsedValue) ? parsedValue : null;
-}
 
 // Owns the fuel screen's two step-flow wizards (fuel check-in, vehicle
 // details) and what happens when each completes - saving fill-up history

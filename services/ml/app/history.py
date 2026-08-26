@@ -75,7 +75,16 @@ def _fetch_backend_history(user_id: str) -> list[dict[str, Any]] | None:
         entries = payload.get("entries", [])
         if isinstance(entries, list):
             # Convert the backend's camelCase field names to this
-            # service's snake_case convention.
+            # service's snake_case convention. These names are hardcoded
+            # against apps/backend/src/modules/fill-up-history/
+            # fill-up-history.repository.ts's FillUpEntry interface -
+            # no shared schema exists between the two languages, so a
+            # rename on that side has to be mirrored here (that
+            # interface carries a comment pointing back to this
+            # function). A drifted field silently reads as its own 0
+            # default below rather than erroring - see
+            # test_fetch_backend_history_remaps_camel_case_fields in
+            # tests/test_history.py, which pins the exact names expected.
             return [
                 {
                     "miles_driven": e.get("milesDriven", 0),

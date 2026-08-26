@@ -1,6 +1,14 @@
 import { database } from "../../db/pool.js";
 import { numericOrNull } from "../../lib/db-helpers.js";
 
+// These field names are serialized as-is over GET /fill-up-history/internal
+// and hand-remapped to snake_case on the other side by the ML service's
+// _fetch_backend_history (services/ml/app/history.py) - there's no shared
+// schema between the two languages, so a rename here has to be paired
+// with an update there (and that function's own test,
+// test_fetch_backend_history_remaps_camel_case_fields in
+// services/ml/tests/test_history.py) or the ML service silently starts
+// reading every field as its own 0 default instead of erroring.
 export interface FillUpEntry {
   milesDriven: number;
   fuelPrice: number;
