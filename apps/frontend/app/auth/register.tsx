@@ -3,18 +3,15 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import PageScaffold from "@/components/PageScaffold";
 import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
 import AuthTextField from "@/components/auth/AuthTextField";
 import PreviewModeNotice from "@/components/auth/PreviewModeNotice";
-import { Card, StatusMessage } from "@/components/ui";
+import { Card, CardTitle, StatusMessage } from "@/components/ui";
 import { getAuthErrorMessage } from "@/lib/auth-errors";
 import { auth, isFirebaseConfigured } from "@/lib/firebase";
 
 export default function Register() {
-  const colors = useThemeColors();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -62,7 +59,7 @@ export default function Register() {
       subtitle="Create your account and personalize your experience."
     >
       <Card surface gap="md">
-        <Text className="text-[22px] font-bold text-text">Create Account</Text>
+        <CardTitle>Create Account</CardTitle>
 
         <PreviewModeNotice
           visible={!isFirebaseConfigured}
@@ -76,7 +73,6 @@ export default function Register() {
           keyboardType="email-address"
           textContentType="emailAddress"
           placeholder="you@example.com"
-          colors={colors}
         />
 
         <AuthTextField
@@ -86,7 +82,6 @@ export default function Register() {
           secureTextEntry
           textContentType="newPassword"
           placeholder="Minimum 6 characters"
-          colors={colors}
         />
 
         <AuthTextField
@@ -96,7 +91,6 @@ export default function Register() {
           secureTextEntry
           textContentType="password"
           placeholder="Re-enter password"
-          colors={colors}
         />
 
         <StatusMessage message={errorMessage} tone="error" />

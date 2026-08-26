@@ -11,19 +11,18 @@ import { useEffect, useState } from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
-import { useAppPreferences, useThemeColors } from "@/components/contexts/AppPreferencesProvider";
+import { useAppPreferences } from "@/components/contexts/AppPreferencesProvider";
 import PageScaffold from "@/components/PageScaffold";
 import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
 import AuthTextField from "@/components/auth/AuthTextField";
 import PreviewModeNotice from "@/components/auth/PreviewModeNotice";
-import { Card, StatusMessage } from "@/components/ui";
+import { Card, CardTitle, StatusMessage } from "@/components/ui";
 import { getAuthErrorMessage } from "@/lib/auth-errors";
 import { auth, isFirebaseConfigured } from "@/lib/firebase";
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function Login() {
-  const colors = useThemeColors();
   const { colorMode } = useAppPreferences();
 
   const googleWebClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
@@ -159,7 +158,7 @@ export default function Login() {
       subtitle="Welcome back. Sign in to continue where you left off."
     >
       <Card surface gap="md">
-        <Text className="text-[22px] font-bold text-text">Account Login</Text>
+        <CardTitle>Account Login</CardTitle>
 
         <PreviewModeNotice
           visible={!isFirebaseConfigured}
@@ -178,7 +177,6 @@ export default function Login() {
           keyboardType="email-address"
           textContentType="emailAddress"
           placeholder="you@example.com"
-          colors={colors}
         />
 
         <AuthTextField
@@ -188,7 +186,6 @@ export default function Login() {
           secureTextEntry
           textContentType="password"
           placeholder="Enter password"
-          colors={colors}
         />
 
         <StatusMessage message={errorMessage} tone="error" />

@@ -3,17 +3,14 @@ import { sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
 import { Pressable, Text } from "react-native";
 
-import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import PageScaffold from "@/components/PageScaffold";
 import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
 import AuthTextField from "@/components/auth/AuthTextField";
 import PreviewModeNotice from "@/components/auth/PreviewModeNotice";
-import { Card, StatusMessage } from "@/components/ui";
+import { Card, CardTitle, StatusMessage } from "@/components/ui";
 import { auth, isFirebaseConfigured } from "@/lib/firebase";
 
 export default function ForgotPassword() {
-  const colors = useThemeColors();
-
   const [email, setEmail] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -50,7 +47,7 @@ export default function ForgotPassword() {
       subtitle="Recover account access quickly and safely."
     >
       <Card surface gap="md">
-        <Text className="text-[22px] font-bold text-text">Request Reset Link</Text>
+        <CardTitle>Request Reset Link</CardTitle>
 
         <PreviewModeNotice
           visible={!isFirebaseConfigured}
@@ -64,7 +61,6 @@ export default function ForgotPassword() {
           keyboardType="email-address"
           textContentType="emailAddress"
           placeholder="you@example.com"
-          colors={colors}
         />
 
         <StatusMessage message={errorMessage} tone="error" />

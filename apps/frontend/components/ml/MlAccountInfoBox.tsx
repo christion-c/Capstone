@@ -12,7 +12,7 @@ export default function MlAccountInfoBox({ label, userId, historyCount }: MlAcco
     <View className="gap-1 rounded-md border border-border bg-background p-sm">
       <Text className="text-xs uppercase tracking-[0.4px] text-textMuted">{label}</Text>
       <Text className="text-sm font-semibold text-text">{userId}</Text>
-      <Text className="text-[13px] text-textMuted">History: {historyCount} entries</Text>
+      <Text className="text-caption text-textMuted">History: {historyCount} entries</Text>
     </View>
   );
 }

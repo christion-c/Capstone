@@ -52,6 +52,17 @@ module.exports = {
         xl: "28px",
         round: "999px",
       },
+      // A named token for the one arbitrary text-[13px] size that had
+      // emerged as a de-facto standard "caption" size, independently
+      // hand-rolled across ~20 call sites (metric rows, chips, form
+      // labels, list captions) with no shared token - CardTitle/
+      // CardText already cover the heading/body roles, this closes the
+      // gap for the smallest one. Only the size, not a fixed line
+      // -height, so existing per-site leading-* overrides still apply
+      // unchanged.
+      fontSize: {
+        caption: "13px",
+      },
     },
   },
   plugins: [],

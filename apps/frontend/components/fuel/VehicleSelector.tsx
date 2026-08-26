@@ -37,7 +37,7 @@ export default function VehicleSelector({ vehicles, selectedVehicleId, onSelect 
               active ? "border-accent" : "border-border bg-surfaceSoft"
             }`}
           >
-            <Text className={`text-[13px] font-semibold ${active ? "text-accent" : "text-textMuted"}`}>
+            <Text className={`text-caption font-semibold ${active ? "text-accent" : "text-textMuted"}`}>
               {vehicle.nickname}
             </Text>
           </Pressable>

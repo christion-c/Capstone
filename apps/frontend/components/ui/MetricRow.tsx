@@ -16,8 +16,8 @@ export default function MetricRow({ icon, label, value, iconColor }: MetricRowPr
   return (
     <View className="flex-row items-center gap-xs">
       <Ionicons name={icon} size={14} color={iconColor} />
-      <Text className="flex-1 text-[13px] text-textMuted">{label}</Text>
-      <Text className="text-[13px] font-bold text-text">{value}</Text>
+      <Text className="flex-1 text-caption text-textMuted">{label}</Text>
+      <Text className="text-caption font-bold text-text">{value}</Text>
     </View>
   );
 }

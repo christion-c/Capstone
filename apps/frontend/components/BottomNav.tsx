@@ -36,7 +36,7 @@ export default function BottomNav({ active }: { active?: NavTabLabel }) {
                 color={isActive ? colors.accentDeep : colors.textMuted}
               />
               <Text
-                className={`${compactCards ? "text-xs" : "text-[13px]"} ${isActive ? "font-bold text-accentDeep" : "font-semibold text-textMuted"}`}
+                className={`${compactCards ? "text-xs" : "text-caption"} ${isActive ? "font-bold text-accentDeep" : "font-semibold text-textMuted"}`}
               >
                 {tab.label}
               </Text>

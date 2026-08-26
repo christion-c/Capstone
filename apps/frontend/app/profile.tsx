@@ -67,7 +67,7 @@ export default function Profile() {
             <Text className="text-lg font-bold text-text">{accountLabel}</Text>
             <View className="flex-row items-center gap-xs">
               <Ionicons name={cloudStatusIcon} size={14} color={cloudStatusColor} />
-              <Text className="text-[13px]" style={{ color: cloudStatusColor }}>{cloudStatus}</Text>
+              <Text className="text-caption" style={{ color: cloudStatusColor }}>{cloudStatus}</Text>
             </View>
           </View>
         </View>
