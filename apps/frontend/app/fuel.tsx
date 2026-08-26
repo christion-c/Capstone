@@ -85,14 +85,14 @@ export default function Fuel() {
             label="Fill-Up Gallons"
             value={fuelGallonsInput || "0"}
             className="flex-1 gap-xs rounded-md bg-surfaceSoft p-md"
-            labelClassName="text-[13px] uppercase tracking-[0.4px] text-textMuted"
+            labelClassName="text-caption uppercase tracking-[0.4px] text-textMuted"
             valueClassName="text-[26px] font-bold text-text"
           />
           <StatTile
             label="Current MPG"
             value={combinedMpgInput || "0"}
             className="flex-1 gap-xs rounded-md bg-surfaceSoft p-md"
-            labelClassName="text-[13px] uppercase tracking-[0.4px] text-textMuted"
+            labelClassName="text-caption uppercase tracking-[0.4px] text-textMuted"
             valueClassName="text-[26px] font-bold text-text"
           />
         </View>
@@ -112,7 +112,7 @@ export default function Fuel() {
             disabled={loading}
             className="rounded-sm bg-surfaceSoft px-sm py-2 active:opacity-85 disabled:opacity-85"
           >
-            <Text className="text-[13px] font-semibold text-text">{loading ? "Loading..." : "Refresh"}</Text>
+            <Text className="text-caption font-semibold text-text">{loading ? "Loading..." : "Refresh"}</Text>
           </Pressable>
         </View>
 
@@ -182,7 +182,6 @@ export default function Fuel() {
         onCancel={fuelFlow.close}
         onConfirm={() => void fuelFlow.confirmStep()}
         webKeyboardInset={webKeyboardInset}
-        colors={colors}
       />
 
       <StepFlowModal
@@ -195,7 +194,6 @@ export default function Fuel() {
         onCancel={vehicleFlow.close}
         onConfirm={() => void vehicleFlow.confirmStep()}
         webKeyboardInset={webKeyboardInset}
-        colors={colors}
       />
     </PageScaffold>
   );

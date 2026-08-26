@@ -103,14 +103,14 @@ export default function Finance() {
             label="Weekly Budget"
             value={formatCurrency(weeklySpendTarget)}
             className="min-w-[30%] flex-1 gap-xs rounded-md bg-surfaceSoft p-md"
-            labelClassName="text-[13px] uppercase tracking-[0.5px] text-textMuted"
+            labelClassName="text-caption uppercase tracking-[0.5px] text-textMuted"
             valueClassName="text-[22px] font-bold text-text"
           />
           <StatTile
             label="Fuel share"
             value={monthlyIncome > 0 ? `${Math.round((monthlyFuelBudget / monthlyIncome) * 100)}%` : "0%"}
             className="min-w-[30%] flex-1 gap-xs rounded-md bg-surfaceSoft p-md"
-            labelClassName="text-[13px] uppercase tracking-[0.5px] text-textMuted"
+            labelClassName="text-caption uppercase tracking-[0.5px] text-textMuted"
             valueClassName="text-[22px] font-bold text-text"
           />
         </View>
@@ -135,7 +135,6 @@ export default function Finance() {
         onCancel={financeFlow.close}
         onConfirm={() => void financeFlow.confirmStep()}
         webKeyboardInset={webKeyboardInset}
-        colors={colors}
         keyboardBehavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={0}
       />

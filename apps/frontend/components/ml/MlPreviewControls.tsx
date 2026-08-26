@@ -1,6 +1,6 @@
 import { ActivityIndicator, Pressable, Text, TextInput, View } from "react-native";
 
-import type { ThemeColors } from "@/components/theme";
+import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 
 interface MlPreviewControlsProps {
   milesInput: string;
@@ -10,7 +10,6 @@ interface MlPreviewControlsProps {
   error: string;
   idleLabel: string;
   loadingLabel: string;
-  colors: ThemeColors;
 }
 
 // Miles-driven input, submit button, and the loading/error feedback beneath it.
@@ -22,8 +21,9 @@ export default function MlPreviewControls({
   error,
   idleLabel,
   loadingLabel,
-  colors,
 }: MlPreviewControlsProps) {
+  const colors = useThemeColors();
+
   return (
     <>
       <View className="gap-sm">

@@ -1,11 +1,34 @@
 import type { ReactNode } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useContext, useMemo } from "react";
 
 import { useAuth } from "./AuthProvider";
 import { getColors, type ColorMode } from "@/components/theme";
+import { usePersistedUserState, type FieldValidators } from "@/hooks/usePersistedUserState";
 
 const PREFERENCES_STORAGE_KEY = "thinktwice.app-preferences";
+
+interface PersistedPreferences {
+  colorMode: ColorMode;
+  compactCards: boolean;
+  highContrast: boolean;
+  remindersEnabled: boolean;
+}
+
+// Stable module-level references - usePersistedUserState relies on
+// both never changing identity between renders (see its own comment).
+const DEFAULT_PREFERENCES: PersistedPreferences = {
+  colorMode: "dark",
+  compactCards: false,
+  highContrast: false,
+  remindersEnabled: true,
+};
+
+const PREFERENCE_VALIDATORS: FieldValidators<PersistedPreferences> = {
+  colorMode: (value): value is ColorMode => value === "dark" || value === "light",
+  compactCards: (value): value is boolean => typeof value === "boolean",
+  highContrast: (value): value is boolean => typeof value === "boolean",
+  remindersEnabled: (value): value is boolean => typeof value === "boolean",
+};
 
 type AppPreferencesValue = {
   colorMode: ColorMode;
@@ -16,114 +39,31 @@ type AppPreferencesValue = {
   setHighContrast: (value: boolean) => void;
   remindersEnabled: boolean;
   setRemindersEnabled: (value: boolean) => void;
-  budgetAlertsEnabled: boolean;
-  setBudgetAlertsEnabled: (value: boolean) => void;
 };
 
 const AppPreferencesContext = createContext<AppPreferencesValue | undefined>(undefined);
 
 export function AppPreferencesProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [colorMode, setColorMode] = useState<ColorMode>("dark");
-  const [compactCards, setCompactCards] = useState(false);
-  const [highContrast, setHighContrast] = useState(false);
-  const [remindersEnabled, setRemindersEnabled] = useState(true);
-  const [budgetAlertsEnabled, setBudgetAlertsEnabled] = useState(true);
-  const hasHydrated = useRef(false);
-  const storageKey = user?.uid ? `${PREFERENCES_STORAGE_KEY}.${user.uid}` : `${PREFERENCES_STORAGE_KEY}.guest`;
-
-  useEffect(() => {
-    setColorMode("dark");
-    setCompactCards(false);
-    setHighContrast(false);
-    setRemindersEnabled(true);
-    setBudgetAlertsEnabled(true);
-    hasHydrated.current = false;
-  }, [user?.uid]);
-
-  useEffect(() => {
-    const loadPreferences = async () => {
-      try {
-        const storedValue = await AsyncStorage.getItem(storageKey);
-
-        if (!storedValue) {
-          return;
-        }
-
-        const parsedValue = JSON.parse(storedValue) as Partial<{
-          colorMode: ColorMode;
-          compactCards: boolean;
-          highContrast: boolean;
-          remindersEnabled: boolean;
-          budgetAlertsEnabled: boolean;
-        }>;
-
-        if (parsedValue.colorMode === "dark" || parsedValue.colorMode === "light") {
-          setColorMode(parsedValue.colorMode);
-        }
-
-        if (typeof parsedValue.compactCards === "boolean") {
-          setCompactCards(parsedValue.compactCards);
-        }
-
-        if (typeof parsedValue.highContrast === "boolean") {
-          setHighContrast(parsedValue.highContrast);
-        }
-
-        if (typeof parsedValue.remindersEnabled === "boolean") {
-          setRemindersEnabled(parsedValue.remindersEnabled);
-        }
-
-        if (typeof parsedValue.budgetAlertsEnabled === "boolean") {
-          setBudgetAlertsEnabled(parsedValue.budgetAlertsEnabled);
-        }
-      } catch {
-        // Ignore malformed persisted preferences and keep defaults.
-      } finally {
-        hasHydrated.current = true;
-      }
-    };
-
-    void loadPreferences();
-  }, [storageKey]);
-
-  useEffect(() => {
-    if (!hasHydrated.current) {
-      return;
-    }
-
-    void AsyncStorage.setItem(
-      storageKey,
-      JSON.stringify({
-        colorMode,
-        compactCards,
-        highContrast,
-        remindersEnabled,
-        budgetAlertsEnabled,
-      }),
-    );
-  }, [colorMode, compactCards, highContrast, remindersEnabled, budgetAlertsEnabled, storageKey]);
+  const [preferences, updatePreferences] = usePersistedUserState(
+    user?.uid,
+    PREFERENCES_STORAGE_KEY,
+    DEFAULT_PREFERENCES,
+    PREFERENCE_VALIDATORS,
+  );
 
   const value = useMemo(
     () => ({
-      colorMode,
-      setColorMode,
-      compactCards,
-      setCompactCards,
-      highContrast,
-      setHighContrast,
-      remindersEnabled,
-      setRemindersEnabled,
-      budgetAlertsEnabled,
-      setBudgetAlertsEnabled,
+      colorMode: preferences.colorMode,
+      setColorMode: (mode: ColorMode) => updatePreferences({ colorMode: mode }),
+      compactCards: preferences.compactCards,
+      setCompactCards: (value: boolean) => updatePreferences({ compactCards: value }),
+      highContrast: preferences.highContrast,
+      setHighContrast: (value: boolean) => updatePreferences({ highContrast: value }),
+      remindersEnabled: preferences.remindersEnabled,
+      setRemindersEnabled: (value: boolean) => updatePreferences({ remindersEnabled: value }),
     }),
-    [
-      colorMode,
-      compactCards,
-      highContrast,
-      remindersEnabled,
-      budgetAlertsEnabled,
-    ],
+    [preferences, updatePreferences],
   );
 
   return <AppPreferencesContext.Provider value={value}>{children}</AppPreferencesContext.Provider>;

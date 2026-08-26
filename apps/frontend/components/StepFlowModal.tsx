@@ -2,9 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { KeyboardAvoidingView, Modal, Platform, Pressable, Text, TextInput, View } from "react-native";
 import type { KeyboardAvoidingViewProps } from "react-native";
 
+import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import type { StepFlowStepConfig } from "@/hooks/useStepFlow";
 import { withAlpha } from "@/lib/color";
-import type { ThemeColors } from "./theme";
 
 interface StepFlowModalProps<K extends string> {
   step: StepFlowStepConfig<K> | null;
@@ -16,7 +16,6 @@ interface StepFlowModalProps<K extends string> {
   onCancel: () => void;
   onConfirm: () => void;
   webKeyboardInset: number;
-  colors: ThemeColors;
   // Defaults match fuel.tsx's tuning; finance.tsx passes its own (see
   // git history for why they differ per-page).
   keyboardBehavior?: KeyboardAvoidingViewProps["behavior"];
@@ -37,10 +36,11 @@ export default function StepFlowModal<K extends string>({
   onCancel,
   onConfirm,
   webKeyboardInset,
-  colors,
   keyboardBehavior = Platform.OS === "ios" ? "position" : "height",
   keyboardVerticalOffset = Platform.OS === "ios" ? 24 : 0,
 }: StepFlowModalProps<K>) {
+  const colors = useThemeColors();
+
   return (
     <Modal transparent visible={Boolean(step)} animationType="fade" onRequestClose={onCancel}>
       <KeyboardAvoidingView

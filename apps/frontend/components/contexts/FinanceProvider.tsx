@@ -14,6 +14,15 @@ import { useVehicle } from "./VehicleProvider";
 
 const FINANCE_STORAGE_KEY = "thinktwice.finance-inputs";
 
+// This provider hand-rolls its own per-user AsyncStorage persistence
+// below rather than using hooks/usePersistedUserState.ts (shared by
+// AppPreferencesProvider and useSetupChecklist for the same "load
+// once per account, save on change" need) - here, local storage is
+// only an offline cache behind a cloud fetch that's the actual source
+// of truth (loadCloudFinanceInputs), with its own debounced remote
+// save. That cloud round trip is a genuinely different shape the
+// shared hook doesn't cover, not an oversight.
+
 type FinanceContextValue = {
   incomeInput: string;
   setIncomeInput: (value: string) => void;

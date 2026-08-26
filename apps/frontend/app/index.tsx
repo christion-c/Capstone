@@ -6,7 +6,6 @@ import { Pressable, Text, View } from "react-native";
 import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import { useFinance } from "@/components/contexts/FinanceProvider";
 import PageScaffold from "@/components/PageScaffold";
-import type { ThemeColors } from "@/components/theme";
 import { AnimatedNumber, Card, CardTitle, DonutGauge, LogoMark } from "@/components/ui";
 import { useVehicle } from "@/components/contexts/VehicleProvider";
 import { useRefetchOnFocus } from "@/hooks/useRefetchOnFocus";
@@ -130,8 +129,8 @@ export default function Home() {
           {donutLegend.map((item) => (
             <View key={item.label} className="flex-row items-center gap-sm">
               <View className="h-2.5 w-2.5 rounded-round" style={{ backgroundColor: item.color }} />
-              <Text className="flex-1 text-[13px] text-textMuted">{item.label}</Text>
-              <Text className="text-[13px] font-bold text-text">{formatCurrencyWhole(item.value)}</Text>
+              <Text className="flex-1 text-caption text-textMuted">{item.label}</Text>
+              <Text className="text-caption font-bold text-text">{formatCurrencyWhole(item.value)}</Text>
             </View>
           ))}
         </View>
@@ -141,7 +140,7 @@ export default function Home() {
         <CardTitle>Tank Forecast</CardTitle>
         <Text className="text-[26px] font-bold text-accent">{Math.max(projectedDaysUntilFillUp, 0).toFixed(1)} days until next fill-up</Text>
         <Text className="text-sm leading-5 text-textMuted">Estimated refill cost: {formatCurrencyWhole(projectedFillUpCost)} based on your current fuel and mileage inputs.</Text>
-        <Text className="text-[13px] font-bold uppercase tracking-[0.5px] text-text">{fuelStatus}</Text>
+        <Text className="text-caption font-bold uppercase tracking-[0.5px] text-text">{fuelStatus}</Text>
       </Card>
 
       {shouldShowSetupChecklist ? (
@@ -157,7 +156,7 @@ export default function Home() {
                 />
                 <View className="flex-1 gap-0.5">
                   <Text className="text-[15px] font-semibold text-text">{step.label}</Text>
-                  <Text className="text-[13px] leading-[18px] text-textMuted">{step.description}</Text>
+                  <Text className="text-caption leading-[18px] text-textMuted">{step.description}</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
               </Pressable>
@@ -170,14 +169,12 @@ export default function Home() {
         <CardTitle>Quick Actions</CardTitle>
         <View className="gap-xs">
           <QuickActionRow
-            colors={colors}
             title="Update budget"
             description="Adjust income, bills, and spending."
             icon="wallet-outline"
             onPress={() => router.push("/finance")}
           />
           <QuickActionRow
-            colors={colors}
             title="Log fuel"
             description="Keep your refill forecast accurate."
             icon="car-outline"
@@ -187,7 +184,6 @@ export default function Home() {
           {/* nutrition is not complete do not use while this is commented out */}
 
           {/* <QuickActionRow
-            colors={colors}
             title="Log nutrition"
             description="Track a daily check-in for forecasts."
             icon="restaurant-outline"
@@ -203,15 +199,15 @@ function QuickActionRow({
   title,
   description,
   icon,
-  colors,
   onPress,
 }: {
-  colors: ThemeColors;
   title: string;
   description: string;
   icon: keyof typeof Ionicons.glyphMap;
   onPress: () => void;
 }) {
+  const colors = useThemeColors();
+
   return (
     <Pressable
       onPress={onPress}
@@ -225,7 +221,7 @@ function QuickActionRow({
       </View>
       <View className="flex-1 gap-0.5">
         <Text className="text-base font-bold text-text">{title}</Text>
-        <Text className="text-[13px] leading-[19px] text-textMuted">{description}</Text>
+        <Text className="text-caption leading-[19px] text-textMuted">{description}</Text>
       </View>
       <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
     </Pressable>

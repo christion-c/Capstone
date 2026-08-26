@@ -1,15 +1,16 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text } from "react-native";
 
-import type { ThemeColors } from "@/components/theme";
+import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 
 interface SettingsBackButtonProps {
   onPress: () => void;
-  colors: ThemeColors;
 }
 
 // The "← Back" pill every settings/account screen puts in its header.
-export default function SettingsBackButton({ onPress, colors }: SettingsBackButtonProps) {
+export default function SettingsBackButton({ onPress }: SettingsBackButtonProps) {
+  const colors = useThemeColors();
+
   return (
     <Pressable
       onPress={onPress}

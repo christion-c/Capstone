@@ -1,6 +1,5 @@
 import { Text, View } from "react-native";
 
-import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import { useAuth } from "@/components/contexts/AuthProvider";
 import PageScaffold from "@/components/PageScaffold";
 import MlAccountInfoBox from "@/components/ml/MlAccountInfoBox";
@@ -11,7 +10,6 @@ import { useMlPreview } from "@/hooks/useMlPreview";
 import { formatCurrency } from "@/lib/money-format";
 
 export default function PrivateMlAccountPage() {
-  const colors = useThemeColors();
   const { user } = useAuth();
   const { milesInput, setMilesInput, data, loading, error, reload } = useMlPreview(user);
 
@@ -39,7 +37,6 @@ export default function PrivateMlAccountPage() {
           error={error}
           idleLabel="Refresh preview"
           loadingLabel="Refreshing..."
-          colors={colors}
         />
 
         {data ? (

@@ -54,7 +54,6 @@ export default function MlPreviewPage() {
           error={error}
           idleLabel="Run prediction"
           loadingLabel="Predicting..."
-          colors={colors}
         />
 
         <MlAccountInfoBox
@@ -99,11 +98,11 @@ export default function MlPreviewPage() {
                   .slice(0, 10)
                   .map((entry, index) => (
                     <View key={`${entry.recordedAt ?? entry.observedCost}-${index}`} className="gap-0.5 rounded-md border border-border p-sm">
-                      <Text className="text-[13px] text-textMuted">{entry.recordedAt ? new Date(entry.recordedAt).toLocaleDateString() : "Recorded date unavailable"}</Text>
-                      <Text className="text-[13px] text-textMuted">Miles: {entry.milesDriven}</Text>
-                      <Text className="text-[13px] text-textMuted">Fuel price: {formatCurrency(entry.fuelPrice)}</Text>
-                      <Text className="text-[13px] text-textMuted">Gallons: {entry.gallons.toFixed(2)}</Text>
-                      <Text className="text-[13px] text-textMuted">Observed cost: {formatCurrency(entry.observedCost)}</Text>
+                      <Text className="text-caption text-textMuted">{entry.recordedAt ? new Date(entry.recordedAt).toLocaleDateString() : "Recorded date unavailable"}</Text>
+                      <Text className="text-caption text-textMuted">Miles: {entry.milesDriven}</Text>
+                      <Text className="text-caption text-textMuted">Fuel price: {formatCurrency(entry.fuelPrice)}</Text>
+                      <Text className="text-caption text-textMuted">Gallons: {entry.gallons.toFixed(2)}</Text>
+                      <Text className="text-caption text-textMuted">Observed cost: {formatCurrency(entry.observedCost)}</Text>
                     </View>
                   ))
               )}

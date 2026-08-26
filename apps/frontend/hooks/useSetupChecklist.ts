@@ -1,11 +1,23 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { useAuth } from "@/components/contexts/AuthProvider";
+import { usePersistedUserState, type FieldValidators } from "@/hooks/usePersistedUserState";
 
 interface ChecklistStep {
   complete: boolean;
 }
+
+interface PersistedChecklistState {
+  hidden: boolean;
+}
+
+// Stable module-level references - usePersistedUserState relies on
+// both never changing identity between renders (see its own comment).
+const DEFAULT_CHECKLIST_STATE: PersistedChecklistState = { hidden: false };
+
+const CHECKLIST_VALIDATORS: FieldValidators<PersistedChecklistState> = {
+  hidden: (value): value is boolean => typeof value === "boolean",
+};
 
 // Owns the home screen's setup-checklist visibility and its AsyncStorage
 // persistence (keyed per account): once every step is complete, or the
@@ -13,54 +25,21 @@ interface ChecklistStep {
 // checklist reappearing on next launch.
 export function useSetupChecklist(steps: ChecklistStep[]) {
   const { user } = useAuth();
-  const [setupChecklistHidden, setSetupChecklistHidden] = useState(false);
+  const [{ hidden: setupChecklistHidden }, updateChecklistState] = usePersistedUserState(
+    user?.uid,
+    "thinktwice.setup-checklist",
+    DEFAULT_CHECKLIST_STATE,
+    CHECKLIST_VALIDATORS,
+  );
 
   const completionCount = steps.filter((step) => step.complete).length;
-  const accountChecklistKey = user?.uid ? `thinktwice.setup-checklist.${user.uid}` : "thinktwice.setup-checklist.guest";
   const shouldShowSetupChecklist = !setupChecklistHidden && completionCount < steps.length;
 
   useEffect(() => {
-    if (!user?.uid) {
-      setSetupChecklistHidden(false);
-      return;
-    }
-
-    const loadChecklistState = async () => {
-      try {
-        const storedValue = await AsyncStorage.getItem(accountChecklistKey);
-
-        if (!storedValue) {
-          return;
-        }
-
-        const parsedValue = JSON.parse(storedValue) as { hidden?: boolean };
-
-        if (typeof parsedValue.hidden === "boolean") {
-          setSetupChecklistHidden(parsedValue.hidden);
-        }
-      } catch {
-        // Ignore malformed persisted checklist state and keep defaults.
-      }
-    };
-
-    void loadChecklistState();
-  }, [accountChecklistKey, user?.uid]);
-
-  useEffect(() => {
     if (completionCount === steps.length && !setupChecklistHidden) {
-      setSetupChecklistHidden(true);
+      updateChecklistState({ hidden: true });
     }
-  }, [completionCount, setupChecklistHidden, steps.length]);
-
-  useEffect(() => {
-    if (!user?.uid) {
-      return;
-    }
-
-    if (setupChecklistHidden || completionCount === steps.length) {
-      void AsyncStorage.setItem(accountChecklistKey, JSON.stringify({ hidden: true }));
-    }
-  }, [accountChecklistKey, completionCount, setupChecklistHidden, steps.length, user?.uid]);
+  }, [completionCount, setupChecklistHidden, steps.length, updateChecklistState]);
 
   return { shouldShowSetupChecklist, completionCount };
 }
