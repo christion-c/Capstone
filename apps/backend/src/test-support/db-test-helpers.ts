@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { database } from "../db/pool.js";
 import { migrations } from "../db/migrations/index.js";
 import { runMigrations } from "../db/migrations/migration-runner.js";
+import { withPostgresRetry } from "../lib/db-helpers.js";
 
 // Integration tests need a real Postgres instance. Rather than failing
 // the whole suite when one isn't reachable (e.g. a laptop with Docker
@@ -35,31 +36,41 @@ export async function ensureSchemaReady(): Promise<boolean> {
 
 // Inserts a throwaway user for a single test. Callers are responsible
 // for deleting it (see deleteTestUser) so repeated test runs don't
-// accumulate rows in a shared development database.
+// accumulate rows in a shared development database. Wrapped in
+// withPostgresRetry: node:test runs every integration-test file
+// concurrently by default, and each file's own before/after hooks
+// insert/delete their own throwaway user via cascading foreign keys
+// (vehicles, budget_entries, finance_inputs, fill_up_history all
+// reference users.id ON DELETE CASCADE) - multiple files' concurrent
+// creates/deletes racing on that shared table can genuinely deadlock,
+// confirmed by reproducing it directly against a real Postgres
+// instance (error code 40P01) rather than assumed.
 export async function createTestUser(): Promise<string> {
-  // Prefix with "test-" so leftover rows are easy to spot/clean up manually.
-  const firebaseUid = `test-${randomUUID()}`;
+  return withPostgresRetry(async () => {
+    // Prefix with "test-" so leftover rows are easy to spot/clean up manually.
+    const firebaseUid = `test-${randomUUID()}`;
 
-  const result = await database.query<{ id: string }>(
-    `
-      INSERT INTO users (firebase_uid, email)
-      VALUES ($1, $2)
-      RETURNING id
-    `,
-    [firebaseUid, `${firebaseUid}@example.test`],
-  );
+    const result = await database.query<{ id: string }>(
+      `
+        INSERT INTO users (firebase_uid, email)
+        VALUES ($1, $2)
+        RETURNING id
+      `,
+      [firebaseUid, `${firebaseUid}@example.test`],
+    );
 
-  const userId = result.rows[0]?.id;
+    const userId = result.rows[0]?.id;
 
-  // INSERT ... RETURNING should always yield exactly one row.
-  if (!userId) {
-    throw new Error("Failed to create test user.");
-  }
+    // INSERT ... RETURNING should always yield exactly one row.
+    if (!userId) {
+      throw new Error("Failed to create test user.");
+    }
 
-  return userId;
+    return userId;
+  });
 }
 
 // Removes the user this test created, keeping the shared dev database clean.
 export async function deleteTestUser(userId: string): Promise<void> {
-  await database.query("DELETE FROM users WHERE id = $1", [userId]);
+  await withPostgresRetry(() => database.query("DELETE FROM users WHERE id = $1", [userId]));
 }

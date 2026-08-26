@@ -1,4 +1,5 @@
 import { database } from "../pool.js";
+import { isRetryablePostgresError } from "../../lib/db-helpers.js";
 import type { Migration } from "./migration.types.js";
 
 // Arbitrary fixed number identifying this app's migration lock in
@@ -101,72 +102,107 @@ export async function runMigrations(
         `Applying migration ${migration.id}: ${migration.description}`,
       );
 
-      // Start this migration's own transaction.
-      await client.query("BEGIN");
+      // A migration's CREATE TABLE ... REFERENCES users(id) can
+      // genuinely deadlock (Postgres error 40P01) against a concurrent
+      // DELETE FROM users ON DELETE CASCADE elsewhere - confirmed by
+      // reproducing it directly against a real Postgres instance, not
+      // theoretical. Real in production too (multiple instances
+      // booting at once can all call runMigrations concurrently), not
+      // just under test concurrency, so this retries the specific
+      // migration a couple of times before giving up, the same way
+      // test-support/db-test-helpers.ts retries its own create/delete
+      // calls.
+      //
+      // This closed the majority of a flaky-integration-test-suite
+      // investigation, but not all of it: under heavy concurrency
+      // (~9 integration test files each calling ensureSchemaReady()
+      // against a brand-new, never-migrated database at once) a rarer
+      // failure mode still surfaces occasionally, where a later
+      // session's fresh SELECT against schema_migrations doesn't
+      // reflect an earlier session's already-committed migration row,
+      // and re-attempts it. Only ever reproduced against a
+      // Docker-bridge-networked Postgres container under this specific
+      // stress pattern; a real dev/CI database (persistent, already
+      // migrated, not hit by nine files' first-ever migration attempt
+      // simultaneously) shouldn't encounter it. Not chased further -
+      // pointing this out for whoever looks at this next rather than
+      // leaving it looking fully solved.
+      const maxAttempts = 3;
 
-      try {
+      for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        // Start this migration's own transaction.
+        await client.query("BEGIN");
+
         try {
-          // Run the migration's actual schema change.
-          await migration.up(client);
+          try {
+            // Run the migration's actual schema change.
+            await migration.up(client);
+          } catch (error) {
+            // A table/index already existing usually means a previous run
+            // got interrupted after the DDL landed but before this migration
+            // got recorded - treat that as success rather than a real failure.
+            if (isAlreadyExistsError(error)) {
+              console.warn(
+                `Migration ${migration.id} already applied in the database; recording it as complete without re-running it.`,
+              );
+
+              // Undo whatever partial DDL this attempt might have run.
+              await client.query("ROLLBACK");
+
+              // Record it as applied anyway, since the underlying structure exists.
+              await client.query(
+                `
+                  INSERT INTO schema_migrations (id, description)
+                  VALUES ($1, $2)
+                  ON CONFLICT (id) DO UPDATE SET description = EXCLUDED.description
+                `,
+                [migration.id, migration.description],
+              );
+
+              console.log(`Migration ${migration.id} completed.`);
+              break;
+            }
+
+            // Any other error is a genuine failure - rethrow to the outer catch.
+            throw error;
+          }
+
+          // Record this migration as applied.
+          await client.query(
+            `
+              INSERT INTO schema_migrations (id, description)
+              VALUES ($1, $2)
+              ON CONFLICT (id) DO UPDATE SET description = EXCLUDED.description
+            `,
+            [migration.id, migration.description],
+          );
+
+          // Commit both the schema change and the schema_migrations row together.
+          await client.query("COMMIT");
+
+          console.log(`Migration ${migration.id} completed.`);
+          break;
         } catch (error) {
-          // A table/index already existing usually means a previous run
-          // got interrupted after the DDL landed but before this migration
-          // got recorded - treat that as success rather than a real failure.
-          if (isAlreadyExistsError(error)) {
-            console.warn(
-              `Migration ${migration.id} already applied in the database; recording it as complete without re-running it.`,
-            );
-
-            // Undo whatever partial DDL this attempt might have run.
+          try {
+            // Undo this migration's partial changes.
             await client.query("ROLLBACK");
+          } catch {
+            // A failed migration may already have left the transaction in an
+            // aborted state, so the rollback itself can fail silently.
+          }
 
-            // Record it as applied anyway, since the underlying structure exists.
-            await client.query(
-              `
-                INSERT INTO schema_migrations (id, description)
-                VALUES ($1, $2)
-                ON CONFLICT (id) DO UPDATE SET description = EXCLUDED.description
-              `,
-              [migration.id, migration.description],
-            );
-
-            console.log(`Migration ${migration.id} completed.`);
-            // Move on to the next migration in the list.
+          if (attempt < maxAttempts && isRetryablePostgresError(error)) {
+            const backoffMs = 50 * attempt + Math.random() * 50;
+            await new Promise((resolve) => setTimeout(resolve, backoffMs));
             continue;
           }
 
-          // Any other error is a genuine failure - rethrow to the outer catch.
-          throw error;
+          // Wrap and rethrow so the caller sees which migration failed.
+          throw new Error(
+            `Migration ${migration.id} failed and was rolled back.`,
+            { cause: error },
+          );
         }
-
-        // Record this migration as applied.
-        await client.query(
-          `
-            INSERT INTO schema_migrations (id, description)
-            VALUES ($1, $2)
-            ON CONFLICT (id) DO UPDATE SET description = EXCLUDED.description
-          `,
-          [migration.id, migration.description],
-        );
-
-        // Commit both the schema change and the schema_migrations row together.
-        await client.query("COMMIT");
-
-        console.log(`Migration ${migration.id} completed.`);
-      } catch (error) {
-        try {
-          // Undo this migration's partial changes.
-          await client.query("ROLLBACK");
-        } catch {
-          // A failed migration may already have left the transaction in an
-          // aborted state, so the rollback itself can fail silently.
-        }
-
-        // Wrap and rethrow so the caller sees which migration failed.
-        throw new Error(
-          `Migration ${migration.id} failed and was rolled back.`,
-          { cause: error },
-        );
       }
     }
   } finally {
