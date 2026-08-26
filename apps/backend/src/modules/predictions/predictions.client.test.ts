@@ -5,10 +5,29 @@ import type { BudgetPrediction } from "@thinktwice/shared-types";
 
 import { env } from "../../config/env.js";
 import type { ForecastEntryInput } from "./predictions.client.js";
-import { requestForecast, requestPreview } from "./predictions.client.js";
 
 const originalFetch = global.fetch;
 const fetchMock = mock.fn<typeof fetch>();
+
+// getIdTokenAuthHeader talks to google-auth-library, which makes a real
+// network call to Google's IAM API regardless of the global.fetch mock
+// above (it uses its own HTTP client, not fetch) - confirmed by timing
+// this file before adding this mock (each test went from a few ms to
+// ~80ms). Mocked to null (the same "no token obtainable" result this
+// sandbox's own credentials produce anyway, since generating an ID
+// token for a Cloud Run audience requires a service account, not a
+// user credential) so every test here stays fast and hermetic.
+const getIdTokenAuthHeaderMock = mock.fn<(audience: string) => Promise<string | null>>(
+  async () => null,
+);
+
+const mockedGoogleIdTokenModule = mock.module("../../lib/google-id-token.js", {
+  namedExports: { getIdTokenAuthHeader: getIdTokenAuthHeaderMock },
+});
+
+// Imported after mock.module() so predictions.client.ts picks up the
+// mocked getIdTokenAuthHeader instead of the real one.
+const { requestForecast, requestPreview } = await import("./predictions.client.js");
 
 before(() => {
   global.fetch = fetchMock as unknown as typeof fetch;
@@ -16,11 +35,13 @@ before(() => {
 
 after(() => {
   global.fetch = originalFetch;
+  mockedGoogleIdTokenModule.restore();
 });
 
 afterEach(() => {
   fetchMock.mock.resetCalls();
   fetchMock.mock.restore();
+  getIdTokenAuthHeaderMock.mock.resetCalls();
 });
 
 const sampleEntries: ForecastEntryInput[] = [
@@ -100,6 +121,19 @@ test("requestForecast rethrows a non-network error", async () => {
   );
 });
 
+test("requestForecast attaches a Google identity token as Authorization when one is available", async () => {
+  getIdTokenAuthHeaderMock.mock.mockImplementationOnce(async () => "Bearer fake-id-token");
+  fetchMock.mock.mockImplementation(
+    async () => new Response(JSON.stringify(samplePrediction), { status: 200 }),
+  );
+
+  await requestForecast(sampleEntries);
+
+  const [, init] = fetchMock.mock.calls[0]?.arguments ?? [];
+  const headers = (init as RequestInit).headers as Record<string, string>;
+  assert.equal(headers["Authorization"], "Bearer fake-id-token");
+});
+
 test("requestPreview returns ok with the preview payload on a successful response", async () => {
   const previewPayload = { predictedMilesDriven: 120, method: "average" };
 
@@ -120,6 +154,31 @@ test("requestPreview returns ok with the preview payload on a successful respons
   assert.equal(requestUrl.searchParams.get("miles_driven"), "120");
   const headers = (init as RequestInit).headers as Record<string, string>;
   assert.equal(headers["X-Internal-Token"], env.INTERNAL_SERVICE_TOKEN);
+});
+
+test("requestPreview attaches a Google identity token as Authorization when one is available", async () => {
+  getIdTokenAuthHeaderMock.mock.mockImplementationOnce(async () => "Bearer fake-id-token");
+  fetchMock.mock.mockImplementation(
+    async () => new Response(JSON.stringify({}), { status: 200 }),
+  );
+
+  await requestPreview("caller-firebase-uid", 120);
+
+  const [, init] = fetchMock.mock.calls[0]?.arguments ?? [];
+  const headers = (init as RequestInit).headers as Record<string, string>;
+  assert.equal(headers["Authorization"], "Bearer fake-id-token");
+});
+
+test("requestPreview omits Authorization when no identity token is available", async () => {
+  fetchMock.mock.mockImplementation(
+    async () => new Response(JSON.stringify({}), { status: 200 }),
+  );
+
+  await requestPreview("caller-firebase-uid", 120);
+
+  const [, init] = fetchMock.mock.calls[0]?.arguments ?? [];
+  const headers = (init as RequestInit).headers as Record<string, string>;
+  assert.equal("Authorization" in headers, false);
 });
 
 test("requestPreview returns service-error on a non-2xx response", async () => {

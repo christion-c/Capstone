@@ -1,7 +1,21 @@
 import type { BudgetPrediction } from "@thinktwice/shared-types";
 
 import { env } from "../../config/env.js";
+import { getIdTokenAuthHeader } from "../../lib/google-id-token.js";
 import type { BudgetEntry } from "../budget/budget.repository.js";
+
+// The ML service's Cloud Run ingress requires IAM authentication (see
+// its infra config) - a Google-signed identity token scoped to the
+// service's own URL, on top of (not instead of) the X-Internal-Token
+// header it's always checked. Best-effort: returns an empty object
+// wherever a token isn't obtainable (local dev's docker-compose ML
+// instance has no Cloud Run IAM in front of it and no real GCP
+// credentials to fetch one with), so this never blocks a request that
+// would otherwise succeed.
+async function googleAuthHeaders(): Promise<Record<string, string>> {
+  const authHeader = await getIdTokenAuthHeader(env.ML_SERVICE_URL);
+  return authHeader ? { Authorization: authHeader } : {};
+}
 
 // The subset of a budget entry the ML service's /predict endpoint needs.
 export type ForecastEntryInput = Pick<
@@ -38,6 +52,7 @@ export async function requestForecast(
       headers: {
         "Content-Type": "application/json",
         "X-Internal-Token": env.INTERNAL_SERVICE_TOKEN,
+        ...(await googleAuthHeaders()),
       },
       body: JSON.stringify({
         entries: entries.map((entry) => ({
@@ -91,6 +106,7 @@ export async function requestPreview(
     mlResponse = await fetch(`${env.ML_SERVICE_URL}/ml-preview?${query}`, {
       headers: {
         "X-Internal-Token": env.INTERNAL_SERVICE_TOKEN,
+        ...(await googleAuthHeaders()),
       },
     });
   } catch (error) {
