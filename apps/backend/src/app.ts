@@ -22,6 +22,16 @@ export function createApp() {
 
   app.disable("x-powered-by");
 
+  // Cloud Run sits in front of every request as a single reverse proxy
+  // hop, setting X-Forwarded-For to the real client IP - without this,
+  // Express's default (don't trust any proxy) means express-rate-limit
+  // below can't safely tell requests apart by IP (it logs a warning and
+  // risks either rate-limiting everyone as one shared "client" or,
+  // depending on its fallback, trusting a client-supplied header it
+  // shouldn't). `1` trusts exactly one hop - Cloud Run's own proxy, not
+  // an arbitrary chain a client could spoof further hops into.
+  app.set("trust proxy", 1);
+
   // API-only service: no browser-rendered HTML, so helmet's default
   // Content-Security-Policy would just add noise without protecting anything.
   app.use(helmet({ contentSecurityPolicy: false }));
