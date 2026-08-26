@@ -11,6 +11,7 @@ import { AnimatedNumber, Card, CardTitle, DonutGauge, LogoMark } from "@/compone
 import { useVehicle } from "@/components/contexts/VehicleProvider";
 import { useRefetchOnFocus } from "@/hooks/useRefetchOnFocus";
 import { useSetupChecklist } from "@/hooks/useSetupChecklist";
+import { withAlpha } from "@/lib/color";
 import { formatCurrencyWhole } from "@/lib/money-format";
 
 export default function Home() {
@@ -96,7 +97,7 @@ export default function Home() {
         <View className="flex-row items-center justify-between gap-sm">
           <CardTitle>Free Cash Flow</CardTitle>
           {shouldShowSetupChecklist ? (
-            <View className="rounded-round bg-[rgba(240,145,61,0.18)] px-3 py-1.5">
+            <View className="rounded-round px-3 py-1.5" style={{ backgroundColor: withAlpha(colors.accent, 0.18) }}>
               <Text className="text-xs font-bold uppercase tracking-[0.4px] text-accent">{completionCount}/{setupSteps.length} setup</Text>
             </View>
           ) : null}
@@ -216,7 +217,10 @@ function QuickActionRow({
       onPress={onPress}
       className="flex-row items-center gap-sm rounded-md bg-surfaceSoft px-md py-3 transition-transform duration-150 ease-out active:scale-[0.98]"
     >
-      <View className="items-center justify-center rounded-round bg-[rgba(240,145,61,0.16)] p-sm">
+      <View
+        className="items-center justify-center rounded-round p-sm"
+        style={{ backgroundColor: withAlpha(colors.accent, 0.16) }}
+      >
         <Ionicons name={icon} size={22} color={colors.accent} />
       </View>
       <View className="flex-1 gap-0.5">

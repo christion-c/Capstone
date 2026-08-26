@@ -6,6 +6,7 @@ import PageScaffold from "@/components/PageScaffold";
 import SettingsBackButton from "@/components/settings/SettingsBackButton";
 import SettingToggleRow from "@/components/settings/SettingToggleRow";
 import { Card, CardText, CardTitle, StatTile } from "@/components/ui";
+import { withAlpha } from "@/lib/color";
 
 export default function DailyRhythmSettings() {
   const colors = useThemeColors();
@@ -27,7 +28,10 @@ export default function DailyRhythmSettings() {
     >
       <Card surface gap="md">
         <View className="gap-xs">
-          <View className="self-start rounded-round bg-[rgba(240,145,61,0.16)] px-2.5 py-1">
+          <View
+            className="self-start rounded-round px-2.5 py-1"
+            style={{ backgroundColor: withAlpha(colors.accent, 0.16) }}
+          >
             <Text className="text-xs font-bold uppercase tracking-[0.8px] text-accent">Demo-ready</Text>
           </View>
           <Text className="text-[22px] font-bold text-text">Your app, tuned for the day ahead</Text>

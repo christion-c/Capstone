@@ -12,6 +12,7 @@ import VehicleSelector from "@/components/fuel/VehicleSelector";
 import { useWebKeyboardInset } from "@/hooks/useWebKeyboardInset";
 import { useRefetchOnFocus } from "@/hooks/useRefetchOnFocus";
 import { useFuelCheckinFlow } from "@/hooks/useFuelCheckinFlow";
+import { withAlpha } from "@/lib/color";
 import { formatCurrency } from "@/lib/money-format";
 
 export default function Fuel() {
@@ -151,7 +152,10 @@ export default function Fuel() {
           <View className="gap-sm">
             {recentFillUps.map((entry, index) => (
               <View key={index} className="flex-row items-center gap-sm">
-                <View className="h-9 w-9 items-center justify-center rounded-round bg-[rgba(240,145,61,0.16)]">
+                <View
+                  className="h-9 w-9 items-center justify-center rounded-round"
+                  style={{ backgroundColor: withAlpha(colors.accent, 0.16) }}
+                >
                   <Ionicons name="water-outline" size={16} color={colors.accent} />
                 </View>
                 <View className="flex-1 gap-0.5">

@@ -67,7 +67,10 @@ export default function StepFlowModal<K extends string>({
 
             <View className="flex-row items-center gap-sm">
               {step?.icon ? (
-                <View className="h-9 w-9 items-center justify-center rounded-round bg-[rgba(240,145,61,0.16)]">
+                <View
+                  className="h-9 w-9 items-center justify-center rounded-round"
+                  style={{ backgroundColor: withAlpha(colors.accent, 0.16) }}
+                >
                   <Ionicons name={step.icon} size={18} color={colors.accent} />
                 </View>
               ) : null}

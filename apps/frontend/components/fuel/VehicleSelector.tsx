@@ -1,6 +1,8 @@
 import { Pressable, Text, View } from "react-native";
 
+import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import type { BackendVehicle } from "@/lib/backend-api";
+import { withAlpha } from "@/lib/color";
 
 interface VehicleSelectorProps {
   vehicles: BackendVehicle[];
@@ -11,6 +13,8 @@ interface VehicleSelectorProps {
 // The fuel screen's vehicle picker: a row of nickname chips, or a fallback
 // message when there's nothing to pick from yet.
 export default function VehicleSelector({ vehicles, selectedVehicleId, onSelect }: VehicleSelectorProps) {
+  const colors = useThemeColors();
+
   if (vehicles.length === 0) {
     return (
       <Text className="text-sm text-textMuted">
@@ -28,8 +32,9 @@ export default function VehicleSelector({ vehicles, selectedVehicleId, onSelect 
           <Pressable
             key={vehicle.id}
             onPress={() => onSelect(vehicle.id)}
+            style={active ? { backgroundColor: withAlpha(colors.accent, 0.18) } : undefined}
             className={`rounded-round border px-sm py-1.5 transition-transform duration-150 ease-out active:scale-95 ${
-              active ? "border-accent bg-[rgba(240,145,61,0.18)]" : "border-border bg-surfaceSoft"
+              active ? "border-accent" : "border-border bg-surfaceSoft"
             }`}
           >
             <Text className={`text-[13px] font-semibold ${active ? "text-accent" : "text-textMuted"}`}>

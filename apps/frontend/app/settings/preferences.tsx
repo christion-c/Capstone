@@ -8,6 +8,7 @@ import PageScaffold from "@/components/PageScaffold";
 import SettingsBackButton from "@/components/settings/SettingsBackButton";
 import SettingToggleRow from "@/components/settings/SettingToggleRow";
 import { Card, CardText, CardTitle, StatusMessage } from "@/components/ui";
+import { withAlpha } from "@/lib/color";
 import { auth, isFirebaseConfigured } from "@/lib/firebase";
 
 export default function ProfileSettings() {
@@ -55,8 +56,9 @@ export default function ProfileSettings() {
         <View className="flex-row gap-sm">
           <Pressable
             onPress={() => setColorMode("dark")}
+            style={colorMode === "dark" ? { backgroundColor: withAlpha(colors.accent, 0.2) } : undefined}
             className={`flex-1 items-center rounded-md border py-3 ${
-              colorMode === "dark" ? "border-accent bg-[rgba(240,145,61,0.2)]" : "border-border bg-surfaceSoft"
+              colorMode === "dark" ? "border-accent" : "border-border bg-surfaceSoft"
             }`}
           >
             <Text className={`text-[15px] ${colorMode === "dark" ? "font-bold text-accent" : "font-semibold text-textMuted"}`}>
@@ -66,8 +68,9 @@ export default function ProfileSettings() {
 
           <Pressable
             onPress={() => setColorMode("light")}
+            style={colorMode === "light" ? { backgroundColor: withAlpha(colors.accent, 0.2) } : undefined}
             className={`flex-1 items-center rounded-md border py-3 ${
-              colorMode === "light" ? "border-accent bg-[rgba(240,145,61,0.2)]" : "border-border bg-surfaceSoft"
+              colorMode === "light" ? "border-accent" : "border-border bg-surfaceSoft"
             }`}
           >
             <Text className={`text-[15px] ${colorMode === "light" ? "font-bold text-accent" : "font-semibold text-textMuted"}`}>

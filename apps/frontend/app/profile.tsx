@@ -10,6 +10,7 @@ import PageScaffold from "@/components/PageScaffold";
 import { useVehicle } from "@/components/contexts/VehicleProvider";
 import { Card, CardTitle, MetricRow } from "@/components/ui";
 import { useRefetchOnFocus } from "@/hooks/useRefetchOnFocus";
+import { withAlpha } from "@/lib/color";
 import { formatCurrencyWhole } from "@/lib/money-format";
 
 function initialsFor(label: string): string {
@@ -56,7 +57,10 @@ export default function Profile() {
     >
       <Card>
         <View className="flex-row items-center gap-md">
-          <View className="h-14 w-14 items-center justify-center rounded-round bg-[rgba(240,145,61,0.16)]">
+          <View
+            className="h-14 w-14 items-center justify-center rounded-round"
+            style={{ backgroundColor: withAlpha(colors.accent, 0.16) }}
+          >
             <Text className="text-xl font-bold text-accent">{initialsFor(accountLabel)}</Text>
           </View>
           <View className="flex-1 gap-xs">
