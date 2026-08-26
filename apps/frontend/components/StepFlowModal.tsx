@@ -16,8 +16,13 @@ interface StepFlowModalProps<K extends string> {
   onCancel: () => void;
   onConfirm: () => void;
   webKeyboardInset: number;
-  // Defaults match fuel.tsx's tuning; finance.tsx passes its own (see
-  // git history for why they differ per-page).
+  // Defaults match fuel.tsx's tuning (iOS: "position"/24). finance.tsx
+  // passes its own ("padding"/0) instead - predates this component and
+  // the commit history that changed it has no more specific reasoning
+  // than "demo day" fixes, so the actual on-device iOS difference this
+  // was tuned for isn't recoverable from history. Left as two different
+  // values rather than guessed-unified, since this environment has no
+  // iOS simulator to verify a change against.
   keyboardBehavior?: KeyboardAvoidingViewProps["behavior"];
   keyboardVerticalOffset?: number;
 }

@@ -3,6 +3,7 @@ export { default as Card } from "./Card";
 export { default as DonutGauge } from "./DonutGauge";
 export { default as CardText } from "./CardText";
 export { default as CardTitle } from "./CardTitle";
+export { default as ListRow } from "./ListRow";
 export { default as LogoMark } from "./LogoMark";
 export { default as MetricRow } from "./MetricRow";
 export { default as PrimaryButton } from "./PrimaryButton";
