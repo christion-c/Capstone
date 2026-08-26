@@ -52,16 +52,21 @@ module.exports = {
         xl: "28px",
         round: "999px",
       },
-      // A named token for the one arbitrary text-[13px] size that had
-      // emerged as a de-facto standard "caption" size, independently
-      // hand-rolled across ~20 call sites (metric rows, chips, form
-      // labels, list captions) with no shared token - CardTitle/
-      // CardText already cover the heading/body roles, this closes the
-      // gap for the smallest one. Only the size, not a fixed line
-      // -height, so existing per-site leading-* overrides still apply
-      // unchanged.
+      // caption: the one arbitrary text-[13px] size that had emerged as
+      // a de-facto standard, independently hand-rolled across ~20 call
+      // sites (metric rows, chips, form labels, list captions) with no
+      // shared token. body: CardText's own 15px, now referenced by name
+      // instead of hardcoded in that one file. pageTitle/pageTitleCompact:
+      // PageScaffoldBody's page-header tier, the one size class not
+      // reused anywhere else, tokenized for the same "name it instead of
+      // a bare number" consistency as the others. None of these set a
+      // fixed line-height, so existing per-site leading-* overrides
+      // (CardText's tight/non-tight split, etc.) keep working unchanged.
       fontSize: {
         caption: "13px",
+        body: "15px",
+        pageTitleCompact: "28px",
+        pageTitle: "32px",
       },
     },
   },

@@ -129,7 +129,7 @@ export default function Fuel() {
           <PrimaryButton
             onPress={startVehicleFlow}
             label={hasExistingVehicle ? "Update vehicle details" : "Add vehicle details"}
-            textClassName="text-[15px]"
+            textClassName="text-body"
           />
         </View>
 
@@ -142,7 +142,7 @@ export default function Fuel() {
         <Text className="text-sm text-textMuted">Check in after every fill-up.</Text>
 
         <View className="gap-sm">
-          <PrimaryButton onPress={startFuelFlow} label="Start fuel check-in" textClassName="text-[15px]" />
+          <PrimaryButton onPress={startFuelFlow} label="Start fuel check-in" textClassName="text-body" />
         </View>
       </Card>
 

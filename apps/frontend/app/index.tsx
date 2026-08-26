@@ -1,12 +1,11 @@
-import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useCallback } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 import { useThemeColors } from "@/components/contexts/AppPreferencesProvider";
 import { useFinance } from "@/components/contexts/FinanceProvider";
 import PageScaffold from "@/components/PageScaffold";
-import { AnimatedNumber, Card, CardTitle, DonutGauge, LogoMark } from "@/components/ui";
+import { AnimatedNumber, Card, CardTitle, DonutGauge, ListRow, LogoMark } from "@/components/ui";
 import { useVehicle } from "@/components/contexts/VehicleProvider";
 import { useRefetchOnFocus } from "@/hooks/useRefetchOnFocus";
 import { useSetupChecklist } from "@/hooks/useSetupChecklist";
@@ -148,18 +147,14 @@ export default function Home() {
           <CardTitle>Get Fully Set Up</CardTitle>
           <View className="gap-xs">
             {setupSteps.map((step) => (
-              <Pressable key={step.label} onPress={() => router.push(step.path)} className="flex-row items-center gap-sm rounded-md bg-surfaceSoft px-md py-3 transition-transform duration-150 ease-out active:scale-[0.98]">
-                <Ionicons
-                  name={step.complete ? "checkmark-circle" : "ellipse-outline"}
-                  size={20}
-                  color={step.complete ? colors.success : colors.textMuted}
-                />
-                <View className="flex-1 gap-0.5">
-                  <Text className="text-[15px] font-semibold text-text">{step.label}</Text>
-                  <Text className="text-caption leading-[18px] text-textMuted">{step.description}</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
-              </Pressable>
+              <ListRow
+                key={step.label}
+                title={step.label}
+                description={step.description}
+                icon={step.complete ? "checkmark-circle" : "ellipse-outline"}
+                iconColor={step.complete ? colors.success : colors.textMuted}
+                onPress={() => router.push(step.path)}
+              />
             ))}
           </View>
         </Card>
@@ -168,62 +163,32 @@ export default function Home() {
       <Card>
         <CardTitle>Quick Actions</CardTitle>
         <View className="gap-xs">
-          <QuickActionRow
+          <ListRow
             title="Update budget"
             description="Adjust income, bills, and spending."
             icon="wallet-outline"
+            iconBadge
             onPress={() => router.push("/finance")}
           />
-          <QuickActionRow
+          <ListRow
             title="Log fuel"
             description="Keep your refill forecast accurate."
             icon="car-outline"
+            iconBadge
             onPress={() => router.push("/fuel")}
           />
 
           {/* nutrition is not complete do not use while this is commented out */}
 
-          {/* <QuickActionRow
+          {/* <ListRow
             title="Log nutrition"
             description="Track a daily check-in for forecasts."
             icon="restaurant-outline"
+            iconBadge
             onPress={() => router.push("/nutrition")}
           /> */}
         </View>
       </Card>
     </PageScaffold>
-  );
-}
-
-function QuickActionRow({
-  title,
-  description,
-  icon,
-  onPress,
-}: {
-  title: string;
-  description: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  onPress: () => void;
-}) {
-  const colors = useThemeColors();
-
-  return (
-    <Pressable
-      onPress={onPress}
-      className="flex-row items-center gap-sm rounded-md bg-surfaceSoft px-md py-3 transition-transform duration-150 ease-out active:scale-[0.98]"
-    >
-      <View
-        className="items-center justify-center rounded-round p-sm"
-        style={{ backgroundColor: withAlpha(colors.accent, 0.16) }}
-      >
-        <Ionicons name={icon} size={22} color={colors.accent} />
-      </View>
-      <View className="flex-1 gap-0.5">
-        <Text className="text-base font-bold text-text">{title}</Text>
-        <Text className="text-caption leading-[19px] text-textMuted">{description}</Text>
-      </View>
-      <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
-    </Pressable>
   );
 }

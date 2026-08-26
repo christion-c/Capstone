@@ -15,5 +15,5 @@ interface CardTextProps {
 export default function CardText({ children, tight = false, className = "" }: CardTextProps) {
   const leadingClass = tight ? "leading-[21px]" : "leading-[22px]";
 
-  return <Text className={`text-[15px] text-textMuted ${leadingClass} ${className}`}>{children}</Text>;
+  return <Text className={`text-body text-textMuted ${leadingClass} ${className}`}>{children}</Text>;
 }

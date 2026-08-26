@@ -120,7 +120,7 @@ export default function Finance() {
         <CardTitle>Budget Check-In</CardTitle>
 
         <View className="gap-sm">
-          <PrimaryButton onPress={startFinanceFlow} label="Start monthly check-in" textClassName="text-[15px]" />
+          <PrimaryButton onPress={startFinanceFlow} label="Start monthly check-in" textClassName="text-body" />
           <Text className="text-sm text-textMuted">Enter your monthly income, spending, and recurring bills one step at a time.</Text>
         </View>
       </Card>

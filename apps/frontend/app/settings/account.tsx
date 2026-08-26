@@ -1,11 +1,10 @@
 import { router } from "expo-router";
-import { Pressable, Text } from "react-native";
 
 import { useAuth } from "@/components/contexts/AuthProvider";
 import PageScaffold from "@/components/PageScaffold";
 import SettingsBackButton from "@/components/settings/SettingsBackButton";
 import { useVehicle } from "@/components/contexts/VehicleProvider";
-import { Card, CardText, CardTitle } from "@/components/ui";
+import { Card, CardText, CardTitle, ListRow } from "@/components/ui";
 
 export default function Account() {
   const { user } = useAuth();
@@ -33,15 +32,9 @@ export default function Account() {
 
       <Card surface>
         <CardTitle>Next Steps</CardTitle>
-        <Pressable onPress={() => router.push("/profile")} className="rounded-md border border-border bg-surfaceSoft px-md py-3.5">
-          <Text className="text-[15px] font-bold text-text">Open profile overview</Text>
-        </Pressable>
-        <Pressable onPress={() => router.push("/settings/preferences")} className="rounded-md border border-border bg-surfaceSoft px-md py-3.5">
-          <Text className="text-[15px] font-bold text-text">Adjust app preferences</Text>
-        </Pressable>
-        <Pressable onPress={() => router.push("/delete-account")} className="rounded-md border border-border bg-surfaceSoft px-md py-3.5">
-          <Text className="text-[15px] font-bold text-danger">Delete my account</Text>
-        </Pressable>
+        <ListRow title="Open profile overview" onPress={() => router.push("/profile")} />
+        <ListRow title="Adjust app preferences" onPress={() => router.push("/settings/preferences")} />
+        <ListRow title="Delete my account" danger onPress={() => router.push("/delete-account")} />
       </Card>
     </PageScaffold>
   );

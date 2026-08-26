@@ -63,7 +63,7 @@ export default function ProfileSettings() {
               colorMode === "dark" ? "border-accent" : "border-border bg-surfaceSoft"
             }`}
           >
-            <Text className={`text-[15px] ${colorMode === "dark" ? "font-bold text-accent" : "font-semibold text-textMuted"}`}>
+            <Text className={`text-body ${colorMode === "dark" ? "font-bold text-accent" : "font-semibold text-textMuted"}`}>
               Dark
             </Text>
           </Pressable>
@@ -75,7 +75,7 @@ export default function ProfileSettings() {
               colorMode === "light" ? "border-accent" : "border-border bg-surfaceSoft"
             }`}
           >
-            <Text className={`text-[15px] ${colorMode === "light" ? "font-bold text-accent" : "font-semibold text-textMuted"}`}>
+            <Text className={`text-body ${colorMode === "light" ? "font-bold text-accent" : "font-semibold text-textMuted"}`}>
               Light
             </Text>
           </Pressable>
@@ -114,7 +114,7 @@ export default function ProfileSettings() {
           onPress={() => router.push("/settings/account")}
           className="mt-xs rounded-md border border-border bg-surfaceSoft px-md py-3.5"
         >
-          <Text className="text-[15px] font-bold text-text">Account details</Text>
+          <Text className="text-body font-bold text-text">Account details</Text>
         </Pressable>
       </Card>
 

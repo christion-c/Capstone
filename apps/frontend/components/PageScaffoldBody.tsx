@@ -33,7 +33,7 @@ export default function PageScaffoldBody({
           <View className="flex-1 flex-row items-center gap-sm">
             {headerLeft ? <View className="items-start justify-center">{headerLeft}</View> : null}
             <Text
-              className={`shrink font-bold tracking-[0.2px] text-text ${compactCards ? "text-[28px]" : "text-[32px]"}`}
+              className={`shrink font-bold tracking-[0.2px] text-text ${compactCards ? "text-pageTitleCompact" : "text-pageTitle"}`}
             >
               {title}
             </Text>
@@ -41,7 +41,7 @@ export default function PageScaffoldBody({
           {headerRight ? <View className="items-end justify-center">{headerRight}</View> : null}
         </View>
         {subtitle ? (
-          <Text className={`text-textMuted ${compactCards ? "text-[15px] leading-[22px]" : "text-base leading-6"}`}>
+          <Text className={`text-textMuted ${compactCards ? "text-body leading-[22px]" : "text-base leading-6"}`}>
             {subtitle}
           </Text>
         ) : null}
