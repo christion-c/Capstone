@@ -37,6 +37,7 @@ export async function requestForecast(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-Internal-Token": env.INTERNAL_SERVICE_TOKEN,
       },
       body: JSON.stringify({
         entries: entries.map((entry) => ({

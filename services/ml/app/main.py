@@ -13,6 +13,7 @@ from contextlib import asynccontextmanager
 from typing import Any
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -55,12 +56,37 @@ async def handle_unexpected_error(request: Request, exc: Exception) -> JSONRespo
     return JSONResponse(status_code=500, content={"error": "Internal server error"})
 
 
+@app.exception_handler(RequestValidationError)
+async def handle_validation_error(
+    request: Request, exc: RequestValidationError
+) -> JSONResponse:
+    # FastAPI's default handler for a malformed request body returns
+    # Pydantic's own {"detail": [...]} shape, including internal field/
+    # type names - reshaped here to match the {"error": "..."} convention
+    # every other error response on this service (and the backend) uses,
+    # rather than three different error shapes depending on which layer
+    # rejected the request.
+    first_error = exc.errors()[0] if exc.errors() else None
+    message = first_error["msg"] if first_error else "Invalid request"
+    return JSONResponse(status_code=422, content={"error": message})
+
+
+@app.exception_handler(HTTPException)
+async def handle_http_exception(request: Request, exc: HTTPException) -> JSONResponse:
+    return JSONResponse(status_code=exc.status_code, content={"error": exc.detail})
+
+
 # Wide open: this service sits behind the backend and is not directly
 # exposed to end users with sensitive credentials to protect.
+# allow_credentials is deliberately left off (default False) - this
+# service authenticates via the X-Internal-Token header, never cookies,
+# so there's nothing credentialed to allow. With allow_origins=["*"],
+# turning it on would make Starlette reflect the caller's literal
+# Origin with Access-Control-Allow-Credentials: true instead of a
+# simple wildcard - broader trust than this service needs.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -89,7 +115,12 @@ def health() -> dict[str, Any]:
     return {"status": "ok"}
 
 
-@app.post("/predict", response_model=PredictResponse, response_model_by_alias=True)
+@app.post(
+    "/predict",
+    response_model=PredictResponse,
+    response_model_by_alias=True,
+    dependencies=[Depends(require_internal_token)],
+)
 def predict(request: PredictRequest) -> PredictResponse:
     # This is the endpoint the real app uses (called server-to-server by
     # the backend's /predictions route) - not to be confused with

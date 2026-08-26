@@ -17,17 +17,25 @@ class BudgetEntry(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     date: date
-    fuel_cost: float | None = Field(default=None, alias="fuelCost", ge=0)
-    food_cost: float | None = Field(default=None, alias="foodCost", ge=0)
-    miles_driven: float | None = Field(default=None, alias="milesDriven", ge=0)
-    meals: int | None = Field(default=None, ge=0)
+    # Upper bounds mirror the backend's own Zod schema for these same
+    # fields (budget.routes.ts) - ge=0 alone still let unbounded/`inf`
+    # values through (Pydantic v2 accepts float("inf") under a bare
+    # ge=0), which could propagate into a non-JSON-serializable
+    # Infinity in the prediction response.
+    fuel_cost: float | None = Field(default=None, alias="fuelCost", ge=0, le=99_999.99)
+    food_cost: float | None = Field(default=None, alias="foodCost", ge=0, le=99_999.99)
+    miles_driven: float | None = Field(default=None, alias="milesDriven", ge=0, le=99_999.99)
+    meals: int | None = Field(default=None, ge=0, le=50)
 
 
 class PredictRequest(BaseModel):
     # Request body for POST /predict: the user's recent budget entries.
     model_config = ConfigDict(populate_by_name=True)
 
-    entries: list[BudgetEntry]
+    # Capped so a single request can't force an unbounded amount of
+    # regression work - a caller has no legitimate reason to send more
+    # entries than there are days in a year of check-ins.
+    entries: list[BudgetEntry] = Field(max_length=366)
 
 
 class PredictResponse(BaseModel):
