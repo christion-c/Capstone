@@ -16,6 +16,10 @@ from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from slowapi.util import get_remote_address
 
 from .history import INTERNAL_SERVICE_TOKEN, load_user_history, save_user_history
 from .models import PredictRequest, PredictResponse
@@ -41,6 +45,19 @@ async def lifespan(app: FastAPI):
 logger = logging.getLogger("thinktwice.ml")
 
 app = FastAPI(title="ThinkTwice ML Service", lifespan=lifespan)
+
+# This service used to have no rate limiting at all - notable because
+# its Cloud Run ingress is "all" (open to the public internet, see
+# infra notes), relying entirely on require_internal_token below for
+# protection. A per-client-IP cap adds a basic backstop against
+# volumetric abuse independent of that check (which still costs a
+# hash comparison per request even when it correctly rejects).
+# Limits are generous relative to the backend's own real traffic
+# pattern (one caller, occasional requests), not a tight quota.
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 
 
 @app.exception_handler(Exception)
@@ -121,31 +138,39 @@ def health() -> dict[str, Any]:
     response_model_by_alias=True,
     dependencies=[Depends(require_internal_token)],
 )
-def predict(request: PredictRequest) -> PredictResponse:
+@limiter.limit("30/minute")
+def predict(request: Request, payload: PredictRequest) -> PredictResponse:
     # This is the endpoint the real app uses (called server-to-server by
     # the backend's /predictions route) - not to be confused with
     # /ml-preview below, which is a separate debug-only flow.
-    if not request.entries:
+    # `request: Request` is required (and must be named exactly that) for
+    # slowapi's @limiter.limit to find the caller's address - the actual
+    # body param is named `payload` instead of the more obvious `request`
+    # specifically to avoid colliding with it.
+    if not payload.entries:
         raise HTTPException(
             status_code=422,
             detail="At least one budget entry is required.",
         )
 
     # Below the regression threshold, fall back to a plain average.
-    if len(request.entries) < MIN_ENTRIES_FOR_REGRESSION:
-        return predict_by_average(request.entries)
+    if len(payload.entries) < MIN_ENTRIES_FOR_REGRESSION:
+        return predict_by_average(payload.entries)
 
-    return predict_by_regression(request.entries)
+    return predict_by_regression(payload.entries)
 
 
 @app.post("/fill-up-history", dependencies=[Depends(require_internal_token)])
-def fill_up_history(payload: dict[str, Any]) -> dict[str, Any]:
+@limiter.limit("30/minute")
+def fill_up_history(request: Request, payload: dict[str, Any]) -> dict[str, Any]:
     # Backs the /ml-preview debug flow's own history writes (see history.py).
     return save_user_history(payload)
 
 
 @app.get("/ml-preview", dependencies=[Depends(require_internal_token)])
+@limiter.limit("30/minute")
 def ml_preview(
+    request: Request,
     miles_driven: int = 120,
     user_id: str | None = None,
     fuel_price: float | None = None,
